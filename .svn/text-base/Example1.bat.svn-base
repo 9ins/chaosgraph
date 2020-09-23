@@ -1,0 +1,8 @@
+@echo off
+
+REM SET JAVA_HOME=C:\j2sdk1.4.1_01
+
+REM SET path=%JAVA_HOME%\bin
+SET CLASS_PATH=.;./bin;./lib/jai_codec.jar;./lib/jai_core.jar
+
+java -classpath %CLASS_PATH% org.chaos.graph.GraphExample1

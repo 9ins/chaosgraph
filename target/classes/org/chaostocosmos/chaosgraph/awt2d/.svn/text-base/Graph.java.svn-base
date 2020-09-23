@@ -1,0 +1,1262 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.geom.*;
+import javax.swing.JPanel;
+import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+/**
+* <p>Title: Graph 그래프 클래스</p>
+* <p>Description:</p>
+* <pre>
+* 이 클래스는 하위의 개별 그래프 클래스의 공통요소가 정의되어 있는 추상클래스입니다.
+* 이 클래스를 상속받는 클래스는 추상메서드인 drawGraph메서드와 resizeImage메서드를 반드시 구현해 주어야 합니다.
+* 또한 그래프를 그리는데 필요한 기본적인 초기화 작업(그래프 배경, XY축, XY인덱스 등)과 각종 초기값 들이 정의되어 있습니다.
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성<br>
+* @version 1.2, 2006/7/5 그래프 요소객체, 이미지 객체, 그래프 패널객체를 포함하도록 수정.
+*                        생성자에서 그래프 넓이, 높이를 인자로 넘겨받도록 수정.
+*                        그래프 이미지의 크기를 조정하는 추상메소드 resizeImage메소드를 추가.<br>
+*               2006/7/6 그래프 이미지의 사이즈를 고정시키는 메소드 추가.<br>
+*               2006/7/11 상좌하우 여백을 조정할 수 있도록하는 메소드 추가.<br>
+*               2006/7/12 수직한계값을 설정하는 메소드 이름을 setVerticalLimit에서 setLimit로 수정.<br>
+* @since JDK1.4.1
+*/
+public abstract class Graph implements GraphConstants
+{
+    protected int INDENT_LEFT = 30;                        //왼쪽 여백 크기
+    protected int INDENT_RIGHT = 30;                       //오른쪽 여백 크기
+    protected int INDENT_TOP = 30;                         //위쪽 여백 크기
+    protected int INDENT_BOTTOM = 30;                      //아래쪽 여백 크기
+    protected float GRAPH_X, GRAPH_Y;                      //그래프 원점 X, Y
+    protected float LABEL_X, LABEL_Y;						//라벨의 x, y
+    protected float GRAPH_WIDTH, GRAPH_HEIGHT;				//그래프 넓이, 높이
+    protected int IMG_WIDTH = 600, IMG_HEIGHT = 300;		//이미지 객체의 넓이, 높이
+    protected boolean IS_SHOW_GRID_Y = true;				//Y축 글라이드
+    protected boolean IS_SHOW_GRID_X = true;				//X축 글라이드
+    protected boolean IS_SHOW_INDEX_Y = true;				//Y축 인덱스
+    protected boolean IS_SHOW_INDEX_X = true;				//X축 인덱스
+    protected boolean IS_SHOW_GRAPH_XY = true;				//x, y축을 보일지 말지
+    protected boolean IS_SHOW_TITLE = true;					//타이틀을 보일지 말지
+    protected boolean IS_SHOW_BG = true;					//배경을 보일지 말지
+    protected boolean IS_SHOW_LABEL = true;					//요소라벨을 보일지 말지
+    protected boolean IS_SHOW_SHADOW = true;				//그림자를 보일지 말지
+    protected boolean IS_SHOW_IMG_BORDER = true;			//이미지 객체의 외곽선을 보일지 말지
+    protected boolean IS_SHOW_GRAPH_BORDER = true;			//그래프의 외곽선을 보일지 말지
+    protected boolean IS_SHOW_BORDER = true;                //배경 외곽선을 보일지 말지
+    protected boolean IS_IMG_FIXED = false;                 //이미지 사이즈 고정여부
+    protected String INDEX_Y_UNIT = "";						//인덱스 Y축의 단위 스트링
+
+    protected Color IMG_BG_COLOR = new Color(230,230,255);		//이미지 객체의 배경색
+    protected Color IMG_BORDER_COLOR = new Color(200,200,230);	//이미지 객체의 외곽선색
+    protected Color GRAPH_BG_COLOR = new Color(255,255,255);	//그래프의 배경색
+    protected Color GRAPH_BORDER_COLOR = new Color(180,180,230);//그래프배경 외곽선색
+    protected Color BORDER_COLOR = new Color(150,150,150);		//그래프 외곽선색
+    protected Color LABEL_BG_COLOR = new Color(200,200,220);	//라벨배경색
+    protected Color TITLE_FONT_COLOR = new Color(150,150,200);	//타이틀 폰트색
+    protected Color INDEX_FONT_COLOR = new Color(100,100,100);	//인덱스 폰트색
+    protected Color GRAPH_XY_COLOR = new Color(50,50,50);		//그래프 XY축색
+    protected Color GRID_X_COLOR = new Color(100,120,100);		//글라이드 X축색
+    protected Color GRID_Y_COLOR = new Color(100,120,100);		//글라이드 Y축색
+    protected Color SHADOW_COLOR = new Color(100,100,100);		//그림자색
+
+    protected float IMG_BG_ALPHA = 1.0f;					//이미지 객체 투명도
+    protected float GRAPH_BG_ALPHA = 1.0f;					//그래프 배경 투명도
+    protected float TITLE_FONT_ALPHA = 0.7f;                //타이틀 폰트 투명도
+    protected float GRAPH_XY_ALPHA = 0.8f;                  //XY축 투명도
+    protected float INDEX_FONT_ALPHA = 0.7f;				//인덱스 폰트 투명도
+    protected float GRID_ALPHA = 0.5f;                      //그리드 투명도
+    protected float SHADOW_ALPHA = 0.15f;					//그림자 투명도
+    protected float GRAPH_ALPHA = 0.7f;						//그래프 투명도
+    protected float LABEL_BG_ALPHA = 0.5f;					//라벨 배경 투명도
+    protected int TITLE_FONT_SIZE = 15;						//타이틀 폰트 크기
+    protected int LABEL_FONT_SIZE = 10;						//라벨 폰트 크기
+    protected int INDEX_FONT_SIZE = 10;						//인덱스 폰트 크기
+    protected int SHADOW_DIST = 5;							//그림자의 거리
+    protected int SHADOW_ANGLE = 300;						//그림자의 각도
+    protected float IMG_BORDER_SIZE = 3f;					//이미지 객체 외곽선 사이즈
+    protected float GRAPH_BORDER_SIZE = 5f;					//그래프 스트록
+    protected float BORDER_SIZE = 2f;                       //외곽선 사이즈
+    protected float GRAPH_XY_SIZE = 2f;						//XY축 스트록 사이즈
+    protected float GRID_SIZE = 0.1f;						//GRID X축 스트록 사이즈
+
+    protected int GRID_STYLE = 2;							// grid선의 스타일 1:라인 2:점선
+    protected String FONT_NAME;								//글꼴이름
+    protected String TITLE;									//그래프 타이틀
+    protected float LIMIT;                                 //그래프의 비율 (높을수록 그래프는 작아진다.)
+    protected Color DEFAULT_COLOR = new Color(220,220,220);	//임의로 사용할 기본색
+
+    protected GraphElements GRAPH_ELEMENTS = null;          //그래프 요소 객체
+    protected BufferedImage GRAPH_IMAGE = null;             //이미지 객체
+    protected Graphics2D GRAPHICS2D = null;                 //그림을 그릴 Graphics2D객체
+    protected GraphPanel GRAPH_PANEL = null;                //그래프 패널
+    /**
+     * 그래프 요소객체를 인자로 갖는 생성자
+     * @param elements GraphElements 그래프 요소객체
+     * @since JDK1.4.1
+     */
+    public Graph(GraphElements elements)
+    {
+        this(600, 300, elements);
+    }
+    /**
+     * 이미지의 넓이, 높이, 요소 객체를 인자로 갖는 생성자
+     * @param width int 이미지의 넓이
+     * @param height int 이미지의 높이
+     * @param elements GraphElements 그래프 요소객체
+     * @since JDK1.4.1
+     */
+    public Graph(int width, int height, GraphElements elements)
+    {
+        this("", width, height, elements);
+    }
+    /**
+     * 타이틀 String과 이미지의 넓이, 높이, 요소객체를 인자로 갖는 생성자
+     * @param title String 그래프 타이틀
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param elements GraphElements 그래프 요소객체
+     * @since JDK1.4.1
+     */
+    public Graph(String title, int width, int height, GraphElements elements)
+    {
+        this.TITLE = title;
+        this.GRAPH_ELEMENTS = elements;
+        initGraph(width, height);
+    }
+    /**
+     * 그래프의 기초데이터를 초기화한다.
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @since JDK1.4.1
+     */
+    protected void initGraph(int width, int height)
+    {
+        this.IMG_WIDTH = width;			                    //이미지 객체의 넓이
+        this.IMG_HEIGHT = height;		                    //이미지 객체의 높이
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//이미지 객체에 대한 그래프 영역의 상대 넓이(그래프 넓이)
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //이미지 객체에 대한 그래프 영역의 상대 높이(그래프 높이)
+        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		//이미지 객체에 대한 그래프의 상대좌표 원점 x
+        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  //이미지 객체에 대한 그래프의 상대좌표 원점 y
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         //그래프 요소들이 표시될 라벨의 상대좌표 X
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     //그래프 요소들이 표시될 라벨의 상대좌표 Y
+        this.GRAPH_IMAGE = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); //이미지 객체 생성
+        this.GRAPHICS2D = (Graphics2D) GRAPH_IMAGE.getGraphics();             //그래픽스 객체 생성
+    }
+    /**
+     * 배경을 청소한다.
+     */
+    public void sweepBg(int width, int height) {
+    	this.IMG_HEIGHT = width;
+    	this.IMG_HEIGHT = height;
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//이미지 객체에 대한 그래프 영역의 상대 넓이(그래프 넓이)
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //이미지 객체에 대한 그래프 영역의 상대 높이(그래프 높이)
+        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		//이미지 객체에 대한 그래프의 상대좌표 원점 x
+        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  //이미지 객체에 대한 그래프의 상대좌표 원점 y
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         //그래프 요소들이 표시될 라벨의 상대좌표 X
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     //그래프 요소들이 표시될 라벨의 상대좌표 Y
+    	this.GRAPHICS2D.setColor(Color.black);
+    	this.GRAPHICS2D.fill(new Rectangle2D.Float(0, 0, width, height));
+    }
+    /**
+     * 그래프의 종류를 스트링 값으로 얻는다.
+     * @param graphType int그래프 종류, int값
+     * @param String 그래프의 종류
+     * @since JDK1.4.1
+     */
+    public static String getGraphStr(int graphType)
+    {
+        String type = null;
+        if(graphType == LINE_GRAPH)
+            type = "LINE GRAPH";
+        else if(graphType == BAR_GRAPH)
+            type = "BAR GRAPH";
+        else if(graphType == CIRCLE_GRAPH)
+            type = "CIRCLE GRAPH";
+        else if(graphType == AREA_GRAPH)
+            type = "AREA GRAPH";
+        return type;
+    }
+    /**
+     * 그래프의 x축 원점을 구한다.
+     * @return float 그래프의 x축 원점
+     * @since JDK1.4.1
+     */
+    public float getGraphX()
+    {
+        return this.GRAPH_X;
+    }
+    /**
+     * 그래프의 y축 원점을 구한다.
+     * @return float 그래프의 y축 원점
+     * @since JDK1.4.1
+     */
+    public float getGraphY()
+    {
+        return this.GRAPH_Y;
+    }
+    /**
+     * 그래프 이미지 넓이를 얻는다.
+     * @return 그래프 이미지 넓이 
+     */
+    public int getImageWidth() 
+    {
+    	return this.IMG_WIDTH;
+    }
+    /**
+     * 그래프 이미지 높이를 얻는다.
+     * @return 그래프 이미지 높이
+     */
+    public int getImageHeight()
+    {
+    	return this.IMG_HEIGHT;
+    }
+    /**
+     * 그래프의 라벨 x축 원점을 구한다.
+     * @return float 그래프의 라벨 x축 원점
+     * @since JDK1.4.1
+     */
+    public float getLabelX()
+    {
+        return this.LABEL_X;
+    }
+    /**
+     * 그래프의 라벨 y축 원점을 구한다.
+     * @return float 그래프의 라벨 y축 원점
+     * @since JDK1.4.1
+     */
+    public float getLabelY()
+    {
+        return this.LABEL_Y;
+    }
+    /**
+     * 그래프 타이틀 스트링을 얻는다.
+     * @return 그래프 타이틀 스트링
+     */
+    public String getTitle() {
+    	return this.TITLE;
+    }
+    /**
+     * y축 글라이드를 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowGridY(boolean is)
+    {
+        IS_SHOW_GRID_Y = is;
+    }
+    /**
+     * x축 글라이드를 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowGridX(boolean is)
+    {
+        IS_SHOW_GRID_X = is;
+    }
+    /**
+     * x축 인덱스를 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowIndexX(boolean is)
+    {
+        IS_SHOW_INDEX_X= is;
+    }
+    /**
+     * y축 인덱스를 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowIndexY(boolean is)
+    {
+        IS_SHOW_INDEX_Y = is;
+    }
+    /**
+     * xy축을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowGraphXY(boolean is)
+    {
+        IS_SHOW_GRAPH_XY = is;
+    }
+    /**
+     * 타이틀을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowTitle(boolean is)
+    {
+        IS_SHOW_TITLE = is;
+    }
+    /**
+     * 배경을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowBg(boolean is)
+    {
+        IS_SHOW_BG = is;
+    }
+    /**
+     * 요소라벨을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowLabel(boolean is)
+    {
+        IS_SHOW_LABEL = is;
+    }
+    /**
+     * 그림자 효과를 줄지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowShadow(boolean is)
+    {
+        IS_SHOW_SHADOW = is;
+    }
+    /**
+     * BufferedImage객체의 외곽선을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowImgBorder(boolean is)
+    {
+        IS_SHOW_IMG_BORDER = is;
+    }
+    /**
+     * 그래프 외곽선을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowGraphBorder(boolean is)
+    {
+        IS_SHOW_GRAPH_BORDER = is;
+    }
+    /**
+     * 그래프 배경 영역 외곽선을 보일지 설정
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowBorder(boolean is)
+    {
+        IS_SHOW_BORDER = is;
+    }
+    /**
+     * 그래프 이미지 사이즈 고정여부를 설정
+     * @param is boolean true or false
+     * @since = JDK1.4.1
+     */
+    public void setImgFixed(boolean is)
+    {
+        IS_IMG_FIXED = is;
+    }
+    /**
+     * BufferedImage객체의 배경색을 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setImgBgColor(Color color)
+    {
+        IMG_BG_COLOR = color;
+    }
+    /**
+     * BufferedImage객체의 외곽선색을 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setImgBorderColor(Color color)
+    {
+        IMG_BORDER_COLOR = color;
+    }
+    /**
+     * 그래프 배경색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setGraphBgColor(Color color)
+    {
+        GRAPH_BG_COLOR = color;
+    }
+    /**
+     * 그래프 배경 외곽선색 설정
+     * @param color Color객체
+     * @since JDK1.4.1
+     */
+    public void setGraphBorderColor(Color color)
+    {
+        GRAPH_BORDER_COLOR = color;
+    }
+    /**
+     * 그래프 외곽선색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setBorderColor(Color color)
+    {
+        BORDER_COLOR = color;
+    }
+    /**
+     * 요소라벨 배경색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setLabelBgColor(Color color)
+    {
+        LABEL_BG_COLOR = color;
+    }
+    /**
+     * 타이틀 폰트색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setTitleFontColor(Color color)
+    {
+        TITLE_FONT_COLOR = color;
+    }
+    /**
+     * 인덱스 폰트색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setIndexFontColor(Color color)
+    {
+        INDEX_FONT_COLOR = color;
+    }
+    /**
+     * 그래프 xy축 색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setGraphXYColor(Color color)
+    {
+        GRAPH_XY_COLOR = color;
+    }
+    /**
+     * 글라이드 x축 색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setGridXColor(Color color)
+    {
+        GRID_X_COLOR = color;
+    }
+    /**
+     * 글라이드 y축 색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setGridYColor(Color color)
+    {
+        GRID_Y_COLOR = color;
+    }
+    /**
+     * 그림자색 설정
+     * @param color Color Color객체
+     * @since JDK1.4.1
+     */
+    public void setShadowColor(Color color)
+    {
+        SHADOW_COLOR = color;
+    }
+    /**
+     * BufferedImage객체 배경 투명도
+     * @param alpha int float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setImgBgAlpha(float alpha)
+    {
+        IMG_BG_ALPHA = alpha;
+    }
+    /**
+     * 그래프 배경 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setGraphBgAlpha(float alpha)
+    {
+        GRAPH_BG_ALPHA = alpha;
+    }
+    /**
+     * 타이틀 폰트 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setTitleFontAlpha(float alpha)
+    {
+        TITLE_FONT_ALPHA = alpha;
+    }
+    /**
+     * 그래프 xy축 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setGraphXYAlpha(float alpha)
+    {
+        GRAPH_XY_ALPHA = alpha;
+    }
+    /**
+     * 인덱스 폰트 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setIndexFontAlpha(float alpha)
+    {
+        INDEX_FONT_ALPHA = alpha;
+    }
+    /**
+     * 글라이드 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setGridAlpha(float alpha)
+    {
+        GRID_ALPHA = alpha;
+    }
+    /**
+     * 그림자 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setShadowAlpha(float alpha)
+    {
+        SHADOW_ALPHA = alpha;
+    }
+    /**
+     * 그래프 영역 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setGraphAlpha(float alpha)
+    {
+        GRAPH_ALPHA = alpha;
+    }
+    /**
+     * 라벨 배경 투명도
+     * @param alpha float float값으로된 투명도 수치
+     * @since JDK1.4.1
+     */
+    public void setLabelBgAlpha(float alpha)
+    {
+        LABEL_BG_ALPHA = alpha;
+    }
+    /**
+     * 타이틀 폰트 사이즈
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setTitleFontSize(int size)
+    {
+        TITLE_FONT_SIZE = size;
+    }
+    /**
+     * 라벨 폰트 사이즈
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setLabelFontSize(int size)
+    {
+        LABEL_FONT_SIZE = size;
+    }
+    /**
+     * 인덱스 폰트 사이즈
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setIndexFontSize(int size)
+    {
+        INDEX_FONT_SIZE = size;
+    }
+    /**
+     * 그림자 거리
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setShadowDist(int size)
+    {
+        SHADOW_DIST = size;
+    }
+    /**
+     * 그림자 각도
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setShadowAngle(int size)
+    {
+        SHADOW_ANGLE = size;
+    }
+    /**
+     * BufferedImage객체 외곽선 크기
+     * @param size int int값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setImgBorderSize(float size)
+    {
+        IMG_BORDER_SIZE = size;
+    }
+    /**
+     * 그래프 외곽선 크기
+     * @param size float float값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setGraphBorderSize(float size)
+    {
+        GRAPH_BORDER_SIZE = size;
+    }
+    /**
+     * 그래프 영역 외곽선 굵기
+     * @param size float float값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setBorderSize(float size)
+    {
+        BORDER_SIZE = size;
+    }
+    /**
+     * 그래프 xy축 크기
+     * @param size float float값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setGraphXYSize(float size)
+    {
+        GRAPH_XY_SIZE = size;
+    }
+    /**
+     * 글라이드 크기
+     * @param size float float값으로된 크기 수치
+     * @since JDK1.4.1
+     */
+    public void setGridSize(float size)
+    {
+        GRID_SIZE = size;
+    }
+    /**
+     * 글라이드 스타일
+     * @param style int int값으로된 종류 (1:라인, 2:점선)
+     * @since JDK1.4.1
+     */
+    public void setGridStyle(int style)
+    {
+        GRID_STYLE = style;
+    }
+    /**
+     * 디폴트 폰트 스타일
+     * @param fontName String 폰트 이름
+     * @since JDK1.4.1
+     */
+    public void setFont(String fontName)
+    {
+        FONT_NAME = fontName;
+    }
+    /**
+     * 타이틀 스트링 설정
+     * @param title String 타이틀 스트링
+     * @since JDK1.4.1
+     */
+    public void setTitle(String title)
+    {
+        TITLE = title;
+    }
+    /**
+     * 그래프 수직 한계치, 수직 한계치가 높으면 높을 수록 실제 그래프는 비율에 따라 작아진다.
+     * 수직한계치가 요소 최고값보다 작으면 요소 최고값으로 대체된다.
+     * @param limit float float값으로된 값
+     * @since JDK1.4.1
+     */
+    public void setLimit(float limit)
+    {
+        LIMIT = limit;
+    }
+    /**
+     * 인자로 주어진 값으로 기본색을 설정한다.
+     * @param color Color Color객체
+     * @see java.awt.Color
+     * @since JDK1.4.1
+     */
+    public void setDefaultColor(Color color)
+    {
+        DEFAULT_COLOR = color;
+    }
+    /**
+     * 위쪽 여백을 얻는다.
+     * @return int 위여백
+     * @since JDK1.4.1
+     */
+    public int getIndentTop()
+    {
+        return INDENT_TOP;
+    }
+    /**
+     * 왼쪽 여백을 얻는다.
+     * @return int 왼쪽여백
+     * @since JDK1.4.1
+     */
+    public int getIndentLeft()
+    {
+        return INDENT_LEFT;
+    }
+    /**
+     * 아래 여백을 얻는다.
+     * @return int 아래 여백
+     * @since JDK1.4.1
+     */
+    public int getIndentBottom()
+    {
+        return INDENT_BOTTOM;
+    }
+    /**
+     * 오른쪽 여백을 얻는다.
+     * @return int 오른쪽 여백
+     */
+    public int getIndentRight()
+    {
+        return INDENT_RIGHT;
+    }
+    /**
+     * 위쪽여백을 설정한다.
+     * @param top int 윗여백
+     */
+    public void setTopIndent(int top)
+    {
+        setIndent(top, INDENT_LEFT, INDENT_BOTTOM, INDENT_RIGHT);
+    }
+    /**
+     * 왼쪽 여백을 설정한다.
+     * @param left int 왼쪽여백
+     */
+    public void setLeftIndent(int left)
+    {
+        setIndent(INDENT_TOP, left, INDENT_BOTTOM, INDENT_RIGHT);
+    }
+    /**
+     * 아랫 여백을 설정한다.
+     * @param bottom int 아랫여백
+     */
+    public void setBottomIndent(int bottom)
+    {
+        setIndent(INDENT_TOP, INDENT_LEFT, bottom, INDENT_RIGHT);
+    }
+    /**
+     * 오른쪽 여백을 설정한다.
+     * @param right int 오른쪽 여백
+     */
+    public void setRightIndent(int right)
+    {
+        setIndent(INDENT_TOP, INDENT_LEFT, INDENT_BOTTOM, right);
+    }
+    /**
+     * 인자 값으로 그래프의 여백을 설정한다.
+     * @param insets Insets 여백객체
+     * @since JDK1.4.1
+     */
+    public void setIndent(Insets insets)
+    {
+        this.INDENT_TOP = insets.top;
+        this.INDENT_LEFT = insets.left;
+        this.INDENT_BOTTOM = insets.bottom;
+        this.INDENT_RIGHT = insets.right;
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);//이미지 객체에 대한 그래프의 상대 넓이, 높이(그래프의 넓이, 높이)
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);
+        this.GRAPH_X = IMG_WIDTH-(INDENT_RIGHT+GRAPH_WIDTH);		//이미지 객체에 대한 그래프의 상대좌표 x, y(그래프의 원점)
+        this.GRAPH_Y = IMG_HEIGHT-INDENT_BOTTOM;
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;
+    }
+    /**
+     * 주어진 인자 값으로 여백을 설정한다.
+     * 인자값은 순서대로 위여백, 왼쪽여백, 아래여백, 오른쪽여백을 의미한다.
+     * @param top int 위여백
+     * @param left int 왼쪽여백
+     * @param bottom int 아래여백
+     * @param right int 오른쪽여백
+     * @since JDK1.4.1
+     */
+    public void setIndent(int top, int left, int bottom, int right)
+    {
+        setIndent(new Insets(top, left, bottom, right));
+    }
+    /**
+     * Y축 유닛 스트링을 설정한다.
+     * @param unit 유닛 스트링
+     */
+    public void setUnit(String unit)
+    {
+    	this.INDEX_Y_UNIT = unit;
+    }
+    /**
+     * Y축 유닛 스트링을 얻는다.
+     * @return 유닛 스트링
+     */
+    public String getUnit()
+    {
+    	return this.INDEX_Y_UNIT;
+    }
+    /**
+     * 그래프의 크기를 인자값으로 설정한다.
+     * @param width float 그래프 넓이
+     * @param height float 그래프 높이
+     * @since JDK1.4.1
+    public void setGraphSize(float width, float height)
+    {
+        this.GRAPH_WIDTH = width;
+        this.GRAPH_HEIGHT = height;
+        this.GRAPH_X = IMG_WIDTH/2-GRAPH_WIDTH/2;
+        this.GRAPH_Y = IMG_HEIGHT/2+GRAPH_HEIGHT/2;
+    }
+     */
+    /**
+     * 그래프의 원점을 인자값 만큼 이동시킨다.
+     * @param x float 원점 x에서 이동할 크기
+     * @param y float 원점 y에서 이동할 크기
+     * @since JDK1.4.1
+    public void moveGraphXY(float x, float y)
+    {
+        this.GRAPH_X += x;
+        this.GRAPH_Y += y;
+    }
+     */
+    /**
+     * 라벨의 원점을 인자값 만큼 이동시킨다.
+     * @param x float 원점 x에서 이동할 크기
+     * @param y float 원점 y에서 이동할 크기
+     * @since JDK1.4.1
+    public void moveLabelXY(float x, float y)
+    {
+        this.LABEL_X += x;
+        this.LABEL_Y += y;
+    }
+     */
+    /**
+     * 그래프의 원점을 인자값으로 설정한다.
+     * @param x float 원점 x값
+     * @param y float 원점 y값
+     * @since JDK1.4.1
+    public void setGraphXY(float x, float y)
+    {
+        this.GRAPH_X = x;					//이미지 객체에 대한 그래프의 상대좌표 x, y
+        this.GRAPH_Y = y;
+    }
+     */
+    /**
+     * 라벨의 원점을 인자값으로 설정한다.
+     * @param x float 원점 x값
+     * @param y float 원점 y값
+     * @since JDK1.4.1
+    public void setLabelXY(float x, float y)
+    {
+        this.LABEL_X = x;
+        this.LABEL_Y = y;
+    }
+     */
+    /**
+     * 그래프 이미지 객체를 얻는다.
+     * @return BufferedImage 이미지 객체
+     * @since JDK1.4.1
+     */
+    public BufferedImage getGraphImage()
+    {
+        return this.GRAPH_IMAGE;
+    }
+    /**
+     * 이미지 객체를 설정한다.
+     * @param buffImg BufferedImage 이미지 객체
+     * @since JDK1.4.1
+     */
+    public void setGraphImage(BufferedImage buffImg)
+    {
+        this.GRAPH_IMAGE = buffImg;
+    }
+    /**
+     * 그래프 패널을 얻는다.
+     * @return GraphPanel 그래프 패널
+     * @since JDK1.4.1
+     */
+    public GraphPanel getGraphPanel()
+    {
+        if(this.GRAPH_PANEL == null)
+        	this.GRAPH_PANEL = new GraphPanel(this);        
+        this.GRAPH_PANEL.validate();
+        return this.GRAPH_PANEL;
+    }
+    /**
+     * GraphElements객체를 가져온다.
+     * @return GraphElements 그래프에 적용된 GraphElements객체
+     * @since JDK1.4.1
+     */
+    public GraphElements getGraphElements()
+    {
+        return this.GRAPH_ELEMENTS;
+    }
+    /**
+     * 그래프를 그리는 Graphics2D객체를 가져온다.
+     * @return Graphics2D 그래프를 그리는 Graphics2D객체
+     * @since JDK1.4.1
+     */
+    public Graphics2D getGraphics2D()
+    {
+        return this.GRAPHICS2D;
+    }
+    /**
+     * 이미지의 배경을 그린다.
+     * @param bgColor Color 배경색
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawBg(Color bgColor, Graphics2D graphImageG)
+    {
+        color(bgColor, graphImageG);
+        graphImageG.fill(new Rectangle2D.Float(0, 0, IMG_WIDTH, IMG_HEIGHT));	//이미지 객체를 체워진 사각형으로 체운다.
+    }
+    /**
+     * 이미지의 배경 외곽선을 그린다.
+     * @param size float 두께
+     * @param borderColor Color 색깔
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawBgBorder(float size, Color borderColor, Graphics2D graphImageG)
+    {
+        color(borderColor, graphImageG);
+        graphImageG.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphImageG.draw(new Rectangle2D.Float(size/2, size/2, IMG_WIDTH-size, IMG_HEIGHT-size));
+    }
+    /**
+     * 그래프의 배경을 그린다.
+     * @param bgColor Color 배경색
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawGraphBg(Color bgColor, Graphics2D graphImageG)
+    {
+        color(bgColor, graphImageG);
+        graphImageG.fill(new Rectangle2D.Float(GRAPH_X, GRAPH_Y-GRAPH_HEIGHT, GRAPH_WIDTH, GRAPH_HEIGHT));
+    }
+    /**
+     * 그래프 외곽선을 그린다.
+     * @param size float 외곽선 두께
+     * @param borderColor Color 외곽선 색깔
+     * @param rWidth float 외곽선 넓이
+     * @param rHeight float 외곽선 높이
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawGraphBorder(float size, Color borderColor, float rWidth, float rHeight, Graphics2D graphImageG)
+    {
+        color(borderColor, graphImageG);
+        graphImageG.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphImageG.draw(new RoundRectangle2D.Float(GRAPH_X, GRAPH_Y-GRAPH_HEIGHT, GRAPH_WIDTH, GRAPH_HEIGHT, rWidth, rHeight));
+    }
+    /**
+     * x, y축을 그린다.
+     * @param size float 축의 두께
+     * @param color Color 축 색깔
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawXY(float size, Color color, Graphics2D graphImageG)
+    {
+        color(color, graphImageG);
+        graphImageG.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphImageG.draw(new Line2D.Float(GRAPH_X,GRAPH_Y,GRAPH_X,GRAPH_Y-GRAPH_HEIGHT));
+        graphImageG.draw(new Line2D.Float(GRAPH_X,GRAPH_Y,GRAPH_X+GRAPH_WIDTH,GRAPH_Y));
+    }
+    /**
+     * 타이틀 문자열을 그린다.
+     * @param title String 타이틀
+     * @param fontName String 폰트이름
+     * @param fontSize int 폰트 사이즈
+     * @param fontColor Color 폰트 색깔
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawTitle(String title, String fontName, int fontSize, Color fontColor, Graphics2D graphImageG)
+    {
+        FontMetrics fm = setFont(fontName, Font.BOLD, fontSize, graphImageG);
+        float ascent = fm.getAscent();
+        color(fontColor, graphImageG);
+        graphImageG.drawString(title, GRAPH_X+10, GRAPH_Y-GRAPH_HEIGHT+ascent);
+    }
+    /**
+     * 색깔을 설정하는 메서드
+     * @param color Color 색깔
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void color(Color color, Graphics2D graphImageG)
+    {
+        graphImageG.setColor(color);
+    }
+    /**
+     * 폰트설정 메서드
+     * @param fontName String 폰트 이름
+     * @param fontStyle int 폰트 스타일
+     * @param fontSize int 폰트 사이즈
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @return FontMetrics 폰트메트릭스 객체
+     * @since JDK1.4.1
+     */
+    protected FontMetrics setFont(String fontName, int fontStyle, int fontSize, Graphics2D graphImageG)
+    {
+        Font f = new Font(fontName, fontStyle, fontSize);
+        FontMetrics fm = graphImageG.getFontMetrics(f);
+        graphImageG.setFont(f);
+        return fm;
+    }
+    /**
+     * float값을 반올림을 적용해서 int로 변환하는 메서드
+     * @param fValue float float값
+     * @return int int값
+     * @since JDK1.4.1
+     */
+    protected int intValue(float fValue)
+    {
+        int iValue = (int)(fValue+0.5);
+        return iValue;
+    }
+    /**
+     * 투명도(Composite)를 설정한다.
+     * @param alpha float 투명도
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void setComposite(float alpha, Graphics2D graphImageG)
+    {
+        graphImageG.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+    }
+    /**
+     * 요소 라벨을 그린다.
+     * 좌표는 그래프의 원점을 중심으로 한 상대좌표로 입력한다.
+     * @param fontName String 폰트 이름
+     * @param fontSize int 폰트 크기
+     * @param fontStyle int 폰트 스타일
+     * @param bgColor Color 배경색
+     * @param elements String[] 요소배열
+     * @param elementsColor Color[] 요소색깔
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawLabel(String fontName, int fontSize, int fontStyle, Color bgColor, Object[] elements, Color[] elementsColor, Graphics2D graphImageG)
+    {
+        String longStr="", tmp="";
+        int i=0;
+        for (i=0; i<elements.length; i++)
+        {
+            tmp = elements[i].toString();
+            if (tmp == null) break;
+            if (tmp.length() > longStr.length()) {longStr = tmp;}
+        }
+        FontMetrics fm = setFont(fontName, fontStyle, fontSize, graphImageG);
+        float labelWidth = fm.stringWidth(longStr)+10;
+        float labelHeight = fm.getHeight()*i;
+        LABEL_X = LABEL_X-(labelWidth+10);
+        //LABEL_Y = LABEL_Y;
+        float ascent = fm.getAscent();
+        color(bgColor, graphImageG);
+        graphImageG.fill(new Rectangle2D.Float(LABEL_X, LABEL_Y, labelWidth, labelHeight));
+        setComposite(1.0f, graphImageG);
+        graphImageG.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        graphImageG.draw(new Rectangle2D.Float(LABEL_X, LABEL_Y, labelWidth, labelHeight));
+        for (int a=0; a<elements.length; a++)
+        {
+            if (elements[a] == null) break;
+            color(elementsColor[a], graphImageG);
+            graphImageG.drawString(elements[a].toString(), LABEL_X+5, LABEL_Y+(labelHeight/i)*a+ascent);
+        }
+    }
+    /**
+     * X축 인덱스를 그린다.
+     * @param graphType int 그래프 종류
+     * @param fontName String 폰트 이름
+     * @param fontSize int 폰트 크기
+     * @param fontColor Color 폰트 색깔
+     * @param xIndex String[] X축 인덱스 배열
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawIndexX(int graphType, String fontName, int fontSize, Color fontColor, String[] xIndex, Graphics2D graphImageG)
+    {
+        color(fontColor, graphImageG);
+        for (int i=0; i<xIndex.length; i++)
+        {
+            FontMetrics fm = setFont(fontName, Font.BOLD, fontSize, graphImageG);
+            String str = xIndex[i];
+            if (str == null)
+                str = "";
+            float indent = fm.stringWidth(str)/2;
+            float ascent = fm.getAscent();
+            float x = 0;
+            if(graphType == Graph.LINE_GRAPH)
+            {
+                x = i*(GRAPH_WIDTH/xIndex.length)+GRAPH_X;
+            }
+            else
+            {
+                x = i*(GRAPH_WIDTH/xIndex.length)+GRAPH_X;
+            }
+            float y = GRAPH_Y+1;
+            graphImageG.drawString(str, x-indent, y+ascent+3);
+        }
+    }
+    /**
+     * Y축 인덱스를 그린다.
+     * @param fontName String 폰트이름
+     * @param fontSize int 폰트크기
+     * @param fontColor Color 폰트 색깔
+     * @param yIndex float[] Y축 인덱스 배열
+     * @param rate float 배율
+     * @param maxValue float 최대값
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawIndexY(String fontName, int fontSize, Color fontColor, float[] yIndex, float rate, float maxValue, Graphics2D graphImageG)
+    {
+        color(fontColor, graphImageG);
+        for (int i=0; i<yIndex.length; i++)
+        {
+            FontMetrics fm = setFont(fontName, Font.BOLD, fontSize, graphImageG);
+            String str = yIndex[i]+"";
+            if(str.equals("0.0"+this.INDEX_Y_UNIT))
+                continue;
+            int colIdx;
+            if((colIdx = str.lastIndexOf(".")) != -1)
+            {
+            	String suffix = str.substring(colIdx+1);
+            	if(suffix.equals("0"))
+            		str = str.substring(0, colIdx); 
+            }
+            str += this.INDEX_Y_UNIT;
+            float y = (rate < maxValue)?(GRAPH_Y-yIndex[i]*GRAPH_HEIGHT/maxValue):(GRAPH_Y-yIndex[i]*GRAPH_HEIGHT/rate);
+            float indent = fm.stringWidth(str)+5;
+            float ascent = fm.getAscent()/2;
+            if (y > GRAPH_Y-GRAPH_HEIGHT)
+            {
+                float x = ((GRAPH_X-indent) < 0)?GRAPH_X+5:GRAPH_X-indent;
+                //graphImageG.drawString(str,x, y+ascent);
+                graphImageG.drawString(str,x, y+2);
+            }        
+        }
+    }
+    /**
+     * X축 그리드를 그린다.
+     * @param xIndex String[] X축 인덱스 배열
+     * @param color Color 그리드 색깔
+     * @param style int 그리드 스타일
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawGridX(String[] xIndex, Color color, int style, Graphics2D graphImageG)
+    {
+        color(color, graphImageG);
+        for (int i=0; i<xIndex.length-1; i++)
+        {
+            float x = (i+1)*(GRAPH_WIDTH/(xIndex.length))+GRAPH_X;
+            //if (xIndex[i] != "" && xIndex[i] != null)
+            //if (xIndex[i] != null)
+            //{
+                drawGrid(1, style, x, GRAPH_Y, x, (GRAPH_Y+1)-GRAPH_HEIGHT, graphImageG);	//그리드를 그린다.
+            //}
+        }
+    }
+    /**
+     * Y축 그리드를 그린다.
+     * @param yIndex float[] 그리드 인덱스 배열
+     * @param color Color 그리드 색깔
+     * @param style int 그리드 스타일
+     * @param rate float 그래프 비율
+     * @param maxValue float 최대값
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    protected void drawGridY(float[] yIndex, Color color, int style, float rate, float maxValue, Graphics2D graphImageG)
+    {
+        color(color, graphImageG);
+        for (int i=0; i<yIndex.length; i++)
+        {
+            float y = (rate < maxValue)?(GRAPH_Y-yIndex[i]*GRAPH_HEIGHT/maxValue):(GRAPH_Y-yIndex[i]*GRAPH_HEIGHT/rate);
+            if (yIndex[i] != 0f && y > GRAPH_Y-GRAPH_HEIGHT)
+            {
+                drawGrid(2, style, GRAPH_X+1, intValue(y), GRAPH_X+GRAPH_WIDTH, intValue(y), graphImageG);
+            }
+        }
+    }
+    /**
+     * 그리드를 그린다
+     * @param xy int 그리드의 X축 Y축 여부
+     * @param gridStyle int 그리드 스타일
+     * @param x1 float 그리드 시작 X좌표
+     * @param y1 float 그리드 시작 Y좌표
+     * @param x2 float 그리드 종료 X좌표
+     * @param y2 float 그리드 종료 Y좌표
+     * @param graphImageG Graphics2D 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    private void drawGrid(int xy, int gridStyle, float x1, float y1, float x2, float y2, Graphics2D graphImageG)
+    {
+        if (gridStyle==1)   //그리드 스타일이 라인일 경우
+        {
+            graphImageG.draw(new Line2D.Float(x1, y1, x2, y2));
+        }
+        else if(gridStyle == 2)  //그리드 스타일이 점선일 경우
+        {
+            if (xy == 1)    //X축 그리드를 그릴경우
+            {
+                for (int a=0; y1-a*5>y2; a++)
+                {
+                    graphImageG.draw(new Line2D.Float(x1, y1-a*5, x1, y1-a*5-3));
+                }
+            }
+            else if (xy == 2)    //Y축 그리드를 그릴경우
+            {
+                for (int b=0; x1+b*5<x2; b++)
+                {
+                    graphImageG.draw(new Line2D.Float(x1+b*5, y1, x1+b*5+3, y1));
+                }
+            }
+        }
+    }
+    /**
+     * 제작 관련정보를 표시한다.
+     * @param graphImageG Graphics2D Graphics2D객체
+     * @since JDK1.4.1
+     */
+    protected void drawRight(Graphics2D graphImageG)
+    {
+        String logo = "9ins®";
+        FontMetrics fm = setFont(graphImageG.getFont().getName(), Font.BOLD, 9, graphImageG);
+        float ascent = fm.getAscent();
+        float width = fm.stringWidth(logo);
+        //color(new Color(255, 255, 255), graphImageG);
+        setComposite(1.0f, graphImageG);
+        graphImageG.drawString(logo, IMG_WIDTH-width-5, IMG_HEIGHT-ascent);
+    }
+    /**
+     * Graph 클래스를 상속받는 클래스에서 반드시 재정의 해주어야 하는 추상 메서드
+     * 실제로 그래프를 그리는 작업을 이 메서드에서 구현해주어야 한다.
+     * @since JDK1.4.1
+     */
+    public abstract void drawGraph();
+    /**
+     * 이 클래스를 상속받는 클래스에서 반드시 재정의 해주어야 하는 추상메소드로
+     * 그래프 이미지 크기를 재조정하는 부분을 구현해 주어야 한다.
+     * @param width int 그래프 넓이
+     * @param height int 그래프 높이
+     * @throws Exception
+     * @since JDK1.4.1
+     */
+    public abstract void resizeImage(int width, int height);
+}

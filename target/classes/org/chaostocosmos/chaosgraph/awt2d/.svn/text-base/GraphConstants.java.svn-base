@@ -1,0 +1,45 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+/**
+* <p>Title: 그래프 상수 클래스</p>
+* <p>Description:</p>
+* <pre>
+* 그래프 컨포넌트에서 사용하는 상수들을 정의한 인터페이스
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.2, 2006/7/5 최초작성, 그래프 컨포넌트의 각종 상수.
+* @since JDK1.4.1
+*/
+public interface GraphConstants
+{
+    /**
+     * 라인그래프
+     * @since JDK1.4.1
+     */
+    public static int LINE_GRAPH = 1;
+    /**
+     * 막대그래프
+     * @since JDK1.4.1
+     */
+    public static int BAR_GRAPH = 2;
+    /**
+     * 원그래프
+     * @since JDK1.4.1
+     */
+    public static int CIRCLE_GRAPH = 3;
+    /**
+     * 영역그래프
+     * @since JDK1.4.1
+     */
+    public static int AREA_GRAPH =4;
+}
+

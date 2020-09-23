@@ -1,0 +1,405 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.Color;
+/**
+* <p>Title: 그래프 요소 클래스</p>
+* <p>Description:</p>
+* <pre>
+* 이 클래스는 그래프의 요소와 요소색깔, X축 인덱스, Y축 인덱스, 요소값들을 초기화 하고 설정,
+* 변경할 수 있는 필드와 메서드로 구성되어 있습니다.
+* 각 그래프의 클래스에 이 클래스를 인자로 갖는 생성자들이 있고 또한 내부적으로 이 클래스를 생성해서 사용하기때문에
+* 그래프를 생성하기 전에 이 클래스를 생성하여 사용하는 것을 권장 합니다.
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성
+* @version 1.2, 2006/7/5 각종 Exception을 try/catch로 처리하던것을 throws로 호출자에게 던지도록 수정.
+* @since JDK1.4.1
+*/
+public class GraphElements implements GraphConstants
+{
+    private Object[] elements;					//그래프 요소
+    private Color[] elementsColor;				//그래프 요소 색깔
+    private String[] xIndex;					//x축 인덱스
+    private float[] yIndex;						//y축 인덱스
+    private float[] value;						//그래프 요소값	-	원그래프....
+    private float[][] values;					//그래프 요소값 [요소수] [요소값]	-	라인, 막대 그래프....
+
+    private int graphType;						//그래프 종류
+    private int elementsNum;					//요소의 수
+    private int elementsColorNum;				//요소색의 수
+    private int valuesNum;						//요소값의 수
+    private int valueNum;						//요소값의 수
+    private int xIndexNum;						//x인덱스의 수
+    private int yIndexNum;						//y인덱스의 수
+    private float maxValue;						//최대값
+    private float minValue;						//최소값
+
+    /**
+     * 그래프 타입, 요소갯수, 값갯수를 인자로 갖는 생성자.
+     * 이 생성자는 원그래프 전용 생성자 이다.
+     * 때문에 다른 그래프 타입으로 생성하면 NotMatchGraphTypeException을 발생시킨다.
+     * @param graphType int 그래프 종류
+     * @param elementNum int 그래프 요소수
+     * @param valuesNum int 그래프 값의수
+     * @exception NotMatchGraphTypeException 그래프 타입이 잘못됬을 경우
+     * @since JDK1.4.1
+     */
+    public GraphElements(int graphType, int elementNum, int valuesNum)
+    {
+        if (graphType != Graph.CIRCLE_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 전용 생성자 입니다.");
+        this.graphType = graphType;
+        this.elements = new Object[elementsNum];
+        this.elementsColor = new Color[elementsNum];
+        this.value = new float[valuesNum];
+        this.elementsNum = elementNum;
+        this.valuesNum = valuesNum;        
+    }
+    /**
+     * 그래프 타입, 요소이름, 요소색깔, 요소값을 인자로 갖는 생성자.
+     * 이 생성자는 원그래프 전용 생성자 이다.
+     * 때문에 다른 그래프 타입으로 생성하면 NotMatchGraphTypeException을 발생시킨다.
+     * @param graphType int 그래프 종류
+     * @param elementNum Object[] 그래프 요소들
+     * @param elementsColor Color[] 그래프 요소색들
+     * @param valuesNum float[] 그래프 값들
+     * @exception NotMatchGraphTypeException 그래프 타입이 잘못됬을 경우
+     * @exception NotMatchArrayException 요소배열의 수와 색배열의 수가 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public GraphElements(int graphType, Object[] elements, Color[] elementsColor, float[] value) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        if(graphType != Graph.CIRCLE_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 전용 생성자 입니다.");
+        if(elements.length != elementsColor.length)
+            throw new NotMatchArrayException("요소 배열의 수와 색배열의 수가 일치하지 않습니다.");
+        if(elements.length != value.length)
+            throw new NotMatchArrayException("요소 배열의 수와 값배열의 수가 일치하지 않습니다.");
+        this.graphType = graphType;
+        this.elements = elements;
+        this.elementsColor = elementsColor;
+        this.value = value;
+        this.elementsNum = elements.length;
+        this.valuesNum = value.length;
+        this.maxValue = calMax(value);
+        this.maxValue = calMin(value);
+    }
+    /**
+     * 그래프 종류, 요소이름, 요소색깔, 요소값, X인덱스, Y인덱스를 인자로 갖는 생성자.
+     * 원그래프 이외의 그래프만 이 생성자를 사용할 수 있다.
+     * 원그래프 타입으로 이 생성자를 사용하면 NotMatchGraphTypeException을 발생시킨다.
+     * @param graphType int 그래프 종류
+     * @param elements Object[] 그래프 요소들
+     * @param elementsColor Color[] 그래프 요소색들
+     * @param valuesNum float[][] 그래프 값들
+     * @param xIndexNum String[] x축 인덱스
+     * @param yIndexNum float[] y축 인덱스
+     * @exception NotMatchGraphTypeException 그래프 타입이 잘못됬을 경우
+     * @exception NotMatchArrayException 요소배열의 수와 색배열의 수가 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public GraphElements(int graphType, Object[] elements, Color[] elementsColor, float[][] values, String[] xIndex, float[] yIndex) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        if (graphType != Graph.LINE_GRAPH && graphType != Graph.BAR_GRAPH && graphType != Graph.AREA_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 타입으로 이 생성자를 사용할 수 없습니다.");
+        if (elements.length != elementsColor.length)
+            throw new NotMatchArrayException("요소 배열의 수와 색배열의 수가 일치하지 않습니다.");
+        if (elements.length != values.length)
+            throw new NotMatchArrayException("요소 배열의 수와 값배열의 행의 수가 일치하지 않습니다.");
+        int start = values[0].length;
+        for (int i=0; i<values.length; i++)
+        {
+            if (start != values[i].length)
+                throw new NotMatchArrayException("값배열의 각 열의 수는 같아야 합니다.");
+        }
+        this.graphType = graphType;
+        this.elements = elements;
+        this.elementsColor = elementsColor;
+        this.values = values;
+        this.xIndex = xIndex;
+        this.yIndex = yIndex;
+        this.elementsNum = elements.length;
+        this.valuesNum = values[0].length;
+        this.maxValue = calMax(values);
+        this.minValue = calMin(values);
+        this.xIndexNum = xIndex.length;
+        this.yIndexNum = yIndex.length;
+    }
+    /**
+     * float 배열값 중 최고치를 구한다.
+     * @param value float[] 값 배열
+     * @return float 배열의 최대값
+     * @since JDK1.4.1
+     */
+    public float calMax(float[] value)				//요소1 최대값 계산
+    {
+        float max = 0;
+        for (int i=0; i<value.length; i++)
+            max = (max < value[i])?value[i]:max;
+        return max;
+    }
+    /**
+     * float 배열값 중 최소치를 구한다.
+     * @param value float[] 값 배열
+     * @return float 배열의 최소값
+     * @since JDK1.4.1
+     */
+    public float calMin(float[] value)				//요소1 최소값 계산
+    {
+        float min = 0;
+        for (int i=0; i<value.length; i++)
+            min = (min > value[i])?value[i]:min;
+        return min;
+    }
+    /**
+     * 2차원 float 배열값 중 최대치를 구한다.
+     * @param values float[][] 2차원 float 배열
+     * @return float 배열의 최대값
+     * @since JDK1.4.1
+     */
+    public float calMax(float[][] values)			//요소2 최대값 리턴
+    {
+        float max = 0;
+        for (int i=0; i<values.length; i++)
+        {
+            for (int j=0; j<values[i].length; j++)
+            {
+                max = (max < values[i][j])?values[i][j]:max;
+            }
+        }
+        return max;
+    }
+    /**
+     * 2차원 float 배열값 중 최소치를 구한다.
+     * @param values float[][] 2차원 float 배열
+     * @return float 배열의 최소값
+     * @since JDK1.4.1
+     */
+    public float calMin(float[][] values)			//요소2 최소값 리턴
+    {
+        float min = 0;
+        for (int i=0; i<values.length; i++)
+        {
+            for (int j=0; j<values[i].length; j++)
+            {
+                min = (min > values[i][j])?values[i][j]:min;
+            }
+        }
+        return min;
+    }
+    /**
+     * 현재 GraphElements 객체의 그래프 종류를 int값으로 구한다.
+     * @return int 그래프 종류
+     * @since JDK1.4.1
+     */
+    public int getGraphType()
+    {
+        return this.graphType;
+    }
+    /**
+     * 현재 GraphElements 객체의 요소들을 구한다.
+     * @return String[] 요소이름
+     * @since JDK1.4.1
+     */
+    public Object[] getElements()					//요소리턴
+    {
+        return this.elements;
+    }
+    /**
+     * 현재 GraphElements 객체의 요소색 배열을 구한다.
+     * @return Color[] 요소색 배열
+     * @since JDK1.4.1
+     */
+    public Color[] getElementsColor()				//요소색깔 리턴
+    {
+        return this.elementsColor;
+    }
+    /**
+     * x축 인덱스 배열을 구한다.
+     * @return String[] x축 인덱스 배열
+     * @since JDK1.4.1
+     */
+    public String[] getXIndex()						//x축 인덱스 리턴
+    {
+        return this.xIndex;
+    }
+    /**
+     * y축 인덱스 배열을 구한다.
+     * @return float y축 인덱스 배열
+     * @since JDK1.4.1
+     */
+    public float[] getYIndex()						//y축 인덱스 리턴
+    {
+        return this.yIndex;
+    }
+    /**
+     * 요소값을 구한다.
+     * @return float[] 요소값 배열
+     * @exception NotMatchGraphTypeException 그래프 타입이 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public float[] getElementsValue()
+    {
+        if (graphType != Graph.CIRCLE_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+"전용 메서드 입니다.");
+        return this.value;
+    }
+    /**
+     * 2차원 배열로 된 요소값을 구한다.
+     * @return float[][] 값 배열
+     * @since JDK1.4.1
+     */
+    public float[][] getElementsValues()					//요소배열값2리턴
+    {
+        return this.values;
+    }
+    /**
+     * 최대값을 구한다.
+     * @return float 최대값
+     * @since JDK1.4.1
+     */
+    public float getMax()							//최대값 리턴
+    {
+        return this.maxValue;
+    }
+    /**
+     * 최소값을 구한다.
+     * @return float 최소값
+     * @since JDK1.4.1
+     */
+    public float getMin()							//최소값 리턴
+    {
+        return this.minValue;
+    }
+    /**
+     * x축 인덱스 수를 구한다.
+     * @return int x축 인덱스 수
+     * @since JDK1.4.1
+     */
+     public int getXIndexNum()						//x축 인덱스 수
+    {
+        return this.xIndexNum;
+    }
+    /**
+     * y축 인덱스 수를 구한다.
+     * @return int y축 인덱스 수
+     * @since JDK1.4.1
+     */
+    public int getYIndexNum()						//y축 인덱스 수
+    {
+        return this.yIndexNum;
+    }
+    /**
+     * 요소의 값을 설정한다.(라인그래프, 막대그래프, 영역그래프 전용)
+     * @param values float[][] 요소의 값으로된 2차원 배열
+     * @exception NotMatchGraphTypeException 그래프 타입이 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public void setValues(float[][] values)
+    {
+        if (graphType != Graph.LINE_GRAPH && graphType != Graph.BAR_GRAPH && graphType != Graph.AREA_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 타입으로 이 메서드를 사용할 수 없습니다.");
+        this.values = values;
+        this.valuesNum = values[0].length;
+        this.maxValue = calMax(values);
+        this.minValue = calMin(values);
+    }
+    /**
+     * 요소의 값을 설정한다.(원그래프 전용)
+     * @param value float[] 요소값 배열
+     * @exception NotMatchGraphTypeException 그래프 타입이 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public void setValue(float[] value)
+    {
+        if (graphType != Graph.CIRCLE_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+"전용 메서드 입니다.");
+        this.value = value;
+        this.valueNum = value.length;
+        this.maxValue = calMax(value);
+        this.minValue = calMin(value);
+    }
+    /**
+     * 그래프 요소를 설정(라인그래프, 막대그래프, 영역그래프 전용)
+     * @param elements String[] 요소배열
+     * @exception NotMatchGraphTypeException 그래프 타입이 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public void setElements(Object[] elements)
+    {
+        if (graphType != Graph.LINE_GRAPH && graphType != Graph.BAR_GRAPH && graphType != Graph.AREA_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 타입으로 이 메서드를 사용할 수 없습니다.");
+        this.elements = elements;
+        this.elementsNum = elements.length;
+    }
+    /**
+     * x축 인덱스를 설정
+     * @param xIndex String[] x축 인덱스 값배열
+     * @since JDK1.4.1
+     */
+    public void setXIndex(String[] xIndex)			//x축 인덱스를 셋팅
+    {
+        this.xIndex = xIndex;
+        this.xIndexNum = xIndex.length;
+    }
+    /**
+     * y축 인덱스를 설정
+     * @param xIndex float[] y축 인덱스 값배열
+     * @since JDK1.4.1
+     */
+    public void setYIndex(float[] yIndex)			//y축 인덱스를 셋팅
+    {
+        this.yIndex = yIndex;
+        this.yIndexNum = yIndex.length;
+    }
+    /**
+     * 요소의 색을 설정
+     * @param elementsColor Color[] 그래프 요소의 색배열
+     * @since JDK1.4.1
+     */
+    public void setElementColors(Color[] elementsColor)			//요소의 색을 셋팅
+    {
+        this.elementsColor = elementsColor;
+        this.elementsColorNum = elementsColor.length;
+    }
+    /**
+     * 요소에 대한 값을 설정(라인, 막대, 영역 그래프 전용)
+     * @param element String 설정할 요소 문자열
+     * @param values float[] 설정할 요소문자여의 값배열
+     * @exception NotMatchGraphTypeException 그래프 타입이 일치하지 않을 경우
+     * @exception NotMatchElementException 설정할 요소가 없을 경우
+     * @since JDK1.4.1
+     */
+    public void setElementValues(Object element, float[] values) throws
+        NotMatchGraphTypeException
+    {
+        if (graphType != Graph.LINE_GRAPH && graphType != Graph.BAR_GRAPH && graphType != Graph.AREA_GRAPH)
+            throw new NotMatchGraphTypeException(Graph.getGraphStr(graphType)+" 타입으로 이 메서드를 사용할 수 없습니다.");
+        boolean is = false;
+        for (int i=0; i<elements.length; i++)
+        {
+            if (element.equals(elements[i]))
+            {
+                is = true;
+                this.values[i] = values;
+                //System.arraycopy(values, 0, this.values[i], 0, values.length);
+            }
+        }
+        if (!is)
+            throw new NotMatchElementException("입력한 스트링과 일치하는 요소를 찾을 수 없습니다.");
+        this.maxValue = calMax(values);
+        this.minValue = calMin(values);
+    }
+}

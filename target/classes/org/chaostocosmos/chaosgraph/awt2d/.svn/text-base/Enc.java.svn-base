@@ -1,0 +1,59 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.io.UnsupportedEncodingException;
+/**
+* <p>Title: Enc 한글 엔코딩</p>
+* <p>Description: </p>
+* <pre>
+* 이 클래스는 한글 엔코딩에 관련된 클래스입니다.
+* 엔코딩 타입으로는 euc-kr과 ISO_8859_1 방식이 있습니다.
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성
+* @version 1.2, 2006/7/5 엔코딩시 발생하는 UnsupportedEncodingException을 try/catch로 처리하지 않고
+*                        throws로 호출자에게 던저줌.
+* @since JDK1.4.1
+*/
+public class Enc
+{
+    /**
+     * 이 메서드는 인자로 넘겨진 스트링을 ISO8859_1 방식으로 얻는다.
+     * @param ko 엔코딩할 스트링
+     * @return 엔코딩된 스트링
+     * @since JDK1.4.1
+     */
+    public static String get8859_1(String ko) throws
+        UnsupportedEncodingException
+    {
+        if (ko == null)
+        {
+            return null;
+        }
+        return new String(ko.getBytes("EUC_KR"),"8859_1");
+    }
+    /**
+     * 이 메서드는 인자로 넘겨진 스트링을 EUC_KR 방식으로 얻는다.
+     * @param ko 엔코딩할 스트링
+     * @return 엔코딩된 스트링
+     * @since JDK1.4.1
+     */
+    public static String getEUC_KR(String en) throws
+        UnsupportedEncodingException
+    {
+        if (en == null)
+        {
+            return null;
+        }
+        return new String (en.getBytes("8859_1"), "EUC_KR");
+    }
+}

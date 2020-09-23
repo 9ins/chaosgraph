@@ -1,0 +1,307 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.geom.*;
+/**
+* <p>Title: CircleGraph 원 그래프</p>
+* <p>Description:</p>
+* 이 클래스는 상위의 Graph클래스를 상속받아 원그래프를 구현하는 클래스 입니다.
+* 이 클래스는 이미지 넓이, 높이등의 정보를 받아 원그래프를 그려줍니다.
+* <br><br>
+* <b>사용예</b>
+* <br>
+* <pre>
+* import java.awt.*;
+* import java.awt.image.*;
+* import org.chaos.graph.*;
+*
+* public class GraphExample extends JFrame
+* {
+*      int width = 800;     //그래프 초기 넓이
+*      int height = 600;    //그래프 초기 높이
+*
+*      //그래프 요소 배열
+*      String[] elements = {"kim","lee","so","han","oh"};
+*
+*      //그래프 요소 색깔 배열, 요소 색깔은 요소의 수와 일치시켜야 합니다.
+*      Color[] colors = {new Color(130,180,130), new Color(180,130,130), new Color(180,180,140), new Color(150,150,150), new Color(150,200,158)};
+*
+*      //그래프 요소 값 배열, 값은 요소 갯수와 일치해야 합니다. 원그래프는 1차원 배열의 값 입니다.
+*      float[] value = {20,88,31,14,55};
+*
+*      //그래프 요소 객체
+*      GraphElements ge = null;
+*
+*      //원 그래프 객체
+*      CircleGraph cg = null;
+*
+*      public GraphExample()
+*      {
+*          //위의 값들로 그래프 요소 객체를 생성합니다.
+*          this.ge = new GraphElements(Graph.CIRCLE_GRAPH, elements, colors, value);
+*
+*          //그래프 타이틀 스트링, 넓이, 높이, 요소 객체로 원그래프를 생성합니다.
+*          //생성된 cg객체에는 다양한 옵션 메소드들이 존재합니다. 자세한 사항은 API 도큐먼트를 활용하세요.
+*          this.cg = new CircleGraph("Chaos Graph System.", width, height, ge);
+*
+*          //주어진 설정으로 원그래프를 그립니다.
+*          cg.drawCircleGraph();
+*
+*          //그래프 이미지를 얻습니다.
+*          //얻어진 그래프 이미지 객체는 파일로 저장(GraphUtility.saveImage())하는등의 다양한 작업에 이용됩니다.
+*          BufferedImage buffImg = cg.getGraphImage();
+*
+*          //그래프 패널을 얻습니다.
+*          GraphPanel panel = cg.getGraphPanel();
+*
+*          //그래프 패널은 JPanel을 상속하고 있으므로 컨텐트 팬이나 다른 컨테이너에 삽입할 수 있습니다.
+*          getConetentPane().add(panel, BorderLayout.CENTER);
+*
+*          //그래프 패널의 상위 컨테이너인 컨텐트 팬에서 validate(활성화) 시켜 줍니다.
+*          getContentPane().validate();
+*
+*          //위의 이미지 객체와 패널을 상황에 맞게 활용합니다.
+*          //구체적 사용법은 GraphExample1.java, GraphExample2.java를 참조합니다.
+*.
+*.
+*.
+*.
+*.
+*</pre>
+*<br>
+* <img src="circle.jpg">
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성<br>
+* @version 1.2, 2006/7/5 생성자 갯수 수정, 그래프 요소객체를 상위클래스인 Graph로 이동,
+*                        그래프 사이즈를 조정하는 resizeImage 메소드 구현.<br>
+* @since JDK1.4.1
+*/
+public class CircleGraph extends Graph
+{
+    private boolean isShowPercent = false;             //퍼센트로 보여줄지 설정
+    private boolean isShowValue = true;                //값을 보여줄지 설정
+    /**
+     * 요소객체를 인자로 갖는 생성자
+     * GraphElements객체의 그래프 타입이 원 그래프가 아니면 NotMatchGraphTypeException을 발생시킨다.
+     * 이미지 넓이, 높이는 디폴트 값으로 자동 설정.
+     * @param ge GraphElements
+     * @since JDK1.4.1
+     */
+    public CircleGraph(GraphElements ge) throws NotMatchGraphTypeException
+    {
+        this(600, 300, ge);
+    }
+    /**
+     * 이미지 넓이, 높이, 요소객체를 인자로 갖는 생성자.
+     * GraphElements객체의 그래프 타입이 원 그래프가 아니면 NotMatchGraphTypeException을 발생시킨다.
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param ge GraphElements 그래프 요소객체
+     * @since JDK1.4.1
+     */
+    public CircleGraph(int width, int height, GraphElements ge) throws
+        NotMatchGraphTypeException
+    {
+        this("", width, height, ge);
+    }
+    /**
+     * 그래프 타이틀 문자열, 이미지 넓이, 높이, 요소 객체를 인자고 갖는 생성자
+     * GraphElements객체의 그래프 타입이 원 그래프가 아니면 Exception을 발생시킨다.
+     * @param title String 그래프 차트에 그려질 타이틀 스트링
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param ge GraphElements 그래프 요소 객체
+     * @since JDK1.4.1
+     */
+    public CircleGraph(String title, int width, int height, GraphElements ge) throws
+        NotMatchGraphTypeException
+    {
+        super(title, width, height, ge);
+        if (ge.getGraphType() != Graph.CIRCLE_GRAPH)
+            throw new NotMatchGraphTypeException("GraphElements의 "+getGraphStr(ge.getGraphType())+" 타입으로 이 그래프를 그릴 수 없습니다.");
+    }
+    /**
+     * 이미지 넓이, 높이, 요소이름 배열, 요소색깔 배열, 값 배열을 인자로 갖는 생성자.
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param elements String[] 그래프 요소 배열
+     * @param elementsColor Color[] 그래프 요소 색배열
+     * @param value float[] 그래프 값배열
+     * @since JDK1.4.1
+     */
+    public CircleGraph(int width, int height, String[] elements, Color[] elementsColor, float[] value) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        this("", width, height, new GraphElements(Graph.CIRCLE_GRAPH, elements, elementsColor, value));
+    }
+    /**
+     * 그래프 타이틀 스트링, 이미지 넓이, 높이, 요소이름 배열, 요소색깔 배열, 값 배열을 인자로 갖는 생성자.
+     * @param title String 그래프 차트에 그려질 타이틀 스트링
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param elements String[] 그래프 요소 배열
+     * @param elementsColor Color[] 그래프 요소 색배열
+     * @param value float[] 그래프 값배열
+     * @since JDK1.4.1
+     */
+    public CircleGraph(String title, int width, int height, String[] elements, Color[] elementsColor, float[] value) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        this(title, width, height, new GraphElements(Graph.CIRCLE_GRAPH, elements, elementsColor, value));
+    }
+    /**
+     * 실제로 설정한 요소와 값들로 그래프를 그리는 메서드.
+     * CircleGraph 클래스를 생성한 후 반드시 이 메서드를 호출해야 비로소 그래프가 그려진다.
+     * @since JDK1.4.1
+     */
+    public void drawGraph()
+    {
+        //super.initGraph(super.IMG_WIDTH, super.IMG_HEIGHT);  //그래프 초기화
+    	super.sweepBg(super.IMG_WIDTH, super.IMG_HEIGHT);
+        Object[] elements = GRAPH_ELEMENTS.getElements();
+        Color[] elementsColor = GRAPH_ELEMENTS.getElementsColor();
+        String[] xIndex = GRAPH_ELEMENTS.getXIndex();
+        float[] yIndex = GRAPH_ELEMENTS.getYIndex();
+        float maxValue = GRAPH_ELEMENTS.getMax();
+
+        if (IS_SHOW_BG)
+        {
+            setComposite(IMG_BG_ALPHA, GRAPHICS2D);
+            drawBg(IMG_BG_COLOR, GRAPHICS2D); 					//Graph객체의 메서드--배경을 그린다.
+            if (IS_SHOW_IMG_BORDER) drawBgBorder(IMG_BORDER_SIZE, IMG_BORDER_COLOR, GRAPHICS2D);
+            setComposite(GRAPH_BG_ALPHA, GRAPHICS2D);
+            drawGraphBg(GRAPH_BG_COLOR, GRAPHICS2D);
+            if (IS_SHOW_GRAPH_BORDER) drawGraphBorder(GRAPH_BORDER_SIZE, GRAPH_BORDER_COLOR, GRAPH_BORDER_SIZE*2, GRAPH_BORDER_SIZE*2, GRAPHICS2D);
+        }
+
+        float[] value = null;
+        try
+        {
+            value = GRAPH_ELEMENTS.getElementsValue();
+        }
+        catch (NotMatchGraphTypeException ex)
+        {
+            ex.printStackTrace();
+        }
+        float total = 0, temp = 90;
+        for (int i=0; i<elements.length; i++)
+            total += value[i];
+
+        float circleWidth = GRAPH_WIDTH-(INDENT_LEFT+INDENT_RIGHT);
+        float circleHeight = GRAPH_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);
+
+        float x = GRAPH_X + INDENT_LEFT;
+        float y = GRAPH_Y - GRAPH_HEIGHT+INDENT_BOTTOM;
+
+        if (IS_SHOW_SHADOW)
+        {
+            float x1 = (float)Math.cos(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST + x;
+            float y1 = (float)Math.sin(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST + y;
+            color(SHADOW_COLOR, GRAPHICS2D);
+            setComposite(SHADOW_ALPHA, GRAPHICS2D);
+            GRAPHICS2D.fill(new Arc2D.Float(x1, y1, circleWidth, circleHeight, 0, 360, Arc2D.PIE));
+        }
+
+        for (int j=0; j<elements.length; j++)
+        {
+            if (value[j] < 0) continue;
+            if (elementsColor[j] != null) 
+            	color(elementsColor[j], GRAPHICS2D);
+            setComposite(GRAPH_ALPHA, GRAPHICS2D);
+            float angle = value[j]*360/total;            
+            Arc2D.Float af = new Arc2D.Float(x, y, circleWidth, circleHeight, temp, angle, Arc2D.PIE);
+            GRAPHICS2D.fill(af);
+            color(BORDER_COLOR, GRAPHICS2D);
+            GRAPHICS2D.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            GRAPHICS2D.draw(new Arc2D.Float(x, y, circleWidth, circleHeight, temp, angle, Arc2D.PIE));
+            temp += angle;            
+            setComposite(INDEX_FONT_ALPHA, GRAPHICS2D);
+            color(INDEX_FONT_COLOR, GRAPHICS2D);
+            FontMetrics fm = setFont(FONT_NAME, Font.BOLD, INDEX_FONT_SIZE, GRAPHICS2D);
+            String valStr = String.valueOf(value[j]);
+            int strWidth = fm.stringWidth(valStr);
+            // 그려진 호보다 작은 가상호에 대한 객체를 생성하고
+            Arc2D af_ = new Arc2D.Float(x+circleWidth/4, y+circleHeight/4, circleWidth/2, circleHeight/2, temp-angle/2, angle/2, Arc2D.PIE);
+            // 작은 가상호에서 시작 부분의 좌표를 얻어낸다.
+            float str_x = (float)af_.getStartPoint().getX();
+            float str_y = (float)af_.getStartPoint().getY();
+            if (isShowValue && isShowPercent)
+            {
+                String str = valStr+"("+(value[j]*100/total)+"%)";
+                int strHalf = fm.stringWidth(str)/2;
+                int strHeight = fm.getHeight();                
+                GRAPHICS2D.drawString(elements[j].toString(), str_x-strHalf, str_y);
+                GRAPHICS2D.drawString(str, str_x-strHalf, str_y+strHeight);
+                //graphImageG.drawString("("+intValue(value[j]*100/total)+"%)", str_x+strWidth+2, str_y);
+                //graphImageG.drawString("("+(value[j]*100/total)+"%)", str_x+strWidth+2, str_y);
+            } else if (isShowValue && !isShowPercent)
+            {
+                GRAPHICS2D.drawString(valStr, str_x, str_y);
+            } else if (isShowPercent && !isShowValue)
+            {
+                //graphImageG.drawString("("+intValue(value[j]*100/total)+"%)", str_x, str_y);
+                GRAPHICS2D.drawString("("+(value[j]*100/total)+"%)", str_x, str_y);
+            }
+        }
+
+        setComposite(LABEL_BG_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_LABEL)
+        {
+            drawLabel(FONT_NAME, LABEL_FONT_SIZE, Font.BOLD, LABEL_BG_COLOR, elements, elementsColor, GRAPHICS2D); 	//라벨의 그린다.--Graph의 메서드
+        }
+
+        setComposite(TITLE_FONT_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_TITLE)
+        {
+            drawTitle(TITLE, FONT_NAME, TITLE_FONT_SIZE, TITLE_FONT_COLOR, GRAPHICS2D);
+            drawRight(GRAPHICS2D);
+        }
+
+        if(this.GRAPH_PANEL != null)
+        	GRAPH_PANEL.setGraphImage(super.GRAPH_IMAGE);
+    }
+    /**
+     * 이미지 사이즈를 변경 한다.
+     * @param width int 새넓이
+     * @param height int 새높이
+     * @since JDK1.4.1
+     */
+    public void resizeImage(int width, int height)
+    {
+        if(!super.IS_IMG_FIXED)  //이미지가 고정되있으면 사이즈가 변경되지 않는다.
+        {
+            super.IMG_WIDTH = width;
+            super.IMG_HEIGHT = height;
+        }
+        drawGraph();       
+    }
+    /**
+     * 값에대한 백분율을 출력할지 설정한다.
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowPercent(boolean is)
+    {
+        this.isShowPercent = is;
+    }
+    /**
+     * 값을 보여줄지 설정한다.
+     * @param is boolean true or false
+     * @since JDK1.4.1
+     */
+    public void isShowValue(boolean is)
+    {
+        this.isShowValue = is;
+    }
+}
