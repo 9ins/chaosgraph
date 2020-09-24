@@ -44,7 +44,7 @@ public class BarGraph extends AbstractGraph {
      * @throws NotMatchGraphTypeException 
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge) throws NotMatchGraphTypeException {
+    public BarGraph(GraphElements ge)  {
         this(ge, 600, 300);
     }
     
@@ -55,7 +55,7 @@ public class BarGraph extends AbstractGraph {
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge, int width, int height) throws  NotMatchGraphTypeException {
+    public BarGraph(GraphElements ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -67,7 +67,7 @@ public class BarGraph extends AbstractGraph {
      * @param height int 
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge, String title, int width, int height) throws NotMatchGraphTypeException {
+    public BarGraph(GraphElements ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.BAR) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
@@ -181,7 +181,7 @@ public class BarGraph extends AbstractGraph {
             		Font.BOLD, 
             		LABEL_BG_COLOR, 
             		GRAPH_ELEMENTS.getElementOrder().stream().map(n -> GRAPH_ELEMENTS.getGraphElementMap().get(n)).collect(Collectors.toList()),
-            		g2d); 	//���� �׸���.--Graph�� �޼���
+            		g2d); 	//???? ?????.--Graph?? ?????
         }
     }
     

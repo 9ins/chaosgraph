@@ -22,7 +22,7 @@ import org.chaostocosmos.chaosgraph.NotMatchArrayException;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
-* <p>Title: LineGraph ���� �׷���</p>
+* <p>Title: LineGraph</p>
 * <p>Description: </p>
 * <br><br>
 * <br>
@@ -47,7 +47,7 @@ public class LineGraph extends AbstractGraph
      * @exception GraphElement
      * @since JDK1.4.1
      */
-    public LineGraph(GraphElements ge) throws NotMatchGraphTypeException {
+    public LineGraph(GraphElements ge)  {
         this(ge, 600, 300);
     }
     
@@ -59,7 +59,7 @@ public class LineGraph extends AbstractGraph
      * @exception GraphElement
      * @since JDK1.4.1
      */
-    public LineGraph(GraphElements ge, int width, int height) throws NotMatchGraphTypeException
+    public LineGraph(GraphElements ge, int width, int height) 
     {
         this(ge, "", width, height);
     }
@@ -73,7 +73,7 @@ public class LineGraph extends AbstractGraph
      * @exception GraphElement
      * @since JDK1.4.1
      */
-    public LineGraph(GraphElements ge, String title, int width, int height) throws NotMatchGraphTypeException
+    public LineGraph(GraphElements ge, String title, int width, int height) 
     {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.LINE) {
@@ -218,8 +218,8 @@ public class LineGraph extends AbstractGraph
     }
     
     /**
-     * ������ ���⸦ �����Ѵ�.
-     * @param size float ������ ����
+     * ?????? ???? ???????.
+     * @param size float ?????? ????
      * @since JDK1.4.1
      */
     public void setLineSize(float size)

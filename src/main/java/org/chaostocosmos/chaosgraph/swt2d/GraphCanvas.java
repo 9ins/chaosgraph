@@ -67,7 +67,7 @@ public class GraphCanvas extends Canvas {
  		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
  		setLayoutData(gridData);
         
-        setCanvasSize(getClientArea().width, getClientArea().height);
+        setCanvasSize(getClientArea().width, getClientArea().height); 
         
 		this.graphType = graphType;
 		this.elements = elements;
@@ -204,7 +204,7 @@ public class GraphCanvas extends Canvas {
 	public void dispose() {
 		super.dispose();
 	}
-	
+
 	class PaintAdpater implements PaintListener {
 		Graph graph;
 		

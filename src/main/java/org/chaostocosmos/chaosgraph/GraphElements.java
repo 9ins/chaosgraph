@@ -6,10 +6,8 @@ package org.chaostocosmos.chaosgraph;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -446,7 +444,7 @@ public class GraphElements implements GraphConstants
     	yIndex.add(50d);
     	yIndex.add(80d);
     	yIndex.add(500d);
-        String[] elements = {"ȫ�浿","lee","so","Kooin-Shin is so cool!!!!","�̼���"};
+    	String[] elements = {"Kafa", "elastic search", "Oracle", "Maria", "S3"};
         Color[] colors = {new Color(130,180,130), 
         						new Color(180,130,130), 
         						new Color(180,180,140), 

@@ -1,17 +1,21 @@
 # chaosgraph v2.0
 This library contribute to make chart on AWT/SWT components.
 
-## Area graph
-![screenshot_20200923-01](https://github.com/9ins/chaosgraph/blob/master/screenshot/AREA.png)
+## Area graph for AWT/Swing
+![screenshot_20200923-01](./pic/AREA.png) { width=60% }
 
-## Bar graph
-![screenshot_20200923-02](https://github.com/9ins/chaosgraph/blob/master/screenshot/BAR.png)
+## Bar graph for AWT/Swing
+![screenshot_20200923-02](./pic//BAR.png){ width=60% }
 
-## Bar ratio graph
-![screenshot_20200923-03](https://github.com/9ins/chaosgraph/blob/master/screenshot/BAR_RATIO.png)
+## Bar ratio graph for AWT/Swing
+![screenshot_20200923-03](./pic//BAR_RATIO.png){ width=60% }
 
-## Circle graph
-![screenshot_20200923-04](https://github.com/9ins/chaosgraph/blob/master/screenshot/CIRCLE.png)
+## Circle graph for AWT/Swing
+![screenshot_20200923-04](./pic/CIRCLE.png){ width=60% }
 
-## Line graph
-![screenshot_20200923-05](https://github.com/9ins/chaosgraph/blob/master/screenshot/LINE.png)
+## Line graph for AWT/Swing
+![screenshot_20200923-05](./pic/LINE.png){ width=60% }
+
+
+## JVM Memory viewer
+[![IMAGE ALT TEXT](./pic/JVM_Memory_Viewer.mp4)](./pic/JVM_Memory_Viewer.mp4 "JVM Memory")  

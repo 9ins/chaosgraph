@@ -53,7 +53,7 @@ public class AreaGraph extends AbstractGraph {
      * @param ge GraphElements
      * @throws NotMatchGraphTypeException
      */
-    public AreaGraph(GraphElements ge) throws NotMatchGraphTypeException {
+    public AreaGraph(GraphElements ge)  {
         this(ge, 600, 300);
     }
     
@@ -66,7 +66,7 @@ public class AreaGraph extends AbstractGraph {
      * @exception GraphElement
      * @since JDK1.4.1
      */
-    public AreaGraph(GraphElements ge, int width, int height) throws NotMatchGraphTypeException {
+    public AreaGraph(GraphElements ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -80,7 +80,7 @@ public class AreaGraph extends AbstractGraph {
      * @exception GraphElement
      * @since JDK1.4.1
      */
-    public AreaGraph(GraphElements ge, String title, int width, int height) throws NotMatchGraphTypeException {
+    public AreaGraph(GraphElements ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.AREA) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());

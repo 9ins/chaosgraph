@@ -121,7 +121,6 @@ public class GraphPanel extends JPanel {
     {
     	repaint();
     }
-    
     /**
      * 
      * MouseAdapterExt

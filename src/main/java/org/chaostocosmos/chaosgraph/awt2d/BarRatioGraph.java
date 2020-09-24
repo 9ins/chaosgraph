@@ -33,7 +33,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @throws NotMatchGraphTypeException 
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge) throws NotMatchGraphTypeException {
+    public BarRatioGraph(GraphElements ge)  {
         this(ge, 600, 300);
     }
     
@@ -44,7 +44,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge, int width, int height) throws NotMatchGraphTypeException {
+    public BarRatioGraph(GraphElements ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -56,7 +56,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @param height int 
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge, String title, int width, int height) throws NotMatchGraphTypeException {
+    public BarRatioGraph(GraphElements ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.BAR_RATIO) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());

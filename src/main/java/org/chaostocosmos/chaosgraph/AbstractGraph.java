@@ -621,7 +621,7 @@ public abstract class AbstractGraph extends Graph {
         setComposite(1.0f, graphics);        
         graphics.setFont(fm.getFont());
         graphics.drawString(ge.getElementName(), (int)(x + ascent), (int)Math.round(y + ascent * 1.5));
-        String value = (Math.round((ge.getSelectedValue() / this.VALUE_DIVISION_RATIO) / 100.0d) * 100.0d)+this.INDEX_Y_UNIT;
+        String value = (Math.round((ge.getSelectedValue() / VALUE_DIVISION_RATIO) * 100.0d) / 100.0d)+this.INDEX_Y_UNIT;
         graphics.drawString(value, (int)(x + ascent), (int)Math.round(y + ascent * 2.5));
     }
     
@@ -641,7 +641,7 @@ public abstract class AbstractGraph extends Graph {
         int i=0;
         for (i=0; i<elements.size(); i++)
         {
-            tmp = elements.get(i).getElementName();
+            tmp = elements.get(i).getLabel();
             if (tmp == null) {
             	break;
             }
@@ -690,9 +690,10 @@ public abstract class AbstractGraph extends Graph {
 	            setComposite(0.5f, graphics);
 	            graphics.fill(ploygon);
             }
-            color(ge.getElementColor(), graphics);
+            color(ge.getLabelColor(), graphics);
             setComposite(1.0f, graphics);
-            graphics.drawString(ge.getElementName(), LABEL_X + spacing / 2, (int)Math.round(LABEL_Y + (labelHeight / i) * a + ascent));
+            String label = ge.getLabel() == null ? ge.getElementName() : ge.getLabel();
+            graphics.drawString(label, LABEL_X + spacing / 2, (int)Math.round(LABEL_Y + (labelHeight / i) * a + ascent));
         }
     }
     

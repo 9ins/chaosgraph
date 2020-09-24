@@ -42,7 +42,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge) throws NotMatchGraphTypeException {
+    public CircleGraph(GraphElements ge)  {
         this(ge, 600, 300);
     }
     
@@ -53,7 +53,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge, int width, int height) throws NotMatchGraphTypeException {
+    public CircleGraph(GraphElements ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -65,7 +65,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge, String title, int width, int height) throws NotMatchGraphTypeException {
+    public CircleGraph(GraphElements ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.CIRCLE) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
