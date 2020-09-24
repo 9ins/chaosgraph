@@ -36,9 +36,11 @@ Current 2.0.0 version is providing more object-oriented, more interactive and mo
 <br>
 <br>
 ## <b> How to code </b>  
-1. You need JRE over 1.8 or more.
-2. Add [GRAPH_HOME]/build/libs/chaosgraph-2.0.0.jar to classpath on your project.
+1. You need JRE over 1.8 or more.  
+2. Add [GRAPH_HOME]/build/libs/chaosgraph-2.0.0.jar to classpath on your project.  
 3. Create indexes of x, y axis.  
+
+
 ```
 	List<Object> xIndex = new ArrayList<Object>();  
 	List<Double> yIndex = new ArrayList<Double>();  
@@ -59,23 +61,37 @@ Current 2.0.0 version is providing more object-oriented, more interactive and mo
 	yIndex.add(1024d*1024d*1000d);  
 	yIndex.add(1024d*1024d*5000d);  
 ```
+
+
 4. Create GraphElements object with x, y indexes.  
+
+
 ```
->   GraphElements graphElements = new GraphElements(GRAPH.AREA, xIndex, yIndex);
+   GraphElements graphElements = new GraphElements(GRAPH.AREA, xIndex, yIndex);  
 ```
-5. Add GraphElement objects being created to GraphElements object created above.
+
+5. Add GraphElement objects being created to GraphElements object created above.  
+
+
 ```
-	double[] values = {1024d*1024d*45d, 1024d*1024d*55d, 1024d*1024d*3d, 1024d*1024d*66d, 1024d*1024d*33d, 1024d*1024d*6d, 1024d*1024d*9d, 1024d*1024d*600d, 1024d*1024d* 500d, 1024d*1024d*980d, 1024d*1024d*103d, 1024d*1024d*666d}
-	GraphElement ge = new GraphElement("Kafka", Color.GRAY, values);
-	graphElements.add(ge);
-    .... (could be added more elements)
+	double[] values = {1024d*1024d*45d, 1024d*1024d*55d, 1024d*1024d*3d, 1024d*1024d*66d, 1024d*1024d*33d, 1024d*1024d*6d, 1024d*1024d*9d, 1024d*1024d*600d, 1024d*1024d* 500d, 1024d*1024d*980d, 1024d*1024d*103d, 1024d*1024d*666d}  
+	GraphElement ge = new GraphElement("Kafka", Color.GRAY, values);  
+	graphElements.add(ge);  
+    .... (could be added more elements)  
 ```
-6. Create GraphPanel object with pre-created GraphElements object.
+
+
+6. Create GraphPanel object with pre-created GraphElements object.  
+
+
 ```
-	//Area graph type with width 600 pixel, height 400 pixel
-	GraphPanel gpArea = new GraphPanel(GRAPH.AREA, graphElements, 600, 400);
+	//Area graph type with width 600 pixel, height 400 pixel  
+	GraphPanel gpArea = new GraphPanel(GRAPH.AREA, graphElements, 600, 400);  
 ```
+
 7. To setting proper or wanted option at Graph object retrived from GraphPanel object.
+
+
 ```
 	AbstractGraph graph = (AreaGraph)gpArea.getGraph();
 	graph.setTitle("This is simple area graph.");
@@ -87,12 +103,16 @@ Current 2.0.0 version is providing more object-oriented, more interactive and mo
 	graph.setSelectionBorder(SELECTION_BORDER.DOT);
 	graph.setShowGraphXY(false);
 ```
+
 8. Add GraphPanel object to be required target UI component.
+
+
 ```
 	getContentPane().add(gpArea , BorderLayout.CENTER);
 	getContentPane().validate();
 	gpArea .repaint();
 ```
+
 
 ## <b>Example snippet</b>
 This project contains 3 example of the library.  
