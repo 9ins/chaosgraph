@@ -1,7 +1,7 @@
 # chaosgraph v2.0
 This library contribute to make chart on AWT/SWT components.
 
-<img src="./pic/AREA.png"> width="10%">
+<img src="./pic/AREA.png"> width="100px">
 
 ## Area graph for AWT/Swing
 ![screenshot_20200923-01](./pic/AREA.png) { width=50% }
