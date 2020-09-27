@@ -177,5 +177,8 @@ This project contains 3 example of the library.
 <br>
 
 ## JVM Memory viewer(Movie)
-[![IMAGE ALT TEXT](./pic/JVM_Memory_Viewer.png)](./pic/JVM_Memory_Viewer.mp4 "JVM Memory")  
-
+<video width="320" height="240" controls>
+  <source src="./pic/JVM_Memory_Viewer.mp4" type="video/mp4">
+  <object data="./pic/JVM_Memory_Viewer.mp4" width="320" height="240">
+  </object>
+</video>
