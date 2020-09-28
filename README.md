@@ -169,3 +169,7 @@ This project contains 3 example of the library.
 ## JVM Memory viewer(Movie)
 [![IMAGE ALT TEXT](./pic/JVM_Memory_Viewer.png)](./pic/JVM_Memory_Viewer.mp4 "JVM Memory")  
 
+<br>
+
+Developed by 9ins
+Mail: chaos930@gmail.com
