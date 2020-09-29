@@ -1,17 +1,27 @@
-# <b>chaosgraph v2.0</b>
+# <b> chaosgraph v2.0 </b>
 ======================
-## <b>Introduction</b>
+## <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interective functionality to the service for users.  
+
+<br>
+<br>
+
+## <b> What do you make with this? </b>
+You could need to make chart based application on pure java GUI, Use this library. Also when you need to build dashboard on non-web-based java application, Just use this. Maybe when if you are working with Eclipse RCP to make analysis app or CRM, MIS, This library could successful choice for your project's goal as UX to users. This library's core is java. Nevertheless, if you use Eclipse RAP, you can see the chart by this library and graphic widget of RAP.
+
+<br>
 <br>
 
 ## <b>What is changed and improved?</b>
 There is 5 type of chart be supported in this v2.0.0 version.  
 Area/Bar/BarRatio/Circle/line chart is currently supported for public user.
 This version of the artifacts is quit changed then old version 1.x that was not suppoted interactive event, just only show chart shapes and handling mutil-dimension array to easily cause error.  
-Current 2.0.0 version is providing more object-oriented, more interactive and more good-looked graphical methods and functions.
+Currently 2.0.0 version is providing more object-oriented, more interactive and more good-looked graphical methods and functions.
+
 <br>  
 <br>
+
 ## <b> Specification of additionals and improved</b>
 ### <b> Additional functionality </b>
 * Adding BarRatioGraph  
@@ -29,13 +39,18 @@ Current 2.0.0 version is providing more object-oriented, more interactive and mo
 * To make chart's graphical effiect more beautiful.
 * When the chart's size to be resize, To make chart's inner element to resize at same ratio.
 * Improving chart drawing/Rendering structure.
+
 <br>
 <br>
+
 ## <b>Structure of chart objects</b>
 ![UMLDiagram1](./pic/UMLDiagram1.PNG)
+
 <br>
 <br>
+
 ## <b> How to code </b>  
+
 1. You need JRE over 1.8 or more.  
 2. Add [GRAPH_HOME]/build/libs/chaosgraph-2.0.0.jar to classpath on your project.  
 3. Create indexes of x, y axis.  
@@ -116,23 +131,28 @@ Current 2.0.0 version is providing more object-oriented, more interactive and mo
 
 ## <b>Example snippet</b>
 This project contains 3 example of the library.  
+
 <br>
+
 > ### AWTGraphSimple1.java
 > This example is chart viewer. 
 > To select the chart be wanted, then draw the chart on window.  
 > You can output chart image to file with specific image format. e.g. PNG, JPG, TIFF, BMP  
 > Location : [PROJECT-PATH]/src/main/java/org/chaostocosmos/chaosgraph/awt2d/AWTGraphSimple1.java  
+
 <br>
 
 > ### AWTGraphSimple2.java
 > This example is JVM memory monitor.  This show that current memory useage of this application on real-time.  
 > You can see memory status with some chart types. Also as pushing 'populate object' button, you will see more dynamic progress of memory status.  
 > Location : [PROJECT-PATH]/src/main/java/org/chaostocosmos/chaosgraph/awt2d/AWTGraphSimple2.java  
+
 <br>
 
 > ### SWTGraphSimple.java
 > This example is converting SWT version of AWTGraphSimple1 above.  
 > Location : [PROJECT-PATH]/src/main/java/org/chaostocosmos/chaosgraph/swt2d/SWTGraphSimple.java
+
 <br>
 <br>
 
@@ -164,9 +184,5 @@ This project contains 3 example of the library.
 <br>
 
 ## JVM Memory viewer(Movie)
-[![IMAGE ALT TEXT](./pic/JVM_Memory_Viewer.png)](./pic/JVM_Memory_Viewer.mp4 "JVM Memory")  
-
-<br>
-
-Developed by 9ins
-Mail: chaos930@gmail.com
+<object data="" height="200" width="200"></object>
+[<img src="./pic/JVM_Memory_Viewer.png" width="50%">](./pic/JVM_Memory_Viewer.mp4)
