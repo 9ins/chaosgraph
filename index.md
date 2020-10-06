@@ -1,7 +1,8 @@
 # <b> chaosgraph v2.0 </b>
 <br>
-![](./pic/chaosgraph-logo.PNG)
-======================================================================
+![](./pic/chaosgraph-logo.PNG)  
+<br>
+======================================================================  
 ## <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interective functionality to the service for users.  
