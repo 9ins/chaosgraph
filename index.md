@@ -1,6 +1,6 @@
 <head>  
-<!-- Place this tag in your head or just before your close body tag. -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/9ins" data-color-scheme="no-preference: light; light: light; dark: dark;" aria-label="Follow @9ins on GitHub">Follow @9ins</a>
 </head>
 <body>
 # <b> chaosgraph v2.0 </b>
@@ -115,6 +115,8 @@ This project contains 3 example of the library.
 <object data="" height="200" width="200"></object>
 [<img src="./pic/JVM_Memory_Viewer.png" width="50%">](./pic/JVM_Memory_Viewer.mp4)
 
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 
 </body>
 
