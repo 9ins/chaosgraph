@@ -1,8 +1,14 @@
+<head>  
+  <!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/9ins" data-color-scheme="no-preference: light; light: light; dark: dark;" aria-label="Follow @9ins on GitHub">Follow @9ins</a>
+</head>
+
+<body>
 # <b> chaosgraph v2.0 </b>
 <br>
 <img src="https://github.com/9ins/chaosgraph/blob/master/pic/chaosgraph-logo.PNG" width="350" height="280">
 <br>
-======================================================================  
+
 ## <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interective functionality to the service for users.  
@@ -109,3 +115,6 @@ This project contains 3 example of the library.
 ## JVM Memory viewer(Movie)
 <object data="" height="200" width="200"></object>
 [<img src="./pic/JVM_Memory_Viewer.png" width="50%">](./pic/JVM_Memory_Viewer.mp4)
+
+
+</body>
