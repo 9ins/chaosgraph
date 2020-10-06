@@ -1,6 +1,6 @@
 # <b> chaosgraph v2.0 </b>
 <br>
-![](./pic/chaosgraph-logo.PNG)  
+<img src="https://github.com/9ins/chaosgraph/blob/master/pic/chaosgraph-logo.PNG" width="350" height="280">
 <br>
 ======================================================================  
 ## <b> Instroduction </b>
