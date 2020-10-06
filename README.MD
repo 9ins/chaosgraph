@@ -1,10 +1,13 @@
+
 # <b> chaosgraph v2.0 </b>
-<br><br>
+<br>
+<img src="./pic/chaosgraph-logo.PNG" width="350" height="280">
+<br>
+
 ## <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
-It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interective functionalities to the service for users.  
-<br>
-To use this library, Should required Java 1.8 or more on system.  
+It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interective functionality to the service for users.  
+
 <br>
 <br>
 
@@ -80,30 +83,32 @@ This project contains 3 example of the library.
 ## <b> Image of Chart </b>
 
 ## Area graph for AWT/Swing
-![screenshot_20200923-01](./pic/AREA.png)  
+<img src="./pic/AREA.png" width="600" height="400">
 
 <br>
 
 ## Bar graph for AWT/Swing
-![screenshot_20200923-02](./pic/BAR.png)  
+<img src="./pic/BAR.png" width="600" height="400">
 
 <br>
 
 ## Bar ratio graph for AWT/Swing
-![screenshot_20200923-03](./pic/BAR_RATIO.png)  
+<img src="./pic/BAR_RATIO.png" width="600" height="400">
 
 <br>
 
 ## Circle graph for AWT/Swing
-![screenshot_20200923-04](./pic/CIRCLE.png)  
+<img src="./pic/CIRCLE.png" width="600" height="400">
 
 <br>
 
 ## Line graph for AWT/Swing
-![screenshot_20200923-05](./pic/LINE.png)  
+<img src="./pic/LINE.png" width="600" height="400">
 
 <br>
 
 ## JVM Memory viewer(Movie)
 <object data="" height="200" width="200"></object>
 [<img src="./pic/JVM_Memory_Viewer.png" width="50%">](./pic/JVM_Memory_Viewer.mp4)
+
+
