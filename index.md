@@ -1,7 +1,7 @@
 
 # <b> chaosgraph v2.0 </b>
 <br>
-<img src="https://github.com/9ins/chaosgraph/blob/master/pic/chaosgraph-logo.PNG" width="350" height="280">
+<img src="./pic/chaosgraph-logo.PNG" width="350" height="280">
 <br>
 
 ## <b> Instroduction </b>
@@ -83,27 +83,27 @@ This project contains 3 example of the library.
 ## <b> Image of Chart </b>
 
 ## Area graph for AWT/Swing
-![screenshot_20200923-01](./pic/AREA.png)  
+<img src="./pic/AREA.png" width="600" height="400">
 
 <br>
 
 ## Bar graph for AWT/Swing
-![screenshot_20200923-02](./pic/BAR.png)  
+<img src="./pic/BAR.png" width="600" height="400">
 
 <br>
 
 ## Bar ratio graph for AWT/Swing
-![screenshot_20200923-03](./pic/BAR_RATIO.png)  
+<img src="./pic/BAR_RATIO.png" width="600" height="400">
 
 <br>
 
 ## Circle graph for AWT/Swing
-![screenshot_20200923-04](./pic/CIRCLE.png)  
+<img src="./pic/CIRCLE.png" width="600" height="400">
 
 <br>
 
 ## Line graph for AWT/Swing
-![screenshot_20200923-05](./pic/LINE.png)  
+<img src="./pic/LINE.png" width="600" height="400">
 
 <br>
 
