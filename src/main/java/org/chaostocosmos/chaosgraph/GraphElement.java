@@ -1,8 +1,8 @@
 package org.chaostocosmos.chaosgraph;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
-import org.eclipse.swt.graphics.GC;
 
 /**
  * 
@@ -34,6 +33,10 @@ public class GraphElement implements Serializable {
     private boolean isSWT = false;
     private GRAPH graphType;
     private Graph graph;
+    private int interpolateScale = -1;
+    private List<Double> interpolateValues;
+    private List<Point2D.Double> interpolates;
+    private INTERPOLATE interpolationType;
 	
     /**
      * Constructor
@@ -67,6 +70,19 @@ public class GraphElement implements Serializable {
      * @param values
      */
     public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<Double> values) {
+		this(elementName, elementColor, label, labelColor, values, null);
+    }
+    
+    /**
+     * Constructor
+     * @param elementName
+     * @param elementColor
+     * @param label
+     * @param labelColor
+     * @param values
+     * @param interpolation
+     */
+    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<Double> values, INTERPOLATE interpolationType) {
 		super();
 		this.elementName = elementName;
 		this.elementColor = elementColor;
@@ -77,7 +93,9 @@ public class GraphElement implements Serializable {
 		    this.values.add(0d);
 		}
 		this.shapes = new ArrayList<Point>();
-    }
+		this.labelShapes = new ArrayList<Point>();
+		this.interpolationType = interpolationType;
+    }    
 	
     /**
      * Get element name
@@ -302,6 +320,70 @@ public class GraphElement implements Serializable {
 		this.selectedPoint = selectedPoint;
 	}
 
+	/**
+	 * Get interpolate Scale
+	 * @return
+	 */
+	public int getInterpolateScale() {
+		return interpolateScale;
+	}
+
+	/**
+	 * Set interpolate points count
+	 * @param interpolatePoints
+	 */
+	public void setInterpolateScale(int interpolateScale) {
+		this.interpolateScale = interpolateScale;
+	}
+
+	/**
+	 * Get interpolated values
+	 * @return
+	 */
+	public List<Double> getInterpolateValues() {
+		return interpolateValues;
+	}
+
+	/**
+	 * Set interpolated values
+	 * @param interpolateValues
+	 */
+	public void setInterpolateValues(List<Double> interpolateValues) {
+		this.interpolateValues = interpolateValues;
+	}
+
+	/**
+	 * Get interpolated values
+	 * @return
+	 */
+	public List<Point2D.Double> getInterpolates() {
+		return interpolates;
+	}
+
+	/**
+	 * Set interpolated values
+	 * @param interpolates
+	 */
+	public void setInterpolates(List<Point2D.Double> interpolates) {
+		this.interpolates = interpolates;
+	}
+
+	/**
+	 * Get interpolation type
+	 * @return
+	 */
+	public INTERPOLATE getInterpolationType() { 
+		return interpolationType;
+	}
+
+	/**
+	 * Set interpolation type
+	 * @param interpolationType
+	 */
+	public void setInterpolationType(INTERPOLATE interpolationType) {
+		this.interpolationType = interpolationType;
+	}
+
 	@Override
 	public String toString() {
 		return "GraphElement [elementName=" + elementName + ", elementColor="
@@ -310,6 +392,10 @@ public class GraphElement implements Serializable {
 				+ ", labelShapes=" + labelShapes + ", selectedValueIndex="
 				+ selectedValueIndex + ", selectedValue=" + selectedValue
 				+ ", selectedPoint=" + selectedPoint + ", isSWT=" + isSWT
-				+ ", graphType=" + graphType + ", graph=" + graph + "]";
+				+ ", graphType=" + graphType + ", graph=" + graph
+				+ ", interpolateScale=" + interpolateScale
+				+ ", interpolateValues=" + interpolateValues + ", interpolates="
+				+ interpolates + ", interpolationType=" + interpolationType
+				+ "]";
 	}
 }

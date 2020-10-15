@@ -16,8 +16,8 @@ import org.chaostocosmos.chaosgraph.awt2d.LineGraph;
  */
 public class DefaultGraphFactory {
 
-	public static Graph createGraph(GRAPH graphType, GraphElements elements, int width, int height) {
-		Graph graph;
+	public static AbstractGraph createGraph(GRAPH graphType, GraphElements elements, int width, int height) {
+		AbstractGraph graph;
         if(graphType.compareTo(GRAPH.AREA) == 0) {
         	graph = new AreaGraph(elements, width, height);
         } else if(graphType.compareTo(GRAPH.BAR) == 0) {

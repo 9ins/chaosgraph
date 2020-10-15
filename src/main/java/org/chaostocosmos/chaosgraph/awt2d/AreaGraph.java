@@ -104,7 +104,7 @@ public class AreaGraph extends AbstractGraph {
             }
         }
         float tab = GRAPH_WIDTH / (GRAPH_ELEMENTS.getXIndex().size());     
-        GeneralPath gp = null;        
+                
         g2d.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
         double x1 = Math.cos(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST;
@@ -114,7 +114,7 @@ public class AreaGraph extends AbstractGraph {
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
             GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
             List<Double> valueList = ge.getValues();
-            gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, valueList.size());
+            final GeneralPath gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, valueList.size());
             if (IS_SHOW_SHADOW) {
                 color(SHADOW_COLOR, g2d);
                 setComposite(SHADOW_ALPHA, g2d);
@@ -155,29 +155,36 @@ public class AreaGraph extends AbstractGraph {
                 color(ge.getElementColor(), g2d);
             }
            
-            gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, ge.getValues().size());
-            gp.moveTo(BORDER_SIZE+GRAPH_X, GRAPH_Y+BORDER_SIZE);
+            gp.moveTo(BORDER_SIZE+GRAPH_X, GRAPH_Y+BORDER_SIZE);            
             List<Point> shape = new ArrayList<Point>();
-            shape.add(new Point((int)(BORDER_SIZE+GRAPH_X), (int)(GRAPH_Y+BORDER_SIZE)));
             x = 0; 
             y = 0;
-            for (int i=0; i<ge.getValues().size(); i++) {
-                double value = ge.getValues().get(i);
-                if(value < 0) {
-                	continue;
-                }
-                x = (i) * tab + GRAPH_X;
-                y = (LIMIT < maxValue) ? GRAPH_Y - value * GRAPH_HEIGHT / maxValue : GRAPH_Y - value * GRAPH_HEIGHT / LIMIT;
-                gp.lineTo(x, y);
-                shape.add(new Point((int)x, (int)y));
+            if(ge.getInterpolationType() != null) {
+            	shape = ge.getInterpolates().stream().map(p -> {
+            		gp.lineTo(p.x, p.y);
+                    return new Point((int)p.x, (int)p.y);
+            	}).collect(Collectors.toList());
+            	x = shape.get(shape.size()-1).x;
+            } else {
+	            for (int i=0; i<ge.getValues().size(); i++) {
+	                double value = ge.getValues().get(i);
+	                if(value < 0) {
+	                	continue;
+	                }
+	                x = (i) * tab + GRAPH_X;
+	                y = (LIMIT < maxValue) ? GRAPH_Y - value * GRAPH_HEIGHT / maxValue : GRAPH_Y - value * GRAPH_HEIGHT / LIMIT;
+	                gp.lineTo(x, y);
+	                shape.add(new Point((int)x, (int)y));
+	            }
             }
+            shape.add(new Point((int)x, GRAPH_Y+GRAPH_HEIGHT));
+            shape.add(new Point((int)GRAPH_X, (int)(GRAPH_Y+GRAPH_HEIGHT)));
+            ge.setShapes(shape);            
             gp.lineTo(x, GRAPH_Y-BORDER_SIZE);
             gp.closePath();
-            ge.setShapes(shape);
-            
             g2d.fill(gp);
-            if (IS_SHOW_BORDER)
-            {
+            
+            if (IS_SHOW_BORDER) {
             	if(isSelected) {
             		color(ge.getElementColor(), SELECTED_COLOR_DENSITY, g2d);
             	}
@@ -185,7 +192,11 @@ public class AreaGraph extends AbstractGraph {
             }
             gp.reset();
             if(IS_SHOW_PEEK && IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
-            	for(Point p : ge.getShapes()) {
+            	for(int i=0; i<shape.size(); i++) {
+            		Point p = shape.get(i);
+            		if(ge.getInterpolationType() != null && i % ge.getInterpolateScale() != 0) {
+            			continue;
+            		}
             		drawPeek(PEEK_STYLE.CIRCLE, p, 3, 5, new Color(180, 180, 180), g2d);
             	}
             }
@@ -200,8 +211,7 @@ public class AreaGraph extends AbstractGraph {
         }
         
         setComposite(LABEL_BG_ALPHA, g2d);
-        if (IS_SHOW_LABEL)
-        {
+        if (IS_SHOW_LABEL) {
         	List<Object> names = new ArrayList<Object>();
         	for(int i = GRAPH_ELEMENTS.getElementOrder().size() -1; i >= 0; i--) {
         		names.add(GRAPH_ELEMENTS.getElementOrder().get(i));

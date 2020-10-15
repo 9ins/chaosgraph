@@ -11,6 +11,7 @@ import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
 import org.chaostocosmos.chaosgraph.GraphSelectionListener;
 import org.chaostocosmos.chaosgraph.GraphUtility;
 import org.chaostocosmos.chaosgraph.GraphUtility.CODEC;
+import org.chaostocosmos.chaosgraph.INTERPOLATE;
 import org.chaostocosmos.chaosgraph.NotMatchArrayException;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 import org.chaostocosmos.chaosgraph.NotSuppotedEncodingFormatException;
@@ -109,7 +110,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
     public AWTGraphSimple1() {
         try {
         	xIndex = new ArrayList<Object>();
-        	for(int i=0; i<17; i++) {
+        	for(int i=0; i<=16; i++) {
         		if(i % 2 == 0)
         			xIndex.add(i+"");
         		else {
@@ -163,6 +164,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
             }
             jbInit();
             showAreaGraph();
+            setVisible(true);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -182,13 +184,43 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
         graph.setPopupStyle(POPUP_STYLE.ROUND);
         graph.setSelectionEnable(true);
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
-        graph.setShowGraphXY(false);        
-        graph.addGraphSelectionListener(this);
+        graph.setInterpolateType(INTERPOLATE.SPLINE);
+        graph.setInterPolateScale(9);
+        graph.setShowGraphXY(false);
+        graph.setShowPeek(true);
+        graph.addGraphSelectionListener(new GraphSelectionListener() {
+			@Override
+			public void onMouseOverGraph(GraphOverEvent goe) throws Exception {
+				//Get selected element
+				GraphElement ge = goe.getGraphElement();
+				//Get values of selected element
+				List<Double> values = ge.getValues();
+				//Get selected value in values
+				double value = ge.getSelectedValue();
+				//Get selected index in values
+				int index = ge.getSelectedValueIndex();
+			}
+			@Override
+			public void onMousePressedGraph(GraphPressEvent gpe) throws Exception {
+				GraphElement ge = gpe.getGraphElement();
+				AbstractGraph graph = (AbstractGraph)ge.getGraph();
+				//Toggle graph background color when user select a element and click.
+				if(graph.getGraphBgColor().equals(Color.white)) {
+					graph.setGraphBgColor(Color.black);
+				} else {
+					graph.setGraphBgColor(Color.white);
+				}
+			}
+			@Override
+			public void onMouseReleasedGraph(GraphReleaseEvent gre)	throws Exception {
+			}
+        });
         
         getContentPane().remove(2);
         getContentPane().add(gpArea, BorderLayout.CENTER);
         getContentPane().validate();
         graph.resizeImage(gpArea.getWidth(), gpArea.getHeight());
+        gpArea.repaint();
     }
     /**
      * show bar graph on panel
@@ -201,6 +233,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
     	graph.setTitle("This is simple bar graph.");
         graph.setLimit(300f);
         graph.setUnit("m");
+        graph.setGraphBgColor(Color.yellow);
         graph.addGraphSelectionListener(this);
         
         getContentPane().remove(2);
@@ -242,6 +275,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
         ((CircleGraph)graph).setShowPercent(true);
         graph.addGraphSelectionListener(this);
+        //graph.setShowLabel(false);
         
         getContentPane().remove(2);
         getContentPane().add(gpCircle, BorderLayout.CENTER);
@@ -257,9 +291,10 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
     public void showLineGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
     	graph = (LineGraph)gpLine.getGraph();
     	graph.setTitle("This is simple line graph.");
-        //graph.setImgBgColor(new Color(50, 50, 50));
-        graph.setGraphBgColor(new Color(60, 60, 60));
-        graph.setGraphXYColor(new Color(150, 150, 150));
+        graph.setGridSize(2);
+        graph.setGridStyle(GRID.DOT);
+        graph.setShowPeek(true);
+        graph.setInterpolateType(INTERPOLATE.SPLINE);
         graph.addGraphSelectionListener(this);
         
         getContentPane().remove(2);
@@ -316,7 +351,6 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
         jPanel2.add(jButton6, null);
         this.getContentPane().add(jPanel3, BorderLayout.CENTER);
         setSize(800, 600);
-        setVisible(true);
     }
     /**
      * Perform area graph selection

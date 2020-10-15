@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -58,12 +59,18 @@ public class Graphics2DRenderer {
 	private int[] awtPixels;
 	/** RGB value to use as transparent color */
 	private static final int TRANSPARENT_COLOR = 0x123456;
+	Canvas canvas;
+	
+	public Graphics2DRenderer(Canvas canvas) {
+		this.canvas = canvas;
+	}
 
 	/**
 	 * Prepare to render on a SWT graphics context.
 	 */
 	public void prepareRendering(GC gc) {
 		org.eclipse.swt.graphics.Rectangle clip = gc.getClipping();
+		//System.out.println(clip.toString());
 		prepareRendering(clip.x, clip.y, clip.width, clip.height);
 	}
 
@@ -71,8 +78,12 @@ public class Graphics2DRenderer {
 	 * Prepare to render on a Draw2D graphics context.
 	 */
 	public void prepareRendering(org.eclipse.draw2d.Graphics graphics) {
-		org.eclipse.draw2d.geometry.Rectangle clip = graphics.getClip(new org.eclipse.draw2d.geometry.Rectangle());
-		prepareRendering(clip.x, clip.y, clip.width, clip.height);
+		//org.eclipse.draw2d.geometry.Rectangle clip = graphics.getClip(new org.eclipse.draw2d.geometry.Rectangle());
+		int x = this.canvas.getClientArea().x;
+		int y = this.canvas.getClientArea().y;
+		int w = this.canvas.getClientArea().width;
+		int h = this.canvas.getClientArea().height;
+		prepareRendering(x, y, w, h);
 	} 
 
 	/**
@@ -80,10 +91,12 @@ public class Graphics2DRenderer {
 	 * region given as parameter.
 	 */
 	private void prepareRendering(int clipX, int clipY, int clipW, int clipH) {
-		checkOffScreenImages(clipW, clipH);
-		java.awt.Graphics awtGraphics = awtImage.getGraphics();
-		awtGraphics.setColor(new java.awt.Color(TRANSPARENT_COLOR));
-		awtGraphics.fillRect(clipX, clipY, clipW, clipH);
+		if(clipW > 0 && clipH > 0) {
+			checkOffScreenImages(clipW, clipH);
+			java.awt.Graphics awtGraphics = awtImage.getGraphics();
+			awtGraphics.setColor(new java.awt.Color(TRANSPARENT_COLOR));
+			awtGraphics.fillRect(clipX, clipY, clipW, clipH);
+		}
 	}
 
 	/**
@@ -104,9 +117,13 @@ public class Graphics2DRenderer {
 		if (awtImage == null) {
 			return;
 		}
-		org.eclipse.swt.graphics.Rectangle clip = gc.getClipping();
-		transferPixels(clip.x, clip.y, clip.width, clip.height);
-		gc.drawImage(swtImage, clip.x, clip.y, clip.width, clip.height, clip.x, clip.y, clip.width, clip.height);
+		///org.eclipse.swt.graphics.Rectangle clip = gc.getClipping();
+		int x = this.canvas.getClientArea().x;
+		int y = this.canvas.getClientArea().y;
+		int width = this.canvas.getClientArea().width;
+		int height = this.canvas.getClientArea().height;
+		transferPixels(x, y, width, height);
+		gc.drawImage(swtImage, x, y, width, height, x, y, width, height);
 	}
 
 	/**
@@ -117,15 +134,26 @@ public class Graphics2DRenderer {
 		if (awtImage == null) {
 			return;
 		}
-		org.eclipse.draw2d.geometry.Rectangle clip = graphics.getClip(new org.eclipse.draw2d.geometry.Rectangle());
+		/*
+		org.eclipse.draw2d.geometry.Rectangle clip = graphics.getClip(new org.eclipse.draw2d.geometry.Rectangle());		
 		transferPixels(clip.x, clip.y, clip.width, clip.height);
 		graphics.drawImage(swtImage, clip.x, clip.y, clip.width, clip.height, clip.x, clip.y, clip.width, clip.height);
+		*/
+		///org.eclipse.swt.graphics.Rectangle clip = gc.getClipping();
+		int x = this.canvas.getClientArea().x;
+		int y = this.canvas.getClientArea().y;
+		int width = this.canvas.getClientArea().width;
+		int height = this.canvas.getClientArea().height;
+		transferPixels(x, y, width, height);
+		graphics.drawImage(swtImage, x, y, width, height, x, y, width, height);
 	}
 
 	/**
 	 * Transfer a rectangular region from the AWT image to the SWT image.
 	 */
 	private void transferPixels(int clipX, int clipY, int clipW, int clipH) {
+		//System.out.println(clipX+"   "+clipY+"   "+clipW+"   "+clipH);
+		//System.out.println("IMAGE: "+awtImage.getWidth()+"   "+awtImage.getHeight());
 		int step = swtImageData.depth / 8;
 		byte[] data = swtImageData.data;
 		awtImage.getRGB(clipX, clipY, clipW, clipH, awtPixels, 0, clipW);

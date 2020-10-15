@@ -2,7 +2,9 @@ package org.chaostocosmos.chaosgraph.swt2d;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 
+import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.DefaultGraphFactory;
 import org.chaostocosmos.chaosgraph.Graph;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
@@ -42,7 +44,7 @@ import org.eclipse.swt.widgets.Shell;
  * 2020. 9. 21.
  */
 public class GraphCanvas extends Canvas {
-	Graph graph;
+	AbstractGraph graph;
 	GraphElements elements;
     BufferedImage buffImg;     
     Graphics2D g2d;	
@@ -52,57 +54,52 @@ public class GraphCanvas extends Canvas {
 	boolean autoResizing = false;
 	int width, height;
 	
-	final Graphics2DRenderer renderer = new Graphics2DRenderer();
+	final Graphics2DRenderer renderer = new Graphics2DRenderer(this);
+	
+	/**
+	 * Constructor
+	 * @param parent
+	 * @param graphType
+	 * @param elements
+	 * @param autoResizing
+	 * @param w
+	 * @param h
+	 */
+	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements elements, boolean autoResizing, int w, int h) {
+		this(parent, graphType, elements, autoResizing, w, h, false);
+	}
 
 	/**
-	 * constructor
+	 * Constructor
 	 * @param parent
 	 * @param graphType
 	 * @param elements
 	 */
-	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements elements, boolean autoResizing) {
+	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements elements, boolean autoResizing, int w, int h, boolean isRAPMode) {
 		super(parent, SWT.DOUBLE_BUFFERED);
+		this.width = w;
+		this.height = h;
         //System.out.println(getClientArea().width+" =======================  "+getClientArea().height);
         setLayout(new GridLayout(1, true));
  		GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+ 		gridData.widthHint = this.width;
+ 		gridData.heightHint = this.height;
  		setLayoutData(gridData);
-        
-        setCanvasSize(getClientArea().width, getClientArea().height); 
         
 		this.graphType = graphType;
 		this.elements = elements;
 		this.autoResizing = autoResizing;
 		this.graph = DefaultGraphFactory.createGraph(this.graphType, this.elements, getClientArea().width, getClientArea().height);
-        
-        addPaintListener( new PaintAdpater(this.graph));
 		
-		this.addMouseMoveListener(new MouseMoveListener () {
-			@Override
-			public void mouseMove(MouseEvent me) {
-			    GraphElement ge = graph.isPointOnShapes(me.x, me.y);
-			    if(ge != null) {
-					//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
-				    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
-						try {
-							gl.onMouseOverGraph(new GraphOverEvent(graph, ge));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					});
-					graph.getGraphElements().setSelectedElement(ge);
-					return;
-			    }
-			    graph.getGraphElements().setSelectedElement(null);
-			}
-		});
 		this.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseDoubleClick(MouseEvent me) {
 			}
+			
 			@Override
 			public void mouseDown(MouseEvent me) {
 			    GraphElement ge = graph.isPointOnShapes(me.x, me.y);
-			    if(ge != null) {
+			    if(ge != null && graph.getGraphElements().getLabelRectangle().contains(me.x, me.y)) {
 				    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
 						try {
 							gl.onMousePressedGraph(new GraphPressEvent(graph, ge));
@@ -111,17 +108,20 @@ public class GraphCanvas extends Canvas {
 						}
 					});
 					graph.getGraphElements().setSelectedElement(ge);
-					//return;
+			    } else {
+				    if(me.button == 1) {
+				    	graph.getGraphElements().circulateElement(true);
+				    } else if(me.button == 3) {
+				    	graph.getGraphElements().circulateElement(false);
+				    }
+				    graph.getGraphElements().setSelectedElement(null);
 			    }
-			    if(me.button == 1) {
-			    	graph.getGraphElements().circulateElement(true);
-			    } else if(me.button == 3) {
-			    	graph.getGraphElements().circulateElement(false);
-			    }
-			    graph.getGraphElements().setSelectedElement(null);
+			    redraw();
 			}
+			
 			@Override
 			public void mouseUp(MouseEvent me) {
+				/*
 			    GraphElement ge = graph.isPointOnShapes(me.x, me.y);
 			    if(ge != null) {
 					//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
@@ -133,40 +133,74 @@ public class GraphCanvas extends Canvas {
 						}
 					});
 					graph.getGraphElements().setSelectedElement(ge);
+					redraw();
 					return;
 			    }
 			    graph.getGraphElements().setSelectedElement(null);
+			    redraw();
+			    */
 			}
-			
 		});
 
-		this.addMouseWheelListener(new MouseWheelListener() {
-			@Override
-			public void mouseScrolled(MouseEvent e) {
-				//System.out.println("COUNT: "+e.count);
-				double scale = 1.0d + (e.count > 0 ? graph.getWheelUnitScale() : -graph.getWheelUnitScale());
-				//System.out.println("SCALE: "+scale);
-				//System.out.println("IMG "+graph.getImageWidth()+"   "+graph.getImageHeight());
-				width = (int)(graph.getImageWidth() * scale);
-				height = (int)(graph.getImageHeight() * scale);
-			
-				if(width <= graph.getIndentLeft()+graph.getIndentRight()+100 || width > getShell().getDisplay().getPrimaryMonitor().getClientArea().width) {
-					return;
+        
+		if(!isRAPMode) {
+    		this.addMouseMoveListener(new MouseMoveListener () { 
+				@Override
+				public void mouseMove(MouseEvent me) {
+				    GraphElement ge = graph.isPointOnShapes(me.x, me.y);
+				    if(ge != null) {
+						//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
+					    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
+							try {
+								gl.onMouseOverGraph(new GraphOverEvent(graph, ge));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						});
+						graph.getGraphElements().setSelectedElement(ge);
+					    redraw();
+						return;
+				    }
+				    graph.getGraphElements().setSelectedElement(null);
+				    redraw();
 				}
-			}			
-		});
+			});
+			this.addMouseWheelListener(new MouseWheelListener() {
+				@Override
+				public void mouseScrolled(MouseEvent e) {
+					//System.out.println("COUNT: "+e.count);
+					double scale = 1.0d + (e.count > 0 ? graph.getWheelUnitScale() : -graph.getWheelUnitScale());
+					//System.out.println("SCALE: "+scale);
+					//System.out.println("IMG "+graph.getImageWidth()+"   "+graph.getImageHeight());
+					//System.out.println("SCALED : "+graph.getImageWidth() * scale+"   "+graph.getImageHeight() * scale);
+					width = (int)(graph.getImageWidth() * scale);
+					height = (int)(graph.getImageHeight() * scale);
+					//System.out.println(width+"   "+height);
+					if(width <= graph.getIndentLeft()+graph.getIndentRight()+100 || width > getShell().getDisplay().getPrimaryMonitor().getClientArea().width) {
+						//return;
+					}
+					redraw();
+				}			
+			});
+		}
 		
-		getShell().addListener(SWT.Resize, new Listener() {
-
+		parent.addListener(SWT.Resize, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				int w = getParent().getClientArea().width;
-				int h = getParent().getClientArea().height;
-				setCanvasSize(w, h);
-				graph.resizeImage(g2d, w, h);
+				if(!isDisposed()) {
+					int w = getParent().getClientArea().width;
+					int h = getParent().getClientArea().height;
+					if(autoResizing) {
+						setCanvasSize(w, h);
+						graph.resizeImage(g2d, w, h);
+						redraw();
+					}
+				}
 			}
-			
 		});
+        addPaintListener( new PaintAdpater(this.graph));
+        parent.layout(true, true);
+		redraw();
 	}
 	
 	public void setAutoResizing(boolean is) {
@@ -175,8 +209,6 @@ public class GraphCanvas extends Canvas {
 	
 	public void setCanvasSize(int width, int height) {
 		//System.out.println("CANVAS SIZE CHANGED: "+width+"   "+height);
-		this.width = width;
-		this.height = height;
 		GridData gd = (GridData)getLayoutData();
 		if(gd != null) {
 			gd.widthHint = width;
@@ -205,6 +237,7 @@ public class GraphCanvas extends Canvas {
 		super.dispose();
 	}
 
+	long rate = 0;
 	class PaintAdpater implements PaintListener {
 		Graph graph;
 		
@@ -217,27 +250,32 @@ public class GraphCanvas extends Canvas {
 			GC gc = e.gc;
 			renderer.prepareRendering(gc);
 	        Graphics2D g2d = renderer.getGraphics2D();
+	        if(g2d == null) {
+	        	gc.dispose();
+	        	return;
+	        }
 			try {
 				//this.graph.drawGraph(g2d);
 				//System.out.println("PAINT: "+e.width+"   "+e.height);
-				int w = 0;
-				int h = 0;
-				if(!autoResizing) {
-					w = width;
-					h = height;
+				if(graph.isImgFixed() && !autoResizing) {
+					//System.out.println("PAINT: "+width+"   "+height);
+					graph.resizeImage(g2d, width, height);
+				} else if(!graph.isImgFixed() && autoResizing) {
+					width = getParent().getClientArea().width;
+					height = getParent().getClientArea().height;
+					setCanvasSize(width, height);
+					graph.resizeImage(g2d, width, height);
 				} else {			
-					w = getParent().getClientArea().width;
-					h = getParent().getClientArea().height;
-					//System.out.println("PARENT SIZE: "+w+"   "+h);
+					graph.repaint(g2d);
 				}
-				setCanvasSize(w, h);
-				graph.resizeImage(g2d, w, h);
 				renderer.render(gc);
-				redraw();
+				//System.out.println("PARENT SIZE: "+w+"   "+h);
+				//redraw();
 				gc.dispose();
 			} catch (NotMatchGraphTypeException e1) {
 				e1.printStackTrace();
 			}
+			rate++;
 		}
 	}
 	
@@ -260,13 +298,15 @@ public class GraphCanvas extends Canvas {
  		gridData.heightHint = shell.getClientArea().height;
  		parent.setLayoutData(gridData);
  		*/
- 		
-        GraphCanvas canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), true);
+ 		 
+        GraphCanvas canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 600, 400, false);
+        canvas.getGraph().setImgFixed(true);
         if(type == GRAPH.CIRCLE) {
         	CircleGraph cg = (CircleGraph)canvas.getGraph();
         	cg.setSelectionBorder(SELECTION_BORDER.DOT);
         	cg.setShowPercent(true);
         	cg.setShowElementName(true);
+        	cg.setShowPopup(true);
         }
         shell.open();
         

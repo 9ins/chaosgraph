@@ -11,14 +11,16 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.stream.IntStream;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.NotMatchArrayException;
+import org.chaostocosmos.chaosgraph.INTERPOLATE;
+import org.chaostocosmos.chaosgraph.InterpolateTransform;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
@@ -100,7 +102,6 @@ public class LineGraph extends AbstractGraph
         double maxValue = GRAPH_ELEMENTS.getMaximum();
         double tab = GRAPH_WIDTH / GRAPH_ELEMENTS.getXIndexCount();	        
         
-        GeneralPath gp = null;
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
                 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
@@ -125,23 +126,47 @@ public class LineGraph extends AbstractGraph
                 color(ge.getElementColor(), g2d);
             }
             
-            gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, values.size());
+            GeneralPath gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, values.size());
             gp.moveTo(tab+GRAPH_X, GRAPH_Y);
+            
             List<Point> shapes = new ArrayList<Point>();
             List<Point> shapes1 = new ArrayList<Point>();
-            double x = 0, y = 0;            
-            for (int i=0; i<values.size(); i++)
-            {
-                if (values.get(i) < 0) {
-                	continue;
-                }
-                x = i * tab + GRAPH_X + 1;                
-                y = (LIMIT < maxValue) ? GRAPH_Y - values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - values.get(i) * GRAPH_HEIGHT / LIMIT;
-                if (i == 0)
-                	gp.moveTo(x, y);
-                gp.lineTo(x, y);
-                shapes.add(new Point((int)(x-LINE_SIZE*2), (int)(y-LINE_SIZE*2)));
-                shapes1.add(new Point((int)(x+LINE_SIZE*2), (int)(y+LINE_SIZE*2)));
+            double x = 0, y = 0; 
+            
+            //List<Point2D.Double> points = IntStream.range(0, values.size())
+            //							.mapToObj(i -> {
+            //								double x0 = i * tab + GRAPH_X + 1;
+            //								double y0 = (LIMIT < maxValue) ? GRAPH_Y - values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - values.get(i) * GRAPH_HEIGHT / LIMIT;
+            //								return new Point2D.Double(x0, y0);
+            //							}).collect(Collectors.toList());
+            //double[] xValues = IntStream.range(0,  values.size()).mapToDouble(idx -> idx * tab + GRAPH_X + 1).toArray();
+            //double[] yValues = values.stream().mapToDouble(Double::doubleValue).toArray();
+            //double[] xValues = {100d, 150, 200d};
+            //double[] yValues = {100d, 180, 200d};
+            //
+            //double[] xv = IntStream.range(0, values.size()).mapToDouble(i -> i * tab + GRAPH_X).toArray();
+            //double[] yv = IntStream.range(0, values.size()).mapToDouble(i -> (LIMIT < maxValue) ? GRAPH_Y - values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - values.get(i) * GRAPH_HEIGHT / LIMIT).toArray();
+            //double[] xi = IntStream.range(0, 80).mapToDouble(i -> GRAPH_X + (((values.size()-1) * tab) / 80d) * i).toArray();
+        	//System.out.println(Arrays.toString(xv));
+        	//System.out.println(Arrays.toString(yv));
+        	//System.out.println(Arrays.toString(xi));
+        	//double[] yi = InterpolateTransform.transform(INTERPOLATE.SPLINE, xv, yv, xi);
+            gp.moveTo(x, y);            
+    
+            if(ge.getInterpolationType() != null) {
+            	ge.getInterpolates().stream().forEach(p -> {
+            		gp.lineTo(p.x, p.y);
+                    shapes.add(new Point((int)(p.x-LINE_SIZE*2), (int)(p.y-LINE_SIZE*2)));
+                    shapes1.add(new Point((int)(p.x+LINE_SIZE*2), (int)(p.y+LINE_SIZE*2)));
+            	});
+            }  else {
+	            for(int i=0; i<values.size(); i++) {
+	                x = i * tab + GRAPH_X;               
+	                y = (LIMIT < maxValue) ? GRAPH_Y - values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - values.get(i) * GRAPH_HEIGHT / LIMIT;
+		            gp.lineTo(x, y);
+	                shapes.add(new Point((int)(x-LINE_SIZE*2), (int)(y-LINE_SIZE*2)));
+	                shapes1.add(new Point((int)(x+LINE_SIZE*2), (int)(y+LINE_SIZE*2)));
+	            }        
             }
             for(int i=shapes1.size()-1; i >= 0; i--) {
             	Point p = shapes1.get(i);
@@ -155,6 +180,10 @@ public class LineGraph extends AbstractGraph
             if(IS_SHOW_PEEK && IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
             	for(int i=0; i<shapes.size()/2; i++) {
             		Point p = shapes.get(i);
+            		p.setLocation(p.getX()+LINE_SIZE*2, p.getY()+LINE_SIZE*2);
+            		if(ge.getInterpolationType() != null && i % ge.getInterpolateScale() != 0) {
+            			continue;
+            		}
             		drawPeek(PEEK_STYLE.CIRCLE, p, 3, 5, new Color(180, 180, 180), g2d);
             	}
             }            
@@ -168,8 +197,7 @@ public class LineGraph extends AbstractGraph
             		g2d);
         }
 
-        if (IS_SHOW_LABEL)
-        {
+        if (IS_SHOW_LABEL) {
             drawLabel(FONT_NAME, 
             		LABEL_FONT_SIZE, 
             		Font.BOLD, 
@@ -218,8 +246,8 @@ public class LineGraph extends AbstractGraph
     }
     
     /**
-     * ?????? ???? ???????.
-     * @param size float ?????? ????
+     * Set line thickness
+     * @param size float
      * @since JDK1.4.1
      */
     public void setLineSize(float size)

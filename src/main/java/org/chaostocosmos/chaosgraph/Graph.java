@@ -1,8 +1,11 @@
 package org.chaostocosmos.chaosgraph;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * 
@@ -41,7 +44,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     protected boolean IS_SHOW_IMG_BORDER = true;			//is show image border
     protected boolean IS_SHOW_GRAPH_BORDER = true;			//is show graph border
     protected boolean IS_SHOW_BORDER = true;                //is show background border
-    protected boolean IS_IMG_FIXED = false;                 //is to fix the image
+    protected boolean IS_IMG_FIXED = true;                 //is to fix the image
     protected boolean IS_SELECTION_ENABLE = true;			//is able to element selection
     protected boolean IS_SHOW_PEEK = false;					//is show peek point
     protected boolean IS_SHOW_ELEMENT_NAME = false;			//is show element name
@@ -67,6 +70,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     protected float BORDER_SIZE = 2.0f;                       //Border size
     protected float GRAPH_XY_SIZE = 2f;					    //Stroke size of xy axis
     protected float GRID_SIZE = 0.1f;						//Stroke size of grid
+    protected int ROUND_PLACE = 2;							//Round digits;
 
     protected POPUP_STYLE POPUP = POPUP_STYLE.ROUND; 		//popup style
     protected GRID GRID_STYLE = GRID.LINE;					//Grid line style(1.line, 2. dot)
@@ -80,7 +84,10 @@ public abstract class Graph implements IGraph, GraphConstants {
     protected int SELECTED_COLOR_DENSITY = -20;		
     protected GraphElements GRAPH_ELEMENTS = null;          //Graph elements object    
     protected Graphics2D GRAPHICS2D = null;                 //Graphics2D object to draw
-    List<GraphSelectionListener> listenerList = new ArrayList<GraphSelectionListener>(); //Graph selection listeners
+    protected List<GraphSelectionListener> listenerList = new ArrayList<GraphSelectionListener>(); //Graph selection listeners
+    
+    protected INTERPOLATE interpolateType;
+    protected int interpolateScale;
     
     /**
      * Constructor
@@ -99,6 +106,66 @@ public abstract class Graph implements IGraph, GraphConstants {
     	this.GRAPH_WIDTH = width;
     	this.GRAPH_HEIGHT = height;
     	this.GRAPH_ELEMENTS.setGraph(this);
+    	this.interpolateScale = 5;
+    	this.ROUND_PLACE = GraphConstants.ROUND_PLACE;
+    }
+    
+    /**
+     * Initialize 
+     * @param width
+     * @param height
+     * @since JDK1.4.1
+     */
+    @Override
+    public void initGraph(Graphics2D g2d, int width, int height) {
+    	if(width <= 0 || height <= 0) {
+    		return;
+    	}
+    	//System.out.println(width+"   "+height+"   "+this.IMG_WIDTH+"   "+this.IMG_HEIGHT);
+    	//System.out.println(this.SCALED_WIDTH+"   "+this.SCALED_HEIGHT);
+    	this.GRAPHICS2D = g2d;
+        this.setImgSize(width, height);
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//Width of graph in image
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //Height of graph in image
+        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		//Graph x position
+        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  //Graph y position
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         //Label x position
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     //Label y position
+        //Interplate y values of graph elements
+        setElementsInterpolates(this.interpolateType, this.interpolateScale);
+    }
+    
+    /**
+     * Sweeping background
+     */
+    public void sweepBg(int width, int height) {
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  
+        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		
+        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     
+        this.GRAPHICS2D.setColor(Color.black);
+        this.GRAPHICS2D.fill(new Rectangle2D.Double(0, 0, width, height));
+    }
+    
+    /**
+     * Get graph type text
+     * @param graphType
+     * @param String
+     * @since JDK1.4.1
+     */
+    public static String getGraphStr(GRAPH graphType) {
+        String type = null;
+        if(graphType == GRAPH.LINE)
+            type = "LINE GRAPH";
+        else if(graphType == GRAPH.BAR)
+            type = "BAR GRAPH";
+        else if(graphType == GRAPH.CIRCLE)
+            type = "CIRCLE GRAPH";
+        else if(graphType == GRAPH.AREA)
+            type = "AREA GRAPH";
+        return type;
     }
     
     @Override
@@ -111,12 +178,39 @@ public abstract class Graph implements IGraph, GraphConstants {
     }
     
     /**
+     * Set graph elements interpolation
+     * @param interpolateType
+     * @param interpolateScale
+     */
+    public void setElementsInterpolates(INTERPOLATE interpolateType, int interpolateScale) {
+    	this.interpolateType = interpolateType;
+    	this.interpolateScale = interpolateScale;
+    	InterpolateTransform.populateInterpolateWithOneType(interpolateType, this.GRAPH_ELEMENTS, interpolateScale);
+    }
+    
+    /**
      * Repaint to graphics object
      */
     public void repaint() {
     	if(this.GRAPHICS2D != null) {
     		this.repaint(this.GRAPHICS2D);
     	}
+    }
+    
+    /**
+     * Set interpolate type to be set to graph elements
+     * @param interpolateType
+     */
+    public void setInterpolateType(INTERPOLATE interpolateType) {
+    	this.interpolateType = interpolateType;
+    }
+    
+    /**
+     * Set interpolate points count
+     * @param interpolatePoints
+     */
+    public void setInterPolateScale(int interpolateScale) {
+    	this.interpolateScale = interpolateScale;
     }
     
     /**
@@ -224,6 +318,30 @@ public abstract class Graph implements IGraph, GraphConstants {
      */
     public int getGraphHeight() {
     	return this.GRAPH_HEIGHT;
+    }
+    
+    /**
+     * Get whether image is fixed size
+     * @return
+     */
+    public boolean isImgFixed() {
+    	return this.IS_IMG_FIXED;
+    }
+    
+    /**
+     * Get round place digits
+     * @return
+     */
+    public int getRoundDigits() {
+    	return this.ROUND_PLACE;
+    }
+    
+    /**
+     * Set round digits
+     * @param digits
+     */
+    public void setRoundDigits(int digits) {
+    	this.ROUND_PLACE = digits;
     }
     
     /**
@@ -638,6 +756,14 @@ public abstract class Graph implements IGraph, GraphConstants {
     }
     
     /**
+     * To get limit value
+     * @return
+     */
+    public double getLimit() {
+    	return this.LIMIT;
+    }
+    
+    /**
      * To set limit of value
      * @param limit float
      * @since JDK1.4.1
@@ -757,6 +883,17 @@ public abstract class Graph implements IGraph, GraphConstants {
     public void setRightIndent(int right) {
         setIndent(INDENT_TOP, INDENT_LEFT, INDENT_BOTTOM, right);
     }
+    
+    /**
+     * Set image size
+     * @param width
+     * @param height
+     */
+    public void setImgSize(int width, int height) {
+    	this.IMG_WIDTH = width;
+    	this.IMG_HEIGHT = height;
+    }
+    
     /**
      * Get wheel unit scale
      * @return

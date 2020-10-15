@@ -4,6 +4,8 @@
 package org.chaostocosmos.chaosgraph;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -151,7 +153,7 @@ public class GraphElements implements GraphConstants
     
     /**
      * Get graph type
-     * @return int �׷��� ����
+     * @return int
      * @since JDK1.4.1
      */
     public GRAPH getGraphType() {
@@ -265,7 +267,7 @@ public class GraphElements implements GraphConstants
      * @return
      */
     public int getMinimumXIndexSize() {
-    	return this.elementMap.entrySet().stream().map(e -> e.getValue().getValues().size()).max(Integer::compare).get();
+    	return this.elementMap.entrySet().stream().map(e -> e.getValue().getValues().size()).max(Integer::compare).get()-1;
     }
     
     /**
@@ -380,6 +382,7 @@ public class GraphElements implements GraphConstants
      * @since JDK1.4.1
      */
     public void setYIndex(List<Double> yIndex) {
+    	System.out.println(yIndex.toString());
         this.yIndex = GraphUtility.roundAvoid(yIndex, ROUND_PLACE);
     }
     
@@ -422,6 +425,16 @@ public class GraphElements implements GraphConstants
      */
     public void setSelectedIndex(int index) {
     	this.selectedIndex = index;
+    }
+    
+    /**
+     * Get whole label dimension
+     * @return
+     */
+    public Rectangle getLabelRectangle() {
+    	int width = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point>::stream).map(p -> p.x).max(Integer::compare).get() - this.graph.LABEL_X;
+    	int height = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point>::stream).map(p -> p.y).max(Integer::compare).get() - this.graph.LABEL_Y; 
+    	return new Rectangle(this.graph.LABEL_X, this.graph.LABEL_Y, width, height);
     }
     
     /**

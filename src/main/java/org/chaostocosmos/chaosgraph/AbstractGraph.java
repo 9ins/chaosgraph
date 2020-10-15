@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -93,39 +94,15 @@ public abstract class AbstractGraph extends Graph {
     	super(elements, title, width, height);
     }
     
-    /**
-     * Initialize 
-     * @param width
-     * @param height
-     * @since JDK1.4.1
-     */
-    @Override
-    public void initGraph(Graphics2D g2d, int width, int height) {
-    	if(width <= 0 || height <= 0) {
-    		return;
-    	}
-    	//System.out.println(width+"   "+height+"   "+this.GRAPH_WIDTH+"   "+this.GRAPH_HEIGHT);
-    	//System.out.println(this.SCALED_WIDTH+"   "+this.SCALED_HEIGHT);
-    	this.GRAPHICS2D = g2d;
-        this.IMG_WIDTH = width;			                    		//Image width
-        this.IMG_HEIGHT = height;		                   			//Image height
-        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//Width of graph in image
-        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //Height of graph in image
-        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		//Graph x position
-        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  //Graph y position
-        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         //Label x position
-        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     //Label y position
-    }
-    
     @Override
     public void drawGraph(Graphics2D g2d) {
-        initGraph(g2d, super.IMG_WIDTH, super.IMG_HEIGHT);
-    	sweepBg(super.IMG_WIDTH, super.IMG_HEIGHT);
+        initGraph(g2d, IMG_WIDTH, IMG_HEIGHT);
+    	sweepBg(IMG_WIDTH, IMG_HEIGHT);
         GRAPH graphType = GRAPH_ELEMENTS.getGraphType();
         double maxValue = GRAPH_ELEMENTS.getMaximum();
         List<Double> yIndex = GRAPH_ELEMENTS.getYIndex();
         List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();
-        
+                
         if (IS_SHOW_BG) {
             setComposite(IMG_BG_ALPHA, g2d);
             drawBg(IMG_BG_COLOR, g2d); 					//draw graph background
@@ -162,47 +139,20 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
-     * Sweeping background
-     */
-    public void sweepBg(int width, int height) {
-    	this.IMG_HEIGHT = width;
-    	this.IMG_HEIGHT = height;
-        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	
-        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  
-        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		
-        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  
-        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         
-        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     
-    	super.GRAPHICS2D.setColor(Color.black);
-    	super.GRAPHICS2D.fill(new Rectangle2D.Double(0, 0, width, height));
-    }
-    
-    /**
-     * Get graph type text
-     * @param graphType
-     * @param String
-     * @since JDK1.4.1
-     */
-    public static String getGraphStr(GRAPH graphType) {
-        String type = null;
-        if(graphType == GRAPH.LINE)
-            type = "LINE GRAPH";
-        else if(graphType == GRAPH.BAR)
-            type = "BAR GRAPH";
-        else if(graphType == GRAPH.CIRCLE)
-            type = "CIRCLE GRAPH";
-        else if(graphType == GRAPH.AREA)
-            type = "AREA GRAPH";
-        return type;
-    }
-    
-    /**
      * To set image background color
      * @param color Color 
      * @since JDK1.4.1
      */
     public void setImgBgColor(Color color) {
         IMG_BG_COLOR = color;
+    }
+    
+    /**
+     * To get image background color
+     * @return
+     */
+    public Color getImgBgColor() {
+    	return IMG_BG_COLOR;
     }
     
     /**
@@ -215,12 +165,28 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get image border color
+     * @return
+     */
+    public Color getImgBorderColor() {
+    	return IMG_BORDER_COLOR;
+    }
+    
+    /**
      * To set graph background color
      * @param color Color Color
      * @since JDK1.4.1
      */
     public void setGraphBgColor(Color color) {
         GRAPH_BG_COLOR = color;
+    }
+    
+    /**
+     * To get graph background color
+     * @return
+     */
+    public Color getGraphBgColor() {
+    	return GRAPH_BG_COLOR;
     }
     
     /**
@@ -233,12 +199,28 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get graph border color
+     * @return
+     */
+    public Color getGraphBorderColor() {
+    	return GRAPH_BORDER_COLOR;
+    }
+    
+    /**
      * To set border color
      * @param color Color Color
      * @since JDK1.4.1
      */
     public void setBorderColor(Color color) {
         BORDER_COLOR = color;
+    }
+    
+    /**
+     * To set default border color
+     * @return
+     */
+    public Color getBorderColor() {
+    	return BORDER_COLOR;
     }
     
     /**
@@ -251,12 +233,28 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get graph label backgraound color
+     * @return
+     */
+    public Color getLabelBgColor() {
+    	return LABEL_BG_COLOR;
+    }
+    
+    /**
      * To set title font color
      * @param color Color Color
      * @since JDK1.4.1
      */
     public void setTitleFontColor(Color color) {
         TITLE_FONT_COLOR = color;
+    }
+    
+    /**
+     * To get title font color
+     * @return
+     */
+    public Color getTitleFontColor() {
+    	return TITLE_FONT_COLOR;
     }
     
     /**
@@ -269,12 +267,28 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get indexes font color
+     * @return
+     */
+    public Color getIndexFontColor() {
+    	return INDEX_FONT_COLOR;
+    }
+    
+    /**
      * To set graph x, y axis color
      * @param color Color Color
      * @since JDK1.4.1
      */
     public void setGraphXYColor(Color color) {
         GRAPH_XY_COLOR = color;
+    }
+    
+    /**
+     * To get graph XY axis color
+     * @return
+     */
+    public Color getGraphXYColor() {
+    	return GRAPH_XY_COLOR;
     }
     
     /**
@@ -287,6 +301,14 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get grid X axis color
+     * @return
+     */
+    public Color getGirdXColor() {
+    	return GRID_X_COLOR;
+    }
+    
+    /**
      * To set grid y color
      * @param color Color Color
      * @since JDK1.4.1
@@ -296,12 +318,28 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get grid Y axis color
+     * @return
+     */
+    public Color getGridYColor() {
+    	return GRID_Y_COLOR;
+    }
+    
+    /**
      * To set shadow color
      * @param color Color Color
      * @since JDK1.4.1
      */
     public void setShadowColor(Color color) {
         SHADOW_COLOR = color;
+    }
+    
+    /**
+     * To get shadow color
+     * @return
+     */
+    public Color getShadowColor() {
+    	return SHADOW_COLOR;
     }    
     /**
      * To set default color
@@ -314,11 +352,27 @@ public abstract class AbstractGraph extends Graph {
     }
     
     /**
+     * To get default color
+     * @return
+     */
+    public Color getDefaultColor() {
+    	return DEFAULT_COLOR;
+    }
+    
+    /**
      * Set peek point color
      * @param color
      */
     public void setPeekColor(Color color) {
-    	this.PEEK_COLOR = color;
+    	PEEK_COLOR = color;
+    }
+    
+    /**
+     * To get peek point color
+     * @return
+     */
+    public Color getPeekColor() {
+    	return PEEK_COLOR;
     }
     
     /**
@@ -462,7 +516,7 @@ public abstract class AbstractGraph extends Graph {
      * @param shapes
      * @return
      */
-    protected Polygon getPolygon(List<Point> shapes, boolean isReverse) {
+    public Polygon getPolygon(List<Point> shapes, boolean isReverse) {
     	if(isReverse) {
     		Collections.reverse(shapes);
     	}
@@ -480,7 +534,7 @@ public abstract class AbstractGraph extends Graph {
      * @param scale
      * @return
      */
-    protected Polygon getScalePolygon(List<Point> shapes, float scale) {
+    public Polygon getScalePolygon(List<Point> shapes, float scale) {
     	Polygon polygon = getPolygon(shapes, false);
         double centerX = polygon.getBounds().getCenterX();
         double centerY = polygon.getBounds().getCenterY();
@@ -581,7 +635,7 @@ public abstract class AbstractGraph extends Graph {
      * @param graphics
      */
     protected void drawPopup(Point popPoint, Color bgColor, GraphElement ge, Graphics2D graphics) {
-        String longStr="";
+        String longStr = "";
         int nmSize = ge.getElementName().length();
         int valSize = (ge.getSelectedValue()+"").length();
         longStr = nmSize > valSize ? ge.getElementName() : ge.getSelectedValue()+"";
@@ -621,8 +675,10 @@ public abstract class AbstractGraph extends Graph {
         setComposite(1.0f, graphics);        
         graphics.setFont(fm.getFont());
         graphics.drawString(ge.getElementName(), (int)(x + ascent), (int)Math.round(y + ascent * 1.5));
-        String value = (Math.round((ge.getSelectedValue() / VALUE_DIVISION_RATIO) * 100.0d) / 100.0d)+this.INDEX_Y_UNIT;
-        graphics.drawString(value, (int)(x + ascent), (int)Math.round(y + ascent * 2.5));
+        double value = ge.getSelectedValue();
+        double scale1 = Math.pow(10, ROUND_PLACE);
+        String valueStr = (Math.round(value * scale1) / scale1)+this.INDEX_Y_UNIT;
+        graphics.drawString(valueStr, (int)(x + ascent), (int)Math.round(y + ascent * 2.5));
     }
     
     /**
@@ -639,8 +695,7 @@ public abstract class AbstractGraph extends Graph {
     protected void drawLabel(String fontName, int fontSize, int fontStyle, Color bgColor, List<GraphElement> elements, Graphics2D graphics) {
         String longStr="", tmp="";
         int i=0;
-        for (i=0; i<elements.size(); i++)
-        {
+        for (i=0; i<elements.size(); i++) {
             tmp = elements.get(i).getLabel();
             if (tmp == null) {
             	break;
@@ -746,7 +801,7 @@ public abstract class AbstractGraph extends Graph {
         {
             FontMetrics fm = setFont(fontName, Font.BOLD, fontSize, graphics);
             String str =yIndex.get(i)+"";
-            if(str.equals("0.0"+this.INDEX_Y_UNIT))
+            if(str.equals("0.0"))
                 continue;
             int colIdx;
             if((colIdx = str.lastIndexOf(".")) != -1)
@@ -760,7 +815,8 @@ public abstract class AbstractGraph extends Graph {
             double y = 0;
             if(obj instanceof Number) {
             	y = ((Double)obj).doubleValue();
-            	str = (Math.round((y / this.VALUE_DIVISION_RATIO) / 100.0d) * 100.0d)+this.INDEX_Y_UNIT;
+            	double scale = Math.pow(10, ROUND_PLACE);
+            	str = Math.round(y * scale) / scale + this.INDEX_Y_UNIT;
             } else if(obj instanceof String) {
             	y = Double.parseDouble(obj+"");
             } else {
@@ -772,7 +828,6 @@ public abstract class AbstractGraph extends Graph {
             if (y > GRAPH_Y-GRAPH_HEIGHT)
             {
                 double x = ((GRAPH_X - indent) < 0) ? GRAPH_X + 5:GRAPH_X - indent;
-                //graphics.drawString(str,x, y+ascent);
                 graphics.drawString(str, (float)x, (float)y+2);
             }        
         }
@@ -893,10 +948,11 @@ public abstract class AbstractGraph extends Graph {
      * @since JDK1.4.1
      */
     public void resizeImage(Graphics2D g2d, int width, int height) {
+    	if(width < 100 || height < 100) {
+    		return;
+    	}
     	this.GRAPHICS2D = g2d;
-        if(!super.IS_IMG_FIXED) {
-            initGraph(g2d, width, height); 
-        }
+        initGraph(g2d, width, height); 
         repaint();  
     }
     
