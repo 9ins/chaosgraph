@@ -12,7 +12,7 @@ It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit)
 <br>
 
 ## <b> What do you make with this? </b>
-You could need to make chart based application on pure java GUI, Use this library. Also when you need to build dashboard on non-web-based java application, Just use this. Maybe when if you are working with Eclipse RCP to make analysis app or CRM, MIS, This library could successful choice for your project's goal as UX to users. This library's core is java. Nevertheless, if you use Eclipse RAP, you can see the chart by this library and graphic widget of RAP.  
+You could need to make chart based application on pure java GUI, Use this library. Also when you need to build dashboard on non-web-based java application, Just use this. Maybe when if you are working with Eclipse RCP to make analysis app or CRM, MIS, This library could successful choice for your project's goal as UX to users. This library's core is java. Nevertheless, if you use Eclipse RAP, you can make a chart on Web Browser and graphic widget by using this library.  
 To use this library, see wiki pages. see above menu.
 <br>
 <br>
