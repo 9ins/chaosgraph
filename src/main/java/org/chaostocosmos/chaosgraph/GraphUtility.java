@@ -132,10 +132,10 @@ public class GraphUtility
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      */
-    public static Graph createGraphElementsWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static Graph createGraphWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	ObjectMapper om = new ObjectMapper();
     	Map<String, Object> map = (Map<String, Object>)om.readValue(json, Map.class);
-    	return createGraphElementsWithMap(map);
+    	return createGraphWithMap(map);
     }
     
     /**
@@ -148,7 +148,7 @@ public class GraphUtility
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      */
-    public static Graph createGraphElementsWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static Graph createGraphWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	GraphConstants.GRAPH type = GraphConstants.GRAPH.valueOf(map.get("GRAPH")+"");
     	INTERPOLATE interpolate = INTERPOLATE.valueOf(map.get("INTERPOLATE")+"");
     	int width = (int)Double.parseDouble(map.get("WIDTH")+"");
@@ -172,7 +172,7 @@ public class GraphUtility
     	//elementList.stream().forEach(System.out::println);
     	GraphElements elements = new GraphElements(type, geList, xIndex, yIndex);
     	
-    	Graph graph = null; 
+    	AbstractGraph graph = null; 
     	switch(type) {
     		case LINE :
     			graph = new LineGraph(elements, width, height);
@@ -195,8 +195,11 @@ public class GraphUtility
     		for(Map<String, Object> m : configList) {
     			String methodName = m.get("METHOD")+"";
     			List<Object> paramList = (List<Object>) m.get("PARAMS");
-    			Object[] params = paramList.toArray();
-    			invokeMethod(graph, methodName, params);
+    			List<Class> classList = new ArrayList<Class>();
+    			for(Object o : paramList) {
+    				classList.add(o.getClass());
+    			}
+    			invokeMethod(graph, methodName, classList);
     		}
     	}    	
     	graph.setInterpolateType(interpolate);
@@ -204,11 +207,15 @@ public class GraphUtility
     }
     
     private static Object invokeMethod(Object object, String methodName, Object...params) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    	Class[] paramClasses = (Class[])Arrays.asList(params).stream().map(o -> o.getClass()).toArray();
+    	Object[] paramClasses = Arrays.asList(params).stream().map(o -> o.getClass()).toArray();
     	Method[] methods = object.getClass().getMethods();
     	for(Method method : methods) {
     		if(method.getName().equalsIgnoreCase(methodName)) {
-    			return object.getClass().getMethod(methodName, paramClasses).invoke(object, params);
+    			Class[] classes = new Class[paramClasses.length];
+    			for(int i=0; i<classes.length; i++) {
+    				classes[i] = paramClasses[i].getClass();
+    			}
+    			return object.getClass().getMethod(methodName, classes).invoke(object, params);
     		}
     	}
     	throw new NoSuchMethodException("There isn't exist method in Class. Class: "+object.getClass().getName()+" Specified: "+methodName);
@@ -253,7 +260,7 @@ public class GraphUtility
     public static void main(String[] args) throws IOException, NotSuppotedEncodingFormatException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	File f = new File("C:\\Users\\chaos\\OneDrive\\문서\\신구인\\aws-api-lambda-chart-json.json");
     	String json = Files.lines(f.toPath()).collect(Collectors.joining(System.lineSeparator()));
-    	Graph graph = createGraphElementsWithJson(json);
+    	Graph graph = createGraphWithJson(json);
     	System.out.println("width: "+graph.getBufferedImage().getWidth()+"   height: "+graph.getBufferedImage().getHeight());
     	GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
     }

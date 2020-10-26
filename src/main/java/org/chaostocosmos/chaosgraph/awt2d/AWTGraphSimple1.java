@@ -185,7 +185,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
         String json = null;
 		try {
 			json = Files.lines(Paths.get("C:\\Users\\chaos\\OneDrive\\문서\\신구인\\aws-api-lambda-chart-json.json")).collect(Collectors.joining(System.lineSeparator()));
-	        graph = (AbstractGraph) GraphUtility.createGraphElementsWithJson(json);
+	        graph = (AbstractGraph) GraphUtility.createGraphWithJson(json);
 	        GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

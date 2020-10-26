@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1_Test" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-10-26T08:10:26" hostname="KOOIN" time="1.096">
+<testsuite name="org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1_Test" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-10-26T09:17:21" hostname="KOOIN" time="1.086">
   <properties/>
-  <testcase name="testAWTGraphSimple1" classname="org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1_Test" time="1.096"/>
+  <testcase name="testAWTGraphSimple1" classname="org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1_Test" time="1.086"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
