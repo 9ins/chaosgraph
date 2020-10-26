@@ -299,7 +299,7 @@ public class GraphCanvas extends Canvas {
  		parent.setLayoutData(gridData);
  		*/
  		 
-        GraphCanvas canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 600, 400, false);
+        GraphCanvas canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 600, 400, true);
         canvas.getGraph().setImgFixed(true);
         if(type == GRAPH.CIRCLE) {
         	CircleGraph cg = (CircleGraph)canvas.getGraph();

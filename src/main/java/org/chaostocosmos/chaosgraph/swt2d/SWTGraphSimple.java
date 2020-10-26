@@ -5,6 +5,7 @@ package org.chaostocosmos.chaosgraph.swt2d;
 
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.INTERPOLATE;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -124,6 +125,8 @@ public class SWTGraphSimple {
     		this.canvas.dispose();
     		//System.out.println("Disposed.....................");
     		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 1000, 600); 
+    		this.canvas.getGraph().setInterpolateType(INTERPOLATE.SPLINE);
+    		this.canvas.getGraph().setShowPeek(true);
     	}
     }
     

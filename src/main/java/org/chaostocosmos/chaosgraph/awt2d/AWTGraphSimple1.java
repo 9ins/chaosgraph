@@ -31,8 +31,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -164,6 +167,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
             }
             jbInit();
             showAreaGraph();
+
             setVisible(true);
         } catch(Exception e) {
             e.printStackTrace();
@@ -176,7 +180,18 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showAreaGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-        graph = (AreaGraph)gpArea.getGraph();
+        //graph = (AreaGraph)gpArea.getGraph();
+        
+        String json = null;
+		try {
+			json = Files.lines(Paths.get("C:\\Users\\chaos\\OneDrive\\문서\\신구인\\aws-api-lambda-chart-json.json")).collect(Collectors.joining(System.lineSeparator()));
+	        graph = (AbstractGraph) GraphUtility.createGraphElementsWithJson(json);
+	        GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
         graph.setTitle("This is simple area graph.");
         graph.setShowShadow(false);
         graph.setGridStyle(GRID.DOT);
@@ -215,7 +230,6 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
 			public void onMouseReleasedGraph(GraphReleaseEvent gre)	throws Exception {
 			}
         });
-        
         getContentPane().remove(2);
         getContentPane().add(gpArea, BorderLayout.CENTER);
         getContentPane().validate();

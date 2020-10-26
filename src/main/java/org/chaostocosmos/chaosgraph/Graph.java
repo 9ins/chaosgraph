@@ -103,8 +103,10 @@ public abstract class Graph implements IGraph, GraphConstants {
     		this.ORIGIN_HEIGHT = height;
     	}
     	this.GRAPH_ELEMENTS = graphElements;
-    	this.GRAPH_WIDTH = width;
-    	this.GRAPH_HEIGHT = height;
+    	this.IMG_WIDTH = width;
+    	this.IMG_HEIGHT = height;
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//Width of graph in image
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //Height of graph in image
     	this.GRAPH_ELEMENTS.setGraph(this);
     	this.interpolateScale = 5;
     	this.ROUND_PLACE = GraphConstants.ROUND_PLACE;

@@ -87,11 +87,25 @@ public class GraphElements implements GraphConstants
      * @param yIndex
      */
     public GraphElements(GRAPH graphType, List<Object> xIndex, List<Double> yIndex) {
+    	this(graphType, null, xIndex, yIndex);
+    }
+    
+    /**
+     * Constructor
+     * @param graphType
+     * @param elements
+     * @param xIndex
+     * @param yIndex
+     */
+    public GraphElements(GRAPH graphType, List<GraphElement> elements, List<Object> xIndex, List<Double> yIndex) {
     	this.graphType = graphType;
     	this.xIndex = xIndex;
     	this.yIndex = yIndex;
-    	this.elementMap = new TreeMap<Object, GraphElement>();
+		this.elementMap = new TreeMap<Object, GraphElement>();
     	this.elementOrder = new ArrayList<Object>();
+    	if(elements != null) {
+    		elements.stream().forEach(e -> addElement(e));
+    	}    	
     }
     
     /**
@@ -382,7 +396,6 @@ public class GraphElements implements GraphConstants
      * @since JDK1.4.1
      */
     public void setYIndex(List<Double> yIndex) {
-    	System.out.println(yIndex.toString());
         this.yIndex = GraphUtility.roundAvoid(yIndex, ROUND_PLACE);
     }
     
