@@ -4,10 +4,13 @@
 <img src="./pic/chaosgraph-logo.PNG" width="350" height="280">
 <br>
 
-## <b> Instroduction </b>
+# <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interactive functionality to the service for users.  
+<br>
 
+## Download Jar  
+[chaosgraph-2.0.0.jar](https://github.com/9ins/chaosgraph/raw/master/build/libs/chaosgraph-2.0.0.jar)  
 <br>
 <br>
 
@@ -15,16 +18,13 @@ It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit)
 You could need to make chart based application on pure java GUI, Use this library. Also when you need to build dashboard on non-web-based java application, Just use this. Maybe when if you are working with Eclipse RCP to make analysis app or CRM, MIS, This library could successful choice for your project's goal as UX to users. This library's core is java. Nevertheless, if you use Eclipse RAP, you can make a chart on Web Browser and graphic widget by using this library.  
 To use this library, see wiki pages. see above menu.
 <br>
-<br>
 
 ## <b>What is changed and improved?</b>
 There is 5 type of chart be supported in this v2.0.0 version.  
 Area/Bar/BarRatio/Circle/line chart is currently supported for public user.
 This version of the artifacts is quit changed then old version 1.x that was not suppoted interactive event, just only show chart shapes and handling mutil-dimension array to easily cause error.  
 Currently 2.0.0 version is providing more object-oriented, more interactive and more good-looked graphical methods and functions.
-
 <br>  
-<br>
 
 ## <b> Specification of additionals and improved</b>
 ### <b> Additional functionality </b>
