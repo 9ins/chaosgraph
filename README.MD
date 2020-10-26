@@ -10,7 +10,7 @@ It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit)
 <br>
 
 ## Current release download
-[chaosgraph-2.0.0.jar](https://github.com/9ins/chaosgraph/raw/master/build/libs/chaosgraph-2.0.0.jar)  
+[chaosgraph-2.0.0.jar](https://github.com/9ins/chaosgraph/raw/master/build/libs/chaosgraph-2.0.0.jar) - 
 <br>
 <br>
 
