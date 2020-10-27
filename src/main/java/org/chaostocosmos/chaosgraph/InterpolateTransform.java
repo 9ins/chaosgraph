@@ -172,7 +172,7 @@ public class InterpolateTransform {
     			double[] yv = IntStream.range(0, vc).mapToDouble(d -> (d >= vc) ? gy : (lim < mx) ? gy - e.getValues().get(d) * gh / mx : gy - e.getValues().get(d) * gh / lim).toArray();
     			int interpolateCounts = vc * e.getInterpolateScale();
     			double gap = (tab * vc) / interpolateCounts;
-    			double[] xi = IntStream.range(0, interpolateCounts - e.getInterpolateScale()+1).mapToDouble(i -> gap * i  + gx).toArray();
+    			double[] xi = IntStream.range(0, interpolateCounts - e.getInterpolateScale()+1).mapToDouble(i -> (int)(gap * i  + gx)).toArray();
     			//System.out.println("xv count: "+xv.length+"   xi count: "+xi.length+"  tab: "+tab+"   gap: "+gap);
     			double[] yi = InterpolateTransform.transform(e.getInterpolationType(), xv, yv, xi);
     			List<Double> values = DoubleStream.of(yi).boxed().collect(Collectors.toList());
