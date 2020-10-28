@@ -9,7 +9,7 @@ This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interactive functionality to the service for users.  
 <br>
 
-## Current release download
+## Current library download
 [chaosgraph-2.0.0.jar](https://github.com/9ins/chaosgraph/raw/master/build/libs/chaosgraph-2.0.0.jar) - Oct 26, 2020
 <br>
 <br>
