@@ -112,7 +112,7 @@ This project contains 3 example of the library.
 
 <br>
 
-## How to be expressed your thinking to this project
+## How to be expressed your thinking in this project
 
 If you have any problem when you were using, or encountered to be met something to improve on TCPProxy, Please let us know using Issue tab.  
 Also If you want to join contributing TCPProxy, you just write and send your profile on Issue tab which title is as "Contribution application", So then we will reply result of qualification of contribution through Issue board.
