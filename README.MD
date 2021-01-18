@@ -82,8 +82,12 @@ This project contains 3 example of the library.
 
 ## <b> Image of Chart </b>
 
-## Area graph for AWT/Swing
+## Area graph
 <img src="./pic/AREA.png" width="600" height="400">
+
+<br>
+## Area graph with applying interpolation with with circle peek points
+<img src="./pic/area_interpolate1.png" width="600", height="400">
 
 <br>
 
