@@ -108,7 +108,8 @@ This project contains 3 example of the library.
 <br>
 
 ## JVM Memory viewer(Movie)
-[JVM_Memory_Viewer.mp4](./JVM_Memory_Viewer.mp4)
+[JVM_Memory_Viewer.mp4](./pic/JVM_Memory_Viewer.mp4)  
+
 
 ## How to be expressed your thinking to this project
 
