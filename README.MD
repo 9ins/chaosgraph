@@ -82,27 +82,27 @@ This project contains 3 example of the library.
 
 ## <b> Image of Chart </b>
 
-## Area graph
+## Area graph  
 <img src="./pic/AREA.png" width="600" height="400"/>
 <br>
 
-## Area graph with applying interpolation with with circle peek points
+## Area graph with applying interpolation with with circle peek points  
 <img src="./pic/area_interpolate1.png" width="600", height="400"/>
 <br>
 
-## Bar graph for AWT/Swing
+## Bar graph for AWT/Swing  
 <img src="./pic/BAR.png" width="600" height="400"/>
 <br>
 
-## Bar ratio graph for AWT/Swing
+## Bar ratio graph for AWT/Swing  
 <img src="./pic/BAR_RATIO.png" width="600" height="400"/>
 <br>
 
-## Circle graph for AWT/Swing
+## Circle graph for AWT/Swing  
 <img src="./pic/CIRCLE.png" width="600" height="400"/>
 <br>
 
-## Line graph for AWT/Swing
+## Line graph for AWT/Swing  
 <img src="./pic/LINE.png" width="600" height="400"/>
 <br>
 
