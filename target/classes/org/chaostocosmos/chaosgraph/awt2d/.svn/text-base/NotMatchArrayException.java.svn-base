@@ -1,0 +1,46 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+/**
+* <p>Title: MotMatchArrayException</p>
+* <p>Description:</p>
+* <pre>
+* 두 배열의 크기가 다를때 발생하는 Exception
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성
+* @version 1.2, 2006/7/5 오류문자열 변수를 추가함
+*/
+public class NotMatchArrayException extends Exception
+{
+    /**
+     * 오류문자열
+     * @since JDK1.4.1
+     */
+    public static String ERR_STR = "배열의 크기가 다릅니다.";
+    /**
+     * 디폴트 생성자
+     * @since JDK1.4.1
+     */
+    public NotMatchArrayException()
+    {
+        super(ERR_STR);
+    }
+    /**
+     * 오류메시지를 인자로 갖는 생성자
+     * @param str String 메시지
+     * @since JDK1.4.1
+     */
+    public NotMatchArrayException(String str)
+    {
+        super(str);
+    }
+}

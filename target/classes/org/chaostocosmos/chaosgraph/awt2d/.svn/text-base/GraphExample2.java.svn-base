@@ -1,0 +1,539 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+/**
+* <p>Title: JVM 메모리 뷰어</p>
+* <p>Description:</p>
+* <pre>
+* 이 예제는 실시간으로 JVM(자바 버추얼 머신)이 호스트 시스템으로 부터 할당받은 총메모리와,
+* 사용된메모리, 여유메모리를 비주얼한 그래프로 사용자에게 보여주는 예제 입니다.
+* 동적으로 변하는 그래프를 만들기 위해 쓰레드로 일정시간 간격으로 그래프 값을 변화시켜 새로 그려주는 기법을 사용하였습니다.
+* 상단에 프로그램을 컨트롤하는 버튼들이 존재하고 하단에는 프로그램을 종료하는 버튼이 있습니다.
+* 지원하는 그래프 형태는 영역 그래프와 라인 그래프 두가지가 있으며, 프로그램 상단에서 선택하여 수행 할 수 있습니다.
+* 상단의 GC버튼은 가비지 컬랙션을 수행하는 버튼으로, 누르면 메모리 양에 변화가 생기게 됩니다.
+* 프로그램 프레임 사이즈를 변경하면 변경된 크기 비율로 그래프가 다시 재조정되게 되며,
+* 메모리 양에도 변화가 생기게 됩니다.
+* 예제로 만든 소스이므로 그래프 컨포넌트의 활용법에 주의하여 작성되었으니 개발자들은 이점에 유의하여
+* 그래프 컨포넌트를 활용하는 부분을 인용하여 사용하시기 바랍니다. 자세한 옵션 및 사용법은 API 도큐먼트를 참조하세요.
+* </pre>
+* <br>
+* <img src="example2.jpg">
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.2, 2006/7/5 최초작성
+* @since JDK1.4.1
+*/
+public class GraphExample2 extends JFrame implements Runnable //쓰레드를 사용해야 하므로 Runnable을 implements하였음.
+{
+    //프로그램에 들어갈 컴포넌트 초기화
+    BorderLayout borderLayout1 = new BorderLayout();
+    JPanel jPanel1 = new JPanel();
+    FlowLayout flowLayout1 = new FlowLayout();
+    JButton jButton1 = new JButton();
+    JButton jButton2 = new JButton();
+    JButton jButton4 = new JButton();
+    JButton jButton3 = new JButton();
+    JButton jButton7 = new JButton();
+    JButton jButton5 = new JButton();
+    JPanel jPanel2 = new JPanel();
+    JPanel jPanel3 = new JPanel();
+    JLabel jLabel1 = new JLabel();
+    JButton jButton6 = new JButton();
+    BorderLayout borderLayout2 = new BorderLayout();
+    Border border1;
+    FlowLayout flowLayout2 = new FlowLayout();
+
+    //쓰레드 객체
+    public Thread thr = null;
+    public boolean isThread = true;
+    //그래프를 새로 그리는 시간간격 1/100초
+    long interval = 100;
+    //영역 그래프 객체
+    public AreaGraph areaGraph = null;
+    //라인 그래프 객체
+    public LineGraph lineGraph = null;
+    //막대 그래프 객체
+    public BarGraph barGraph = null;
+    //그래프 요소 객체
+    public GraphElements ge1 = null, ge2 = null, ge3 = null;
+    //그래프 패널(JPanel을 상속)
+    public GraphPanel gPanel1 = null, gPanel2 = null, gPanel3 = null;
+    //그래프 요소 이름 배열
+    public String[] elements = {"Used Memory", "Free Memory"};
+    //그래프 요소 색깔 배열
+    public Color[] elementsColors = {new Color(230, 150, 150), new Color(150, 150, 230)};
+    //그래프 요소 값 배열
+    public float[][] values = new float[2][150];
+    public float[][] values_ = new float[2][1];
+    //그래프 X축 인덱스 150칸으로 설정
+    public String[] xIndex = new String[150];
+    public String[] xIndex_ = new String[2];
+    //그래프 Y축 인덱스 0칸으로 설정
+    public float[] yIndex = new float[0];
+    //현재 선택된 그래프 종류를 나타내는 플러그
+    public int sel = Graph.BAR_GRAPH;
+    /**
+     * 생성자
+     */
+    public GraphExample2()
+    {
+        try
+        {
+            //위에서 주어진 값으로 그래프 요소객체를 생성하도록 하죠
+            this.ge1 = new GraphElements(Graph.AREA_GRAPH, elements, elementsColors, values, xIndex, yIndex);
+            this.ge2 = new GraphElements(Graph.LINE_GRAPH, elements, elementsColors, values, xIndex, yIndex);
+            this.ge3 = new GraphElements(Graph.BAR_GRAPH, elements, elementsColors, values_, xIndex_, yIndex);
+            //생성된 요소객체로 그래프 객체를 생성합니다.(영역, 라인 그래프)
+            this.areaGraph = new AreaGraph("MEMORY VIWER", 700, 400, this.ge1);
+            this.lineGraph = new LineGraph("MEMORY VIWER", 700, 400, this.ge2);
+            this.barGraph = new BarGraph("MEMORY VIWER", 700, 400, this.ge3);
+            //컴포넌트 초기화
+            jbInit();
+            //최초에 영역 그래프로 기본 설정
+            jButton4_actionPerformed(null);
+            //프레임을 보입니다.
+            setVisible(true);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 프레임 화면을 구성하는 컴포넌트를 초기화 하는 메서드죠
+     * @throws Exception
+     */
+    private void jbInit() throws Exception
+    {
+        border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
+        this.getContentPane().setLayout(borderLayout1);
+        jPanel1.setLayout(flowLayout1);
+        jButton1.setText("STOP");
+        jButton1.addActionListener(new GraphExample2_jButton1_actionAdapter(this));
+        jButton2.setText("START");
+        jButton2.addActionListener(new GraphExample2_jButton2_actionAdapter(this));
+        flowLayout1.setAlignment(FlowLayout.RIGHT);
+        jButton3.setAlignmentX((float) 0.0);
+        jButton3.setText("CLOSE");
+        jButton3.addActionListener(new GraphExample2_jButton3_actionAdapter(this));
+        jPanel2.setLayout(flowLayout2);
+        jPanel3.setLayout(borderLayout2);
+        flowLayout2.setAlignment(FlowLayout.LEFT);
+        jPanel1.setBorder(BorderFactory.createEtchedBorder());
+        jPanel2.setBorder(BorderFactory.createEtchedBorder());
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setTitle("JVM 메모리 뷰어");
+        jButton4.setText("AREA STYLE");
+        jButton4.addActionListener(new GraphExample2_jButton4_actionAdapter(this));
+        jButton5.setText("LINE STYLE");
+        jButton5.addActionListener(new GraphExample2_jButton5_actionAdapter(this));
+        jButton7.setText("BAR STYLE");
+        jButton7.addActionListener(new GraphExample2_jButton7_actionAdapter(this));
+                
+        jLabel1.setText("시작한 후에 프레임의 사이즈를 변경해 보세요");
+        jButton6.setText("GC");
+        jButton6.addActionListener(new GraphExample2_jButton6_actionAdapter(this));
+        this.getContentPane().add(jPanel1, BorderLayout.SOUTH);
+        jPanel1.add(jButton3, null);
+        this.getContentPane().add(jPanel2,  BorderLayout.NORTH);
+        jPanel2.add(jButton2, null);
+        jPanel2.add(jButton1, null);
+        jPanel2.add(jButton4, null);
+        jPanel2.add(jButton5, null);
+        jPanel2.add(jButton7, null);
+        jPanel2.add(jButton6, null);
+        jPanel2.add(jLabel1, null);
+        this.getContentPane().add(jPanel3, BorderLayout.CENTER);
+        this.setSize(700, 400);
+        //요기 까지는 화면 구성 컴포넌트들 이므로 걍 설명 안케습니다.
+    }
+    /**
+     * run 쓰레드가 시작되면 호출됨
+     */
+    public void run()
+    {
+        //멤버변수에서 true로 설정했으니 무한루프저...
+        while(this.isThread)
+        {
+            try
+            {
+                //그래프를 그려줍니다.
+                draw();
+                //잠시 쉬어줍니다.
+                this.thr.sleep(this.interval);
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    /**
+     * 요기가 그래프를 그려주는 부분이죠
+     * @throws NotMatchGraphTypeException
+     */
+    public void draw() throws NotMatchGraphTypeException
+    {
+        //JVM이 확보한 총 메모리 바이트
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        //최대 메모리 바이트
+        long maxMemory = Runtime.getRuntime().maxMemory();
+        //가용 메모리 바이트
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        //사용된 메모리 바이트
+        long usedMemory = totalMemory - freeMemory;
+
+        //영역 그래프를 선택하였을 경우
+        if(sel == Graph.AREA_GRAPH)
+        {
+            //요부분이 좀 헤갈릴수 있습니다.
+            //좀 자세히 설명하자면... 동적으로 움직이는 그래프를 만들어야 하는데...
+            //일단 이해를 위해 애니메이션을 생각해 봅시다.
+            //에니가 동적으로 움직이게 보이려면 조금씩 차이가 있는 여러장의 그림이 필요하죠.
+            //이 그래프 프로그램도 마찬가지 입니다. 조금씩 값의 차이가 있는 그래프 이미지를
+            //일정간격으로 여러장 순서대로 보여주면 마치 움직이는 듯한 느낌이 들것 입니다.
+            //때문에 그래프 요소값 배열의 마지막 값을 새값으로 넣고 처음값을 버리도록 합니다.
+            //그럼 그래프의 처음 값을 그렸던 부분은 없어지고 마지막 부분은 새로 그려질 것입니다.
+            //아래 부분을 보면서 생각해 보세여.
+
+            //그래프 요소값 원본을 얻고
+            float[][] values = this.ge1.getElementsValues();
+            //새로운 요소값이 될 2차원 배열을 설정합니다.
+            float[][] newValues = new float[2][values[0].length];
+            //요소값의 길이 -1
+            int len = values[0].length-1;
+            //원본의 1번째 인덱스에서 요소값 -1개의 값을 새요소 값 배열에 복사합니다.
+            //즉 첫번째 인덱스는 버리고 나머지를 새 배열의 0번째 인덱스부터 복사해 넣습니다.
+            //그럼 새로운 요소값의 마지막 인덱스 값이 비어 있겠죠?
+            System.arraycopy(values[0], 1, newValues[0], 0, len);
+            System.arraycopy(values[1], 1, newValues[1], 0, len);
+            //비어 있는 새 값 배열의 마지막 인덱스에 사용된 메모리값, 사용가능한 메모리값을 넣는다.
+            newValues[0][len] = usedMemory;
+            newValues[1][len] = freeMemory;
+            //그래프 요소 객체에 새값을 설정하고
+            this.ge1.setValues(newValues);
+            //그래프 요소 객체에 Y인덱스 값을 JVM 토탈 메모리 값으로 설정합니다.
+            this.ge1.setYIndex(new float[]{totalMemory});
+            //그래프 타이틀 스트링의 폰트 크기를 12로
+            this.areaGraph.setTitleFontSize(12);
+            //타이틀 스트링을 토탈메모리, 사용가능 메모리, 사용한 메모리로 설정합니다.
+            this.areaGraph.setTitle("JVM 메모리 TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
+            //영역 그래프를 그립니다.
+            this.areaGraph.drawGraph();            
+//            //그래프 이미지를 얻습니다.
+//            BufferedImage img = this.areaGraph.getGraphImage();
+//            //이미지를 패널에 설정합니다.
+//            if(this.gPanel1 != null)
+//            	this.gPanel1.setGraphImage(img);
+        }
+        else if(sel == Graph.LINE_GRAPH)
+        {
+            //요 부분은 위에서 설명한 바와 같습니다. 위를 참조하세요
+            //lineGraph객체에는 많은 옵션이 존재하는데 구체적인거는 API 도큐먼트를 이용해 주셔요.
+            float[][] values = this.ge2.getElementsValues();
+            float[][] newValues = new float[2][values[0].length];
+            int len = values[0].length-1;
+            System.arraycopy(values[0], 0, newValues[0], 1, len);
+            System.arraycopy(values[1], 0, newValues[1], 1, len);
+            newValues[0][0] = usedMemory;
+            newValues[1][0] = freeMemory;            
+            this.ge2.setValues(newValues);
+            this.ge2.setYIndex(new float[]{totalMemory});
+            this.lineGraph.setTitleFontSize(12);
+            this.lineGraph.setTitle("JVM 메모리 TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
+            this.lineGraph.drawGraph();
+//            BufferedImage img = this.lineGraph.getGraphImage();
+//            if(this.gPanel2 != null)
+//            	this.gPanel2.setGraphImage(img);
+        }
+        else if(sel == Graph.BAR_GRAPH)
+        {
+            float[][] values = this.ge3.getElementsValues();
+            float[][] newValues = new float[2][values[0].length];
+            int len = values[0].length-1;
+            System.arraycopy(values[0], 1, newValues[0], 0, len);
+            System.arraycopy(values[1], 1, newValues[1], 0, len);
+            newValues[0][len] = usedMemory;
+            newValues[1][len] = freeMemory;            
+            this.ge3.setValues(newValues);
+            this.ge3.setYIndex(new float[]{totalMemory});
+            this.barGraph.setTitleFontSize(12);
+            this.barGraph.setTitle("JVM 메모리 TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
+            this.barGraph.drawGraph();
+//            BufferedImage img = this.lineGraph.getGraphImage();
+//            if(this.gPanel2 != null)
+//            	this.gPanel2.setGraphImage(img);
+        }
+        else
+        {
+        	throw new NotMatchGraphTypeException();
+        }
+    }
+    /**
+     * 프로그램 상단의 START 버튼이 눌렸을때
+     * @param e ActionEvent
+     */
+    public void jButton2_actionPerformed(ActionEvent e)
+    {
+        this.isThread = true;
+        this.thr = new Thread(this);
+        this.thr.start();
+    }
+    /**
+     * 프로그램 상단의 AREA_STYLE 버튼이 눌렸을때
+     * @param e ActionEvent
+     */
+    public void jButton4_actionPerformed(ActionEvent e)
+    {
+        //쓰레드 중지 하고
+        jButton1_actionPerformed(e);
+        try
+        {
+            //그래프 선택 플러그를 영역 그래프로...
+            this.sel = Graph.AREA_GRAPH;
+            //그래프 수직 한계값을 설정합니다.
+            long limit = Runtime.getRuntime().maxMemory();
+            this.areaGraph.setLimit(limit);
+            //왼쪽 공백을 80픽셀로 설정
+            this.areaGraph.setLeftIndent(80);
+            //XY축을 보이지 않도록 설정
+            this.areaGraph.isShowGraphXY(false);
+            //그림자 효과를 사용하지 않도록
+            this.areaGraph.isShowShadow(false);
+            //타이틀 스트링 폰트 색깔을 설정
+            this.areaGraph.setTitleFontColor(new Color(100, 100, 200));
+            //X축 그리드 색깔을 설정
+            this.areaGraph.setGridXColor(new Color(200, 200, 200));
+            //그래프 패널을 얻습니다.
+            this.gPanel1 = this.areaGraph.getGraphPanel();
+            //컨텐트 팬의 Center에 있는 컴포넌트를 제거하고
+           	this.getContentPane().remove(2);
+            //그래프 패널을 넣습니다.
+            this.getContentPane().add(this.gPanel1, "Center");
+            //컨텐트 팬의 하부 컴포넌트를 활성화 시킵니다.
+            this.getContentPane().validate();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * 프로그램 상단의 LINE_STYLE 버튼이 눌렸을때
+     * 위의 영역 그래프 선택시를 참조하시면 됩니다.
+     * 자세한 설명은 API 도큐먼트를 활용하세요
+     * @param e ActionEvent
+     */
+    public void jButton5_actionPerformed(ActionEvent e)
+    {
+        jButton1_actionPerformed(e);
+        try
+        {
+            this.sel = Graph.LINE_GRAPH;
+            float limit = Runtime.getRuntime().maxMemory();
+            this.lineGraph.setLimit(limit);
+            this.lineGraph.isShowBg(false);
+            this.lineGraph.setIndent(20, 20, 20, 20);
+            this.lineGraph.setTitleFontColor(new Color(255, 255, 255));
+            this.lineGraph.setGraphXYColor(new Color(255, 255, 255));
+            this.lineGraph.setGridXColor(new Color(150, 150, 150));
+            this.lineGraph.setGridYColor(new Color(230, 230, 230));
+            this.gPanel2 = this.lineGraph.getGraphPanel();
+           	this.getContentPane().remove(2);
+            this.getContentPane().add(this.gPanel2, "Center");
+            this.getContentPane().validate();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * 프로그램 상단의 BAR_STYLE 버튼이 눌렸을때
+     * 위의 영역 그래프 선택시를 참조하시면 됩니다.
+     * 자세한 설명은 API 도큐먼트를 활용하세요
+     * @param e ActionEvent
+     */
+    public void jButton7_actionPerformed(ActionEvent e)
+    {
+        jButton1_actionPerformed(e);
+        try
+        {
+            this.sel = Graph.BAR_GRAPH;
+            float limit = Runtime.getRuntime().maxMemory();
+            this.barGraph.setLimit(limit);
+            this.barGraph.isShowBg(false);
+            this.barGraph.setIndent(20, 20, 20, 20);
+            this.barGraph.setTitleFontColor(new Color(255, 255, 255));
+            this.barGraph.setGraphXYColor(new Color(255, 255, 255));
+            this.barGraph.setGridXColor(new Color(150, 150, 150));
+            this.barGraph.setGridYColor(new Color(230, 230, 230));
+            this.gPanel3 = this.barGraph.getGraphPanel();
+           	this.getContentPane().remove(2);
+            this.getContentPane().add(this.gPanel3, "Center");
+            this.getContentPane().validate();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    /**
+     * 프로그램 상단의 GC버튼을 눌렀을때
+     * 가비지 콜렉팅을 수행합니다.
+     * @param e ActionEvent
+     */
+    public void jButton6_actionPerformed(ActionEvent e)
+    {
+        System.gc();
+    }
+    /**
+     * 프로그램 상단의 STOP 버튼을 눌렀을때
+     * @param e ActionEvent
+     */
+    public void jButton1_actionPerformed(ActionEvent e)
+    {
+        //쓰레드 무한루프 해제
+        this.isThread = false;
+    }
+    /**
+     * 프로그램 하단의 CLOSE 버튼을 눌렀을때
+     * @param e ActionEvent
+     */
+    public void jButton3_actionPerformed(ActionEvent e)
+    {
+        //쓰레드 무한루프 해제
+        this.isThread = false;
+        System.exit(0);
+    }
+    /**
+     * 메인 메소드
+     * @param args String[]
+     * @throws UnsupportedLookAndFeelException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     */
+    public static void main(String[] args) throws
+        UnsupportedLookAndFeelException, IllegalAccessException,
+        InstantiationException, ClassNotFoundException
+    {
+        //윈도우 룩엔필로 설정
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        new GraphExample2();
+    }
+}
+/**
+ * 아래부터는 이벤트 어뎁터들이 정의 되어있습니다.
+ * 신경 안쓰셔도 되는 부분입니다.
+ */
+class GraphExample2_jButton2_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton2_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton2_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton1_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton1_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton1_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton3_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton3_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton3_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton4_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton4_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton4_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton5_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton5_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton5_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton6_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton6_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton6_actionPerformed(e);
+    }
+}
+
+class GraphExample2_jButton7_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample2 adaptee;
+
+    GraphExample2_jButton7_actionAdapter(GraphExample2 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton7_actionPerformed(e);
+    }
+}

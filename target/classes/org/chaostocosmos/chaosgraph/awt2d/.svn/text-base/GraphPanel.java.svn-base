@@ -1,0 +1,153 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
+import java.awt.Panel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Graphics2D;
+/**
+* <p>Title: 그래프 패널 클래스</p>
+* <p>Description:</p>
+* <pre>
+* JPanel을 상속받고 있으며 그래프가 그려진 이미지를 패널에 도시하는 클래스 이다.
+* 따라서 paint메소드에서 이미지객체를 그려주는 작업을 오버라이딩 해주어야 한다.
+* </pre>
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.2, 2006/7/5 최초작성
+* @since JDK1.4.1
+*/
+public class GraphPanel extends JPanel
+{
+    Graph graph = null;                //그래프객체
+    BufferedImage buffImg = null;      //그래프 이미지 객체
+    public ComponentAdapterExt component = null;//컴포넌트 어뎁터 객체
+    public ContainerAdapterExt container = null;//컨테이너 어뎁터 객체
+    private double rotateAngle;
+    private double anglePointX, anglePointY;
+    /**
+     * 그래프 객체를 인자로 갖는 생성자
+     * @param graph Graph 그래프 객체
+     * @since JDK1.4.1
+     */
+    public GraphPanel(Graph graph)
+    {    	
+        this.graph = graph;
+        if(this.graph != null)
+        	this.buffImg = this.graph.getGraphImage();
+        this.component = new ComponentAdapterExt();
+        this.container = new ContainerAdapterExt();
+        addComponentListener(this.component);
+        addContainerListener(this.container);
+        super.setPreferredSize(null);
+    }
+    /**
+     * 그래프 패널에 전시될 이미지 객체를 설정한다.
+     * @param img BufferedImage 전시될 이미지 객체
+     * @since JDK1.4.1
+     */
+    public void setGraphImage(BufferedImage img)
+    {
+        this.buffImg = img;
+        repaint();
+        updateUI();
+    }
+    /**
+     * 이미지 객체를 패널에 그린다.
+     * @param g Graphics 그래픽스 객체
+     * @since JDK1.4.1
+     */
+    public void paint(Graphics g)
+    {
+        Graphics2D g2d = (Graphics2D)g;
+        if(buffImg != null)
+        {
+            g2d.rotate(Math.toRadians(this.rotateAngle), this.anglePointX, this.anglePointY);
+            g2d.drawImage(buffImg, null, 0, 0);
+        }
+    }
+    /**
+     * 이미지를 회전시킨다.
+     * @param angle 회전각도
+     * @param x 원점X
+     * @param y 원점Y
+     */
+    public void rotate(double angle, double x, double y) 
+    {
+    	this.rotateAngle = angle;
+    	this.anglePointX = x;
+    	this.anglePointY = y;
+    	repaint();
+    }
+    /**
+     * <p>Title: 컴포넌트 어뎁터 이너 클래스</p>
+     * <p>Description: 컨포넌트 어뎁터를 상속하고 있으며 컴포넌트 이벤트에 대한 핸들링을 수행하는 메소드로 구성되어 있습니다.</p>
+     * <p>Copyright: Copyleft (c) 2006</p>
+     * <p>Company: ChaosToCosmos</p>
+     * @author Kooin-Shin
+     * @version 1.0
+     * @since JDK1.4.1
+     */
+    public class ComponentAdapterExt extends ComponentAdapter
+    {
+        /**
+         * 컴포넌트가 보여질때
+         * @param e ComponentEvent 컴포넌트 이벤트
+         * @since JDK1.4.1
+         */
+        public void componentShown(ComponentEvent e)
+        {
+            componentResized(e);
+        }
+        /**
+         * 컴포넌트 크기가 재조정 될때
+         * @param e ComponentEvent 컴포넌트 이벤트
+         * @since JDK1.4.1
+         */
+        public void componentResized(ComponentEvent e)
+        {
+            int width = e.getComponent().getWidth();
+            int height = e.getComponent().getHeight();
+            //이미지 사이즈를 재조정된 넓이와 높이로 조정합니다.
+            if(graph != null)
+            	graph.resizeImage(width, height);            
+            //다시 그려준다.
+            repaint();
+        }
+    }
+    
+    /**
+     * <p>Title: 컨테이너 어뎁터 이너 클래스</p>
+     * <p>Description: 컨테이너 어뎁터를 상속하고 있으며 컨테이너 이벤트에 대한 핸들링을 수행하는 메소드로 구성되어 있습니다.</p>
+     * <p>Copyright: Copyleft (c) 2006</p>
+     * <p>Company: ChaosToCosmos</p>
+     * @author Kooin-Shin
+     * @version 1.0
+     * @since JDK1.4.1
+     */
+    public class ContainerAdapterExt extends ContainerAdapter
+    {
+    	public void componentAdded(ContainerEvent e)
+    	{
+    	}
+    	public void componentRemoved(ContainerEvent e) {
+    	}
+    }
+}

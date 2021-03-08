@@ -1,0 +1,322 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.geom.*;
+/**
+* <p>Title: AreaGraph 영역 그래프</p>
+* <p>Description:</p>
+* 이 클래스는 상위의 Graph클래스를 상속받아 영역그래프를 구현하는 클래스 입니다.
+* <br><br>
+* <b>사용예</b>
+* <br>
+* <pre>
+* import java.awt.*;
+* import java.awt.image.*;
+* import org.chaos.graph.*;
+*
+* public class GraphExample extends JFrame
+* {
+*     //X축 인덱스 배열
+*     String[] xIndex = {"1","2", "3", "4", "5", "6", "7", "8", "9", "10"};
+*
+*     //Y축 인덱스 배열
+*     float[] yIndex = {10, 20, 0, 30, 40, 110, 55};
+*
+*     //그래프 요소 배열
+*     String[] elements = {"kim","lee","so","han","oh"};
+*
+*     //그래프 요소 색 배열, 그래프 요소 배열과 갯수가 일치해야 합니다.
+*     Color[] colors = {new Color(130,180,130), new Color(180,130,130), new Color(180,180,140), new Color(150,150,150), new Color(150,200,158)};
+*
+*     //그래프 요소 값 배열, 영역그래프 이므로 1차원 배열의 갯수는 요소배열 갯수와 일치해야 하며
+*     //2차원 배열의 갯수는 X인덱스 갯수와 일치 시키는 것이 좋습니다.
+*     float[][] values = {{44,35,0,32,0,33,29,43,25,22,32,43,23},
+*                         {43,25,0,32,0,23,52,32,32,23,54,23,48},
+*                         {28,93,0,49,0,24,93,63,92,84,69,46,28},
+*                         {43,25,0,32,0,23, 9,19,32,70,93,29,15},
+*                         {20,36,0,24,22,37,33,54,23,48,53,150,22}};
+*
+*
+*      //그래프 요소 객체
+*      GraphElements ge = null;
+*
+*      //영역 그래프 객체
+*      AreaGraph ag = null;
+*
+*      public GraphExample()
+*      {
+*          //위의 값들로 그래프 요소 객체를 생성합니다.
+*          this.ge = new GraphElements(Graph.AREA_GRAPH, elements, colors, values, xIndex, yIndex);
+*
+*          //그래프 타이틀 스트링, 이미지 넓이, 높이, 요소 객체로 영역 그래프를 생성한다.
+*          //그래프 객체(아래의 ag)에는 수많은 옵션들이 존재합니다. 자세한 사항은 API 도큐먼트를 참조하세요.
+*          this.ag = new AreaGraph("Chaos Graph System.", width, height, ge);
+*
+*          //영역 그래프를 그린다.
+*          ag.drawAreaGraph();
+*
+*          //그래프 이미지를 얻는다.
+*          //이미지 객체는 이미지를 저장(GraphUtility.saveImage())하는 등의 작업에 사용됩니다.
+*          BufferedImage buffImg = ag.getGraphImage();
+*
+*          //그래프 패널을 얻습니다.
+*          GraphPanel panel = ag.getGraphPanel();
+*
+*          //그래프 패널은 JPanel을 상속받았기 때문에 컨텐트팬에 삽입할 수 있습니다.
+*          //이외의 다른 컨테이너에 삽입할 수도 있습니다.
+*          getConetentPane().add(panel, BorderLayout.CENTER);
+*
+*          //컨텐트 팬에 들어있는 하위 컨포넌트들을 활성화(validate)시킵니다.
+*          getContentPane().validate();
+*
+*          //위의 이미지 객체와 패널을 상황에 맞게 활용한다.
+*          //구체적 사용법은 GraphExample1.java, GraphExample2.java를 참조한다.
+*.
+*.
+*.
+*.
+*.
+*</pre>
+*<br>
+* <img src="area.jpg">
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.0, 2001/8/13 19:30 최초작성<br>
+* @version 1.2, 2006/7/5 생성자 갯수 수정, 그래프 요소객체를 상위클래스인 Graph로 이동,
+*                        그래프 사이즈를 조정하는 resizeImage 메소드 구현.<br>
+* @since JDK1.4.1
+*/
+public class AreaGraph extends Graph
+{
+    /**
+     * 그래프 요소 객체를 인자로 갖는 생성자.
+     * GraphElements객체의 그래프 타입이 영역 그래프가 아니면 NotMatchGraphTypeException을 발생시킨다.
+     * @param ge GraphElements 그래프 요소객체
+     * @throws NotMatchGraphTypeException  그래프 타입이 일치하지 않을 경우
+     */
+    public AreaGraph(GraphElements ge) throws NotMatchGraphTypeException
+    {
+        this(600, 300, ge);
+    }
+    /**
+     * 이미지 넓이, 높이, 요소객체를 인자로 갖는 생성자.
+     * GraphElements객체의 그래프 타입이 영역 그래프가 아니면 NotMatchGraphTypeException을 발생시킨다.
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param ge GraphElements 그래프 요소객체
+     * @exception GraphElement에 정의된 그래프 타입이 이 클래스와 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public AreaGraph(int width, int height, GraphElements ge) throws
+        NotMatchGraphTypeException
+    {
+        this("", width, height, ge);
+    }
+    /**
+     * 그래프 타이틀 스트링, 이미지 넓이, 높이, 요소 객체를 인자로 갖는 생성자.
+     * GraphElements객체의 그래프 타입이 영역 그래프가 아니면 NotMatchGraphTypeException을 발생시킨다.
+     * @param title String 그래프 차트에 그려질 타이틀 스트링
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param ge GraphElements 요소 객체
+     * @exception GraphElement에 정의된 그래프 타입이 이 클래스와 일치하지 않을 경우
+     * @since JDK1.4.1
+     */
+    public AreaGraph(String title, int width, int height, GraphElements ge) throws
+        NotMatchGraphTypeException
+    {
+        super(title, width, height, ge);
+        if (ge.getGraphType() != Graph.AREA_GRAPH)
+            throw new NotMatchGraphTypeException("GraphElements의 "+getGraphStr(ge.getGraphType())+" 타입으로 이 그래프를 그릴 수 없습니다.");
+    }
+    /**
+     * 이미지 넓이, 높이, 요소이름, 요소 색깔, 값, X축 인덱스, Y축 인덱스를 인자로 갖는 생성자.
+     * 그래프 요소와 값들을 배열로 입력함.
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param elements String[] 그래프 요소 배열
+     * @param elementsColor Color[] 그래프 요소별 색깔 배열
+     * @param values float[][] 그래프 요소 값, 2차원 배열로 1차원의 갯수는 요소의 수와 같아야 한다.
+     * @param xIndex String[] X축 인덱스 배열
+     * @param yIndex float[] Y축 인덱스 배열
+     * @since JDK1.4.1
+     */
+    public AreaGraph(int width, int height, String[] elements, Color[] elementsColor, float[][] values, String[] xIndex, float[] yIndex) throws NotMatchGraphTypeException,
+        NotMatchArrayException
+    {
+        this("", width, height, new GraphElements(Graph.AREA_GRAPH, elements, elementsColor, values, xIndex, yIndex));
+    }
+    /**
+     * 그래프 타이틀 스트링, 이미지 넓이, 높이, 요소이름, 요소 색깔, 값, X축 인덱스, Y축 인덱스를 인자로 갖는 생성자.
+     * 그래프 요소와 값들을 배열로 입력함.
+     * @param title String 그래프 차트에 그려질 타이틀 스트링
+     * @param width int 이미지 넓이
+     * @param height int 이미지 높이
+     * @param elements String[] 그래프 요소 배열
+     * @param elementsColor Color[] 그래프 요소별 색깔 배열
+     * @param values float[][] 그래프 요소 값, 2차원 배열로 1차원의 갯수는 요소의 수와 같아야 한다.
+     * @param xIndex String[] x축 인덱스 배열
+     * @param yIndex float[] y축 인덱스 배열
+     * @since JDK1.4.1
+     */
+    public AreaGraph(String title, int width, int height, String[] elements, Color[] elementsColor, float[][] values, String[] xIndex, float[] yIndex) throws NotMatchGraphTypeException,
+        NotMatchArrayException
+    {
+        this(title, width, height, new GraphElements(Graph.AREA_GRAPH, elements, elementsColor, values, xIndex, yIndex));
+    }
+    
+    /**
+     * 실제로 설정한 요소와 값들로 그래프를 그리는 메서드.
+     * AreaGraph클래스를 생성한 후 반드시 이 메서드를 호출해야 비로소 그래프가 그려진다.
+     * @since JDK1.4.1
+     */
+    public void drawGraph()
+    {
+        //super.initGraph(super.IMG_WIDTH, super.IMG_HEIGHT);
+    	super.sweepBg(super.IMG_WIDTH, super.IMG_HEIGHT);
+        int graphType = GRAPH_ELEMENTS.getGraphType();
+        float maxValue = GRAPH_ELEMENTS.getMax();
+        float[] yIndex = GRAPH_ELEMENTS.getYIndex();
+        String[] xIndex = GRAPH_ELEMENTS.getXIndex();
+        Object[] elements = GRAPH_ELEMENTS.getElements();
+        Color[] elementsColor = GRAPH_ELEMENTS.getElementsColor();
+
+        if (IS_SHOW_BG)
+        {
+            setComposite(IMG_BG_ALPHA, GRAPHICS2D);
+            drawBg(IMG_BG_COLOR, GRAPHICS2D); 					//Graph객체의 메서드--배경을 그린다.
+            if (IS_SHOW_IMG_BORDER)	drawBgBorder(IMG_BORDER_SIZE, IMG_BORDER_COLOR, GRAPHICS2D);
+            setComposite(GRAPH_BG_ALPHA, GRAPHICS2D);
+            drawGraphBg(GRAPH_BG_COLOR, GRAPHICS2D);
+            if (IS_SHOW_GRAPH_BORDER) drawGraphBorder(GRAPH_BORDER_SIZE, GRAPH_BORDER_COLOR, GRAPH_BORDER_SIZE*2, GRAPH_BORDER_SIZE*2, GRAPHICS2D);
+        }
+
+        setComposite(GRAPH_XY_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_GRAPH_XY)
+        {
+            drawXY(GRAPH_XY_SIZE, GRAPH_XY_COLOR, GRAPHICS2D);						//x, y축을 그린다.
+        }
+
+        setComposite(INDEX_FONT_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_INDEX_X)
+        {
+            drawIndexX(graphType, FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, xIndex, GRAPHICS2D); 					//인덱스를 그린다.--Graph의 추상메서드로 반드시 재정의 해주어야 한다.
+        }
+        if (IS_SHOW_INDEX_Y)
+        {
+            drawIndexY(FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, yIndex, LIMIT, maxValue, GRAPHICS2D); 					//인덱스를 그린다.--Graph의 추상메서드로 반드시 재정의 해주어야 한다.
+        }
+
+        setComposite(GRID_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_GRID_X)
+        {
+            GRAPHICS2D.setStroke(new BasicStroke(GRID_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            drawGridX(xIndex, GRID_X_COLOR, GRID_STYLE, GRAPHICS2D);
+        }
+        if (IS_SHOW_GRID_Y)
+        {
+            GRAPHICS2D.setStroke(new BasicStroke(GRID_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            drawGridY(yIndex, GRID_Y_COLOR, GRID_STYLE, LIMIT, maxValue, GRAPHICS2D);
+        }
+
+        float tab = GRAPH_WIDTH/(GRAPH_ELEMENTS.getXIndex().length);			//X축 요소별 단위거리
+        float[][] values = GRAPH_ELEMENTS.getElementsValues();					//요소값
+        GeneralPath gp = null;
+        
+        GRAPHICS2D.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        GRAPHICS2D.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
+        float x1 = (float)Math.cos(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST;
+        float y1 = (float)Math.sin(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST;
+        float x = 0, y = 0;
+        for (int j=0; j<elements.length; j++)
+        {
+            gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, values[j].length);
+            if (IS_SHOW_SHADOW)
+            {
+                color(SHADOW_COLOR, GRAPHICS2D);
+                setComposite(SHADOW_ALPHA, GRAPHICS2D);
+                gp.moveTo(x1+tab+GRAPH_X, y1+GRAPH_Y);
+                for (int i=0; i<values[j].length; i++)
+                {
+                    if (values[j][i] < 0f)
+                        continue;
+                    x = x1+(i+1)*tab+GRAPH_X;
+                    y = (LIMIT < maxValue) ? y1+GRAPH_Y-values[j][i]*GRAPH_HEIGHT/maxValue : y1+GRAPH_Y-values[j][i]*GRAPH_HEIGHT/LIMIT;
+                    gp.lineTo(x, y);
+                }
+                gp.lineTo(x, GRAPH_Y-GRAPH_BORDER_SIZE);
+                gp.lineTo(x1+tab+GRAPH_X, y1+GRAPH_Y-GRAPH_BORDER_SIZE);
+                gp.closePath();
+                GRAPHICS2D.fill(gp);
+                gp.reset();
+            }
+            if (elementsColor[j] != null) color(elementsColor[j], GRAPHICS2D);
+            setComposite(GRAPH_ALPHA, GRAPHICS2D);
+            gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, values[j].length);
+            gp.moveTo(tab+GRAPH_X, GRAPH_Y);
+            x = 0; 
+            y = 0;
+            for (int i=0; i<values[j].length; i++)
+            {
+                if (values[j][i] < 0) continue;
+                x = (i+1)*tab+GRAPH_X;
+                y = (LIMIT < maxValue) ? GRAPH_Y-values[j][i]*GRAPH_HEIGHT/maxValue : GRAPH_Y-values[j][i]*GRAPH_HEIGHT/LIMIT;
+                gp.lineTo(x, y);
+            }
+            gp.lineTo(x, GRAPH_Y-BORDER_SIZE);
+            gp.lineTo(tab+GRAPH_X, GRAPH_Y-BORDER_SIZE);
+            gp.closePath();
+            
+            GRAPHICS2D.fill(gp);
+            if (IS_SHOW_BORDER)
+            {
+                GRAPHICS2D.draw(gp);
+            }
+        	gp.reset();
+        }
+        GRAPHICS2D.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
+
+        setComposite(LABEL_BG_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_LABEL)
+        {
+            drawLabel(FONT_NAME, LABEL_FONT_SIZE, Font.BOLD, LABEL_BG_COLOR, elements, elementsColor, GRAPHICS2D); 	//라벨 그린다.--Graph의 메서드
+        }
+
+        setComposite(TITLE_FONT_ALPHA, GRAPHICS2D);
+        if (IS_SHOW_TITLE)
+        {
+            drawTitle(TITLE, FONT_NAME, TITLE_FONT_SIZE, TITLE_FONT_COLOR, GRAPHICS2D);
+            drawRight(GRAPHICS2D);
+        }
+
+        //그래프 패널이 null이 아니면 그래프 패널에 이미지 객체를 그려준다.
+        if(this.GRAPH_PANEL != null)
+        	this.GRAPH_PANEL.setGraphImage(super.GRAPH_IMAGE);
+    }
+    
+    /**
+     * 이미지 사이즈를 변경 한다.
+     * @param width int 새넓이
+     * @param height int 새높이
+     * @since JDK1.4.1
+     */
+    public void resizeImage(int width, int height)
+    {
+        if(!super.IS_IMG_FIXED)
+        {
+            super.IMG_WIDTH = width;
+            super.IMG_HEIGHT = height;
+        }
+        drawGraph();        
+    }
+}

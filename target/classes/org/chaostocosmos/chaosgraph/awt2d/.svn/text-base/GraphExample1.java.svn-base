@@ -1,0 +1,528 @@
+/**
+ * <i>Chaos Graph API </i><br>
+ * 이 컨포넌트는 그래프 차트를 그려주는 API입니다.
+ * 구성은 라인그래프, 막대그래프, 영역그래프, 원그래프의 4가지 입니다.
+ * 이 컨포넌트를 이용하여 개발하는 것을 누구에게나 자유이지만
+ * 컨포넌트 자체를 상업적으로 이용할 수 없습니다.
+ * 원본의 수정이나 문의사항은 chaos93@hanmail.net으로 연락주십시오.
+ */
+package org.chaos.graph;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import javax.swing.*;
+import java.awt.image.renderable.ParameterBlock;
+import javax.media.jai.*;
+import com.sun.media.jai.codec.ImageEncoder;
+import com.sun.media.jai.codec.ImageCodec;
+//import com.iproject.wbmpcreator.*;
+/**
+* <p>Title: 그래프 뷰어 및 파일저장</p>
+* <p>Description: </p>
+* <pre>
+* 영역, 막대, 원, 라인 그래프를 보여주는 예제.
+* 상단의 버튼으로 해당 그래프를 전시하여 주며 그림을 파일로 저장시켜 줍니다.
+* 개별 그래프의 요소의 색이나 XY축의 형태 배경등의 색을 바꿈으로서 다양한 컨셉의 그래프를 만들수 있습니다.
+* 자세한 사항은 API Documentation를 참조하기 바랍니다.
+* </pre>
+* <br>
+* <img src="example1.jpg">
+* <p>Copyright: Copyleft (c) 2006</p>
+* <p>Company: ChaosToCosmos</p>
+* @author 9ins
+* @version 1.2, 2006/7/5 최초작성
+* @since JDK1.4.1
+*/
+public class GraphExample1 extends JFrame
+{
+    //그래프 객체
+    public Graph graph;
+    //x축 인덱스, X축에 표시할 인덱스 이름들
+    public String[] xIndex = {"1","2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"};
+    //Y축 인덱스, Y축에 표시할 인덱스 값들
+    public float[] yIndex = {10, 20, 0, 30, 40, 110, 55};
+    //그래프 요소이름
+    public String[] elements = {"홍길동","lee","so","Kooin-Shin","이순신"};
+    //그래프 요소 색깔, 요소이름 배열의 갯수와 색의 갯수는 일치해야 합니다.
+    public Color[] colors = {new Color(130,180,130), new Color(180,130,130), new Color(180,180,140), new Color(150,150,150), new Color(150,200,158)};
+    //그래프 값 배열, 2차원 배열의 1차원의 갯수는 요소이름 배열의 갯수와 같아야 합니다.
+    //즉 아래와 같이 1차원의 갯수가 5 이여야 합니다.
+    public float[][] values = {{44,35,0,32,0,33,29,43,25,22,32,43,23},
+                        {43,25,10,32,0,23,52,32,32,23,54,23,48},
+                        {28,93,0,49,0,24,93,63,92,84,69,46,28},
+                        {43,25,0,32,0,23, 9,19,32,70,93,29,15},
+                        {20,36,0,24,22,37,33,54,23,48,53,150,22}};
+
+
+    //원그래프일 경우의 요소값 1차원 메트릭스,
+    //원그래프는 특성상 1차원 배열의 값을 가진다.
+    public float[] value = {3, 43.6f, 40f, 10, 5};
+
+    //컨포넌트 초기화
+    JPanel jPanel1 = new JPanel();
+    BorderLayout borderLayout1 = new BorderLayout();
+    FlowLayout flowLayout1 = new FlowLayout();
+    JPanel jPanel2 = new JPanel();
+    FlowLayout flowLayout2 = new FlowLayout();
+    JPanel jPanel3 = new JPanel();
+    JButton jButton1 = new JButton();
+    JButton jButton2 = new JButton();
+    JButton jButton3 = new JButton();
+    JButton jButton4 = new JButton();
+    JTextField jTextField1 = new JTextField();
+    JButton jButton5 = new JButton();
+    BorderLayout borderLayout2 = new BorderLayout();
+    JButton jButton6 = new JButton();
+    /**
+     * 디폴트 생성자
+     * @since JDK1.4.1
+     */
+    public GraphExample1()
+    {
+        try
+        {
+            //초기화
+            jbInit();
+            //최초에 영역 그래프를 전시한다.
+            showAreaGraph();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 영역 그래프를 전시한다.
+     * @throws NotMatchArrayException
+     * @throws NotMatchGraphTypeException
+     * @since JDK1.4.1
+     */
+    public void showAreaGraph() throws NotMatchArrayException,
+        NotMatchGraphTypeException
+    {
+        //그래프 요소객체를 영역 그래프로 생성합니다.
+        GraphElements ge = new GraphElements(Graph.AREA_GRAPH, elements, colors, values, xIndex, yIndex);
+        //영역 그래프를 생성합니다.
+        AreaGraph ag = new AreaGraph("AREA GRAPH", 600, 400, ge);
+        ag.setIndent(ag.getIndentTop(), ag.getIndentLeft(), ag.getIndentBottom(), 100);
+        //영역 그래프 이미지 사이즈를 고정시킨다. 이미지를 고정시키면
+        //프래임 영역이 리사이즈 되더라도 이미지 영역은 고정되어 크기가 변하지 않습니다.
+        ag.setImgFixed(true);
+        //그래프 XY축을 보이지 안도록 합니다.
+        ag.isShowGraphXY(false);
+        //영역 그래프를 그립니다.
+        ag.drawGraph();
+        //그래프 패널을 얻습니다.
+        GraphPanel gp = ag.getGraphPanel();
+        //이전에 컨텐트 팬에 들어가 있던 컴포넌트를 제거하고, 컨텐트 팬의 Center에 있는 컴포넌트를 제거 합니다.
+        getContentPane().remove(2);
+        //컨텐트 팬 Center에 영역 그래프 패널을 삽입합니다.
+        getContentPane().add(gp, BorderLayout.CENTER);
+        //컨텐트 팬의 하부 컴포넌트를 활성화 시키고
+        getContentPane().validate();
+        //멤버변수 graph에 영역그래프를 설정합니다.
+        //상위 클래스로 설정할 수 있습니다.
+        this.graph = ag;
+    }
+    /**
+     * 막대 그래프를 전시한다.
+     * @throws NotMatchArrayException
+     * @throws NotMatchGraphTypeException
+     * @since JDK1.4.1
+     */
+    public void showBarGraph() throws NotMatchArrayException,
+        NotMatchGraphTypeException
+    {
+        //그래프 요소객체를 막대 그래프로 생성합니다.
+        GraphElements ge = new GraphElements(Graph.BAR_GRAPH, elements, colors, values, xIndex, yIndex);
+        //막대 그래프를 생성합니다.
+        BarGraph bg = new BarGraph("BAR GRAPH", 800, 600, ge);
+        //수직 한계값을 500으로 설정합니다.
+        //현재 최대값이 150인데 한계값을 300으로 잡았으니까 그와 비례하여 Y축의 값이 2배 작아질 것입니다.
+        //아래 부분을 주석처리하고 컴파일 다시해서 테스트 해보세요.
+        bg.setLimit(300f);
+        //막대 그래프 패널을 얻습니다. JPanel을 상속 받았기 때문에 JPanel에 설정할 수 있습니다.
+        GraphPanel gp = bg.getGraphPanel();
+        //컨텐트 팬에 들어있던 이전 컴포넌트를 삭제합니다. 위의 영역 그래프와 삭제하는 방법을 다르게 해봤슴다.
+        remove(getContentPane().getComponent(2));
+        //컨텐트 팬 Center에 막대 그래프 패널의 삽입합니다.
+        getContentPane().add(gp, BorderLayout.CENTER);
+        //컨텐트 팬의 컴포넌트들을 활성화 시키고
+        getContentPane().validate();
+        //멤버변수 graph에 막대 그래프를 넣습니다.
+        bg.setUnit(" m");
+        this.graph = bg;
+    }
+    /**
+     * 원 그래프를 전시한다.
+     * @throws NotMatchArrayException
+     * @throws NotMatchGraphTypeException
+     * @since JDK1.4.1
+     */
+    public void showCircleGraph() throws NotMatchArrayException,
+        NotMatchGraphTypeException
+    {
+        //원 그래프 타입으로 GraphElements객체를 생성합니다.
+        GraphElements ge = new GraphElements(Graph.CIRCLE_GRAPH, elements, colors, value);
+        //원 그래프 생성합니다.
+        CircleGraph cg = new CircleGraph("CIRCLE GRAPH", 800, 600, ge);
+        //그림자 효과 앵글을 280도로 조정하고
+        cg.setShadowAngle(280);
+        //오른쪽 여백을 100픽셀 줍니다.
+        cg.setRightIndent(100);
+        //퍼센트 값을 전시하도록 설정합니다. 그러면 요소값 옆에 퍼센트 값이 전시됩니다.
+        cg.isShowPercent(true);
+        //원 그래프 패널을 얻습니다.
+        GraphPanel gp = cg.getGraphPanel();
+        //컨텐트 팬의 Center에 이전 컴포넌트를 삭제합니다.
+        remove(getContentPane().getComponent(2));
+        //컨텐트 팬 Center에 원 그래프 패널을 삽입합니다.
+        getContentPane().add(gp, BorderLayout.CENTER);
+        //컨텐트 팬의 컴포넌트들을 활성화 시킵니다.
+        getContentPane().validate();
+        //멤버변수 graph에 원그래프를 넣습니다.
+        this.graph = cg;
+    }
+    /**
+     * 라인 그래프를 전시한다.
+     * 라인 그래프 부터는 기본으로 설정되있는 그래프 모양이 아니라 다른 색깔과 형태로
+     * 만들어서 전시해 보도록 한다.
+     * @throws NotMatchArrayException
+     * @throws NotMatchGraphTypeException
+     * @since JDK1.4.1
+     */
+    public void showLineGraph() throws NotMatchArrayException,
+        NotMatchGraphTypeException
+    {
+        //그래프 요소 객체를 생성합니다.
+        GraphElements ge = new GraphElements(Graph.LINE_GRAPH, elements, colors, values, xIndex, yIndex);
+        //라인 그래프를 생성합니다.
+        LineGraph lg = new LineGraph("LINE GRAPH", 800, 600, ge);
+        //라인 그래프는 색다르게 분위기를 바꾸어 보겠습니다.
+        //라인 그래프 이미지 배경색을 설정합니다.(검정)
+        lg.setImgBgColor(new Color(0, 0, 0));
+        //라인 그래프 배경색을 설정합니다.(검정)
+        lg.setGraphBgColor(new Color(0, 0, 0));
+        //라인 그래프 외곽선 색을 설정합니다.(검정)
+        lg.setGraphBorderColor(new Color(0, 0, 0));
+        //라인 그래프 XY축 색을 설정합니다.(회색)
+        lg.setGraphXYColor(new Color(150, 150, 150));
+        //라인 그래프 패널을 얻습니다.
+        GraphPanel gp = lg.getGraphPanel();
+        //컨텐트 팬에서 이전의 컨포넌트를 삭제합니다.
+        remove(getContentPane().getComponent(2));
+        //컨텐트 팬으로 라인그래프 패널을 삽입합니다.
+        getContentPane().add(gp, BorderLayout.CENTER);
+        //컨텐트 팬의 컨포넌트들을 활성화 시킵니다.
+        getContentPane().validate();
+        //멤버변수 graph에 라인그래프를 넣습니다.
+        this.graph = lg;
+    }
+    /**
+     * 컴포넌트 초기화
+     * @throws Exception
+     * @since JDK1.4.1
+     */
+    private void jbInit() throws Exception
+    {
+        this.getContentPane().setLayout(borderLayout1);
+        jPanel1.setLayout(flowLayout1);
+        jPanel2.setLayout(flowLayout2);
+        jPanel3.setLayout(borderLayout2);
+        jButton1.setText("AREA");
+        jButton1.addActionListener(new GraphTest_jButton1_actionAdapter(this));
+        jButton2.setText("BAR");
+        jButton2.addActionListener(new GraphTest_jButton2_actionAdapter(this));
+        jButton3.setText("CIRCLE");
+        jButton3.addActionListener(new GraphTest_jButton3_actionAdapter(this));
+        jButton4.setText("LINE");
+        jButton4.addActionListener(new GraphTest_jButton4_actionAdapter(this));
+        jButton5.setText("SAVE");
+        jButton5.addActionListener(new GraphTest_jButton5_actionAdapter(this));
+        jTextField1.setMinimumSize(new Dimension(150, 22));
+        jTextField1.setOpaque(true);
+        jTextField1.setPreferredSize(new Dimension(150, 22));
+        jTextField1.setText("");
+        jTextField1.setColumns(40);
+        jTextField1.setScrollOffset(0);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setLocale(java.util.Locale.getDefault());
+        this.setResizable(true);
+        this.setTitle("ChaosGraph");
+        jButton6.setText("CLOSE");
+        jButton6.addActionListener(new GraphTest_jButton6_actionAdapter(this));
+        this.getContentPane().add(jPanel1, BorderLayout.NORTH);
+        jPanel1.add(jButton1, null);
+        jPanel1.add(jButton2, null);
+        jPanel1.add(jButton3, null);
+        jPanel1.add(jButton4, null);
+        this.getContentPane().add(jPanel2, BorderLayout.SOUTH);
+        jPanel2.add(jTextField1, null);
+        jPanel2.add(jButton5, null);
+        jPanel2.add(jButton6, null);
+        this.getContentPane().add(jPanel3, BorderLayout.CENTER);
+        setSize(800, 600);
+        setVisible(true);
+    }
+    /**
+     * 영역 그래프 버튼 이벤트 수신
+     * @param ae ActionEvent
+     * @throws NotMatchGraphTypeException
+     * @throws NotMatchArrayException
+     * @since JDK1.4.1
+     */
+    public void jButton1_actionPerformed(ActionEvent ae) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        //영역 그래프를 그려 줍니다.
+        showAreaGraph();
+    }
+    /**
+     * 막대 그래프 버튼 이벤트 수신
+     * @param ae ActionEvent
+     * @throws NotMatchGraphTypeException
+     * @throws NotMatchArrayException
+     * @since JDK1.4.1
+     */
+    public void jButton2_actionPerformed(ActionEvent ae) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        //막대 그래프를 그려줍니다.
+        showBarGraph();
+    }
+    /**
+     * 원 그래프 이벤트 수신
+     * @param ae ActionEvent
+     * @throws NotMatchGraphTypeException
+     * @throws NotMatchArrayException
+     * @since JDK1.4.1
+     */
+    public void jButton3_actionPerformed(ActionEvent ae) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        //원 그래프를 그려줍니다.
+        showCircleGraph();
+    }
+    /**
+     * 라인 그래프 이벤트 수신
+     * @param ae ActionEvent
+     * @throws NotMatchGraphTypeException
+     * @throws NotMatchArrayException
+     * @since JDK1.4.1
+     */
+    public void jButton4_actionPerformed(ActionEvent ae) throws
+        NotMatchGraphTypeException, NotMatchArrayException
+    {
+        //라인 그래프를 그려줍니다.
+        showLineGraph();
+    }
+    /**
+     * 저장 버튼 이벤트 수신
+     * @param ae ActionEvent
+     * @since JDK1.4.1
+     */
+    public void jButton5_actionPerformed(ActionEvent ae)
+    {
+       //JAI 라이브러리를 이용하여 파일로 저장하는 부분임.
+       String tFilename = jTextField1.getText().trim();
+       File tFile = new File(tFilename);
+       //그래프 객체에서 이미지 객체를 얻어 옵니다.
+       BufferedImage img = this.graph.getGraphImage();
+       try
+       {
+           //그래프 유틸리티에서 이미지를 저장합니다.
+           GraphUtility.saveImage(img, tFile);
+       }
+       catch (NotSuppotedEncodingFormatException ex)
+       {
+           //저장시 지원되지 않는 엔코딩 확장자를 사용하였을 경우
+           JOptionPane.showConfirmDialog(this, ex.getMessage(), "엔코딩 오류", JOptionPane.CLOSED_OPTION);
+           return;
+       }
+       catch (FileNotFoundException ex)
+       {
+           //파일명이 잘못 되었을 경우
+           JOptionPane.showConfirmDialog(this, ex.getMessage(), "파일 오류", JOptionPane.CLOSED_OPTION);
+           return;
+       }
+       catch (IOException ex)
+       {
+           //입출력시 잘못 되었을 경우
+           JOptionPane.showConfirmDialog(this, ex.getMessage(), "입출력 오류", JOptionPane.CLOSED_OPTION);
+           return;
+       }
+       //성공적으로 저장시
+       JOptionPane.showConfirmDialog(this, "성공적으로 저장 되었습니다.", "파일 저장", JOptionPane.CLOSED_OPTION);
+       this.jTextField1.setText("");
+       /*
+       //모바일용 WBMP파일 포멧으로 저장하는 부분입니다.
+       //예전에 모바일로 이미지를 저장하는 서비스를 구상할때 만든 부분인데 걍 뮤시 하십쇼~
+       tFilename = "graph.wbmp";
+       SimpleImageFile sif = new SimpleImageFile();
+       sif.setInnerImg(img);
+       sif.resizeImage(150, 100);
+
+       WBMPfile wf = new WBMPfile(sif, -1, -1, -1);
+       wf.saveWBMPFile("WBMP", tFilename);
+       */
+    }
+    /**
+     * 종료 버튼 이벤트 수신
+     * @param e ActionEvent
+     * @since JDK1.4.1
+     */
+    public void jButton6_actionPerformed(ActionEvent e)
+    {
+        System.exit(0);
+    }
+    /**
+     * 메인 메소드
+     * @param args String[]
+     * @throws UnsupportedLookAndFeelException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     * @throws ClassNotFoundException
+     * @since JDK1.4.1
+     */
+    public static void main(String[] args) throws
+        UnsupportedLookAndFeelException, IllegalAccessException,
+        InstantiationException, ClassNotFoundException
+    {
+        //윈도우 룩엔필로 설정
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        new GraphExample1();
+    }
+}
+/**
+ * 아래부터는 이벤트 어뎁터들이 정의 되어있습니다.
+ * 신경 안쓰셔도 되는 부분입니다.
+ */
+class GraphTest_jButton1_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton1_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        try
+        {
+            adaptee.jButton1_actionPerformed(e);
+        }
+        catch (NotMatchArrayException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (NotMatchGraphTypeException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class GraphTest_jButton2_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton2_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        try
+        {
+            adaptee.jButton2_actionPerformed(e);
+        }
+        catch (NotMatchArrayException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (NotMatchGraphTypeException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class GraphTest_jButton3_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton3_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        try
+        {
+            adaptee.jButton3_actionPerformed(e);
+        }
+        catch (NotMatchArrayException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (NotMatchGraphTypeException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class GraphTest_jButton4_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton4_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        try
+        {
+            adaptee.jButton4_actionPerformed(e);
+        }
+        catch (NotMatchArrayException ex)
+        {
+            ex.printStackTrace();
+        }
+        catch (NotMatchGraphTypeException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class GraphTest_jButton5_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton5_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton5_actionPerformed(e);
+    }
+}
+
+class GraphTest_jButton6_actionAdapter implements java.awt.event.ActionListener
+{
+    GraphExample1 adaptee;
+
+    GraphTest_jButton6_actionAdapter(GraphExample1 adaptee)
+    {
+        this.adaptee = adaptee;
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        adaptee.jButton6_actionPerformed(e);
+    }
+}
