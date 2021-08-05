@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -274,19 +275,82 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         jPanel2.setLayout(flowLayout2);
         jPanel3.setLayout(borderLayout2);
         jButton1.setText("AREA");
-        jButton1.addActionListener(new GraphTest_jButton1_actionAdapter(this));
+        jButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton1_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton2.setText("BAR");
-        jButton2.addActionListener(new GraphTest_jButton2_actionAdapter(this));
+        jButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton2_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton7.setText("BAR RATIO");
-        jButton7.addActionListener(new GraphTest_jButton7_actionAdapter(this));
+        jButton7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton7_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton3.setText("CIRCLE");
-        jButton3.addActionListener(new GraphTest_jButton3_actionAdapter(this));
+        jButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton3_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton4.setText("LINE");
-        jButton4.addActionListener(new GraphTest_jButton4_actionAdapter(this));
+        jButton4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton4_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton5.setText("Choose...");
-        jButton5.addActionListener(new GraphTest_jButton5_actionAdapter(this));
+        jButton5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton5_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jButton8.setText("SAVE");
-        jButton8.addActionListener(new GraphTest_jButton8_actionAdapter(this));
+        jButton8.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton8_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         jTextField1.setMinimumSize(new Dimension(150, 22));
         jTextField1.setOpaque(true);
         jTextField1.setPreferredSize(new Dimension(150, 22));
@@ -299,7 +363,16 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         this.setResizable(true);
         this.setTitle("ChaosGraph");
         jButton6.setText("CLOSE");
-        jButton6.addActionListener(new GraphTest_jButton6_actionAdapter(this));
+        jButton6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jButton6_actionPerformed(e);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
         jPanel1.add(jButton1, null);
         jPanel1.add(jButton2, null);
@@ -444,189 +517,5 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new GraphExample1();
-    }
-}
-
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton1_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton1_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        try
-        {
-            adaptee.jButton1_actionPerformed(e);
-        }
-        catch (NotMatchArrayException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (NotMatchGraphTypeException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton2_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton2_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        try
-        {
-            adaptee.jButton2_actionPerformed(e);
-        }
-        catch (NotMatchArrayException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (NotMatchGraphTypeException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton7_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton7_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        try
-        {
-            adaptee.jButton7_actionPerformed(e);
-        }
-        catch (NotMatchArrayException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (NotMatchGraphTypeException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton3_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton3_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        try
-        {
-            adaptee.jButton3_actionPerformed(e);
-        }
-        catch (NotMatchArrayException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (NotMatchGraphTypeException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton4_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton4_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        try
-        {
-            adaptee.jButton4_actionPerformed(e);
-        }
-        catch (NotMatchArrayException ex)
-        {
-            ex.printStackTrace();
-        }
-        catch (NotMatchGraphTypeException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton5_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton5_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton5_actionPerformed(e);
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton6_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton6_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton6_actionPerformed(e);
-    }
-}
-/**
- * Buffon action adapter class
- */
-class GraphTest_jButton8_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample1 adaptee;
-
-    GraphTest_jButton8_actionAdapter(GraphExample1 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton8_actionPerformed(e);
     }
 }

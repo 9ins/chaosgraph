@@ -13,8 +13,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,7 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.JPanel; 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
@@ -115,13 +116,28 @@ public class GraphExample2 extends JFrame implements Runnable {
         this.getContentPane().setLayout(borderLayout1);
         jPanel1.setLayout(flowLayout1);
         jButton1.setText("STOP");
-        jButton1.addActionListener(new GraphExample2_jButton1_actionAdapter(this));
+        jButton1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton1_actionPerformed(e);
+            }
+        });
         jButton2.setText("START");
-        jButton2.addActionListener(new GraphExample2_jButton2_actionAdapter(this));
+        jButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton2_actionPerformed(e);
+            }
+        });
         flowLayout1.setAlignment(FlowLayout.RIGHT);
         jButton3.setAlignmentX((float) 0.0);
         jButton3.setText("CLOSE");
-        jButton3.addActionListener(new GraphExample2_jButton3_actionAdapter(this));
+        jButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton3_actionPerformed(e);
+            }
+        });
         jPanel2.setLayout(flowLayout2);
         jPanel3.setLayout(borderLayout2);
         flowLayout2.setAlignment(FlowLayout.LEFT);
@@ -130,15 +146,40 @@ public class GraphExample2 extends JFrame implements Runnable {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("JVM Memory Viewer");
         jButton4.setText("AREA STYLE");
-        jButton4.addActionListener(new GraphExample2_jButton4_actionAdapter(this));
+        jButton4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton4_actionPerformed(e);
+            }
+        }); 
         jButton5.setText("LINE STYLE");
-        jButton5.addActionListener(new GraphExample2_jButton5_actionAdapter(this));
+        jButton5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton5_actionPerformed(e);
+            }
+        });
         jButton7.setText("BAR STYLE");
-        jButton7.addActionListener(new GraphExample2_jButton7_actionAdapter(this));
+        jButton7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton7_actionPerformed(e);
+            }
+        });
         jButton6.setText("Populate objects");
-        jButton6.addActionListener(new GraphExample2_jButton6_actionAdapter(this));
+        jButton6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton6_actionPerformed(e);
+            }
+        });
         jButton8.setText("GC");
-        jButton8.addActionListener(new GraphExample2_jButton8_actionAdapter(this));
+        jButton8.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jButton8_actionPerformed(e);
+            }
+        });
         
         this.getContentPane().add(jPanel1, BorderLayout.SOUTH);
         jPanel1.add(jButton3, null);
@@ -372,133 +413,5 @@ public class GraphExample2 extends JFrame implements Runnable {
     public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new GraphExample2();
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton2_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton2_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton2_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton1_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton1_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton1_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton3_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton3_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton3_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton4_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton4_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton4_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton5_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton5_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton5_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton6_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton6_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton6_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton8_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton8_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton8_actionPerformed(e);
-    }
-}
-/**
- * Button adapter class
- */
-class GraphExample2_jButton7_actionAdapter implements java.awt.event.ActionListener
-{
-    GraphExample2 adaptee;
-
-    GraphExample2_jButton7_actionAdapter(GraphExample2 adaptee)
-    {
-        this.adaptee = adaptee;
-    }
-    public void actionPerformed(ActionEvent e)
-    {
-        adaptee.jButton7_actionPerformed(e);
     }
 }

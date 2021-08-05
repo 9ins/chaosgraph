@@ -122,14 +122,14 @@ public class GraphExample {
     
     public void placeGraph(Composite parent, GRAPH type) {
     	if(this.canvas == null) {
-    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false); 
+    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 400, 250);  
     		return; 
     	}
     	//System.out.println("Placed..");
     	if(!this.canvas.isDisposed()) {
     		this.canvas.dispose();
     		//System.out.println("Disposed.....................");
-    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false); 
+    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 400, 250); 
     		//parent.layout(true, true);
     	}
     }

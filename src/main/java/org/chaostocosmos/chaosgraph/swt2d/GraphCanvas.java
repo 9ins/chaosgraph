@@ -141,8 +141,6 @@ public class GraphCanvas extends Canvas {
 			    */
 			}
 		});
-
-        
 		if(!isRAPMode) {
     		this.addMouseMoveListener(new MouseMoveListener () { 
 				@Override
@@ -161,7 +159,7 @@ public class GraphCanvas extends Canvas {
 					    redraw();
 						return;
 				    }
-				    graph.getGraphElements().setSelectedElement(null);
+				    graph.getGraphElements().setSelectedElement(null); 
 				    redraw();
 				}
 			});
