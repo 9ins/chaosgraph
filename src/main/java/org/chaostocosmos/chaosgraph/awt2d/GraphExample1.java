@@ -486,7 +486,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
         }
-        JOptionPane.showConfirmDialog(this, "Success to save image...", "Error", JOptionPane.CLOSED_OPTION);
+        JOptionPane.showConfirmDialog(this, "Success to save image...", "Error", JOptionPane.CLOSED_OPTION);   
     }
 
 	@Override
