@@ -3,23 +3,17 @@
  */
 package org.chaostocosmos.chaosgraph.swt2d;
 
-import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 import org.chaostocosmos.chaosgraph.GraphElements;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -122,14 +116,14 @@ public class GraphExample {
     
     public void placeGraph(Composite parent, GRAPH type) {
     	if(this.canvas == null) {
-    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 400, 250);  
+    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 600, 400);  
     		return; 
     	}
     	//System.out.println("Placed..");
     	if(!this.canvas.isDisposed()) {
     		this.canvas.dispose();
     		//System.out.println("Disposed.....................");
-    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 400, 250); 
+    		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 600, 400); 
     		//parent.layout(true, true);
     	}
     }
