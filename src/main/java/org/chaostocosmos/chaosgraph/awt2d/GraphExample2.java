@@ -34,10 +34,8 @@ import javax.swing.border.Border;
 /**
 * <p>Title: JVM Memory Viewer</p>
 * <p>Description:</p>
-* <pre>
-* </pre>
 * <br>
-* <img src="example2.jpg">
+* <img src="pic/JVM_Memory_Viewer.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins

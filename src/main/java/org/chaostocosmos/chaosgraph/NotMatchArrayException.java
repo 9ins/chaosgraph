@@ -5,8 +5,7 @@ package org.chaostocosmos.chaosgraph;
 /**
 * <p>Title: MotMatchArrayException</p>
 * <p>Description:</p>
-* <pre>
-* </pre>
+* 
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins

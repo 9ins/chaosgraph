@@ -11,16 +11,12 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.INTERPOLATE;
-import org.chaostocosmos.chaosgraph.InterpolateTransform;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
@@ -28,11 +24,8 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * <p>Description: </p>
 * <br><br>
 * <br>
-* <pre>
-*.
-*</pre>
 *<br>
-* <img src="line.jpg">
+* <img src="pic/LINE.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins
@@ -45,9 +38,7 @@ public class LineGraph extends AbstractGraph
     
     /**
      * Constructor
-     * @param ge GraphElements
-     * @exception GraphElement
-     * @since JDK1.4.1
+     * @param ge
      */
     public LineGraph(GraphElements ge)  {
         this(ge, 600, 300);
@@ -55,11 +46,9 @@ public class LineGraph extends AbstractGraph
     
     /**
      * Constructor
-     * @param width int
-     * @param height int
-     * @param ge GraphElements
-     * @exception GraphElement
-     * @since JDK1.4.1
+     * @param ge
+     * @param width
+     * @param height
      */
     public LineGraph(GraphElements ge, int width, int height) 
     {
@@ -67,13 +56,11 @@ public class LineGraph extends AbstractGraph
     }
     
     /**
-	 * Constructor
-     * @param title String
-     * @param width int
-     * @param height int
-     * @param ge GraphElements
-     * @exception GraphElement
-     * @since JDK1.4.1
+     * Constructor
+     * @param ge
+     * @param title
+     * @param width
+     * @param height
      */
     public LineGraph(GraphElements ge, String title, int width, int height) 
     {

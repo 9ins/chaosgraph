@@ -9,7 +9,12 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'signing'
-apply plugin: 'java-library'
+
+group = "io.github.9ins"
+archivesBaseName = "chaosgraph"
+version = "0.9.0"
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'utf-8'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -21,17 +26,13 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-group = "io.github.9ins"
-archivesBaseName = "chaosgraph"
-version = "0.9.0"
-sourceCompatibility = 1.8
-compileJava.options.encoding = 'utf-8'
-
+artifacts {
+    archives javadocJar, sourcesJar
+}
 
 signing {
     sign configurations.archives
 }
-
 
 uploadArchives {
   repositories {
@@ -49,7 +50,7 @@ uploadArchives {
       pom.project {
         name 'chaosgraph'
         packaging 'jar'
-        description ''
+        description 'ChaosGraph is able to make your Chart App more graceful and easily'
         url 'https://github.com/9ins/chaosgraph'
         scm {
           connection 'scm:svn:https://github.com/9ins/chaosgraph.git'

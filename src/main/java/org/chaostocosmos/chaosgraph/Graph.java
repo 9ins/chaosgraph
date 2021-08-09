@@ -114,8 +114,8 @@ public abstract class Graph implements IGraph, GraphConstants {
     
     /**
      * Initialize 
-     * @param width
-     * @param height
+     * @param width int
+     * @param height int
      * @since JDK1.4.1
      */
     @Override
@@ -154,8 +154,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     /**
      * Get graph type text
      * @param graphType
-     * @param String
-     * @since JDK1.4.1
+     * @return
      */
     public static String getGraphStr(GRAPH graphType) {
         String type = null;
@@ -209,7 +208,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     
     /**
      * Set interpolate points count
-     * @param interpolatePoints
+     * @param interpolateScale
      */
     public void setInterPolateScale(int interpolateScale) {
     	this.interpolateScale = interpolateScale;
@@ -767,8 +766,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     
     /**
      * To set limit of value
-     * @param limit float
-     * @since JDK1.4.1
+     * @param valueLimit
      */
     public void setLimit(double valueLimit) {
         LIMIT = valueLimit;
@@ -922,7 +920,6 @@ public abstract class Graph implements IGraph, GraphConstants {
     
     /**
      * Get graph selection border
-     * @param border
      * @return
      */
     public SELECTION_BORDER getSelectionBorder() {

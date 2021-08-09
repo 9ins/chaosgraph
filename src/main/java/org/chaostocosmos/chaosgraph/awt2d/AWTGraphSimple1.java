@@ -51,10 +51,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 /**
 * <p>Title: Graph example </p>
 * <p>Description: </p>
-* <pre>
-* </pre>
 * <br>
-* <img src="example1.jpg">
+* <img src="pic/area_interpolate.jpg"  alt=""> 
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins
@@ -184,7 +182,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
         
         String json = null;
 		try {
-			json = Files.lines(Paths.get("C:\\Users\\chaos\\OneDrive\\문서\\신구인\\aws-api-lambda-chart-json.json")).collect(Collectors.joining(System.lineSeparator()));
+			json = Files.lines(Paths.get("D:\\Github\\chaosgraph\\aws-api-lambda-chart-json.json")).collect(Collectors.joining(System.lineSeparator()));
 	        graph = (AbstractGraph) GraphUtility.createGraphWithJson(json);
 	        GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
 		} catch (Exception e) {

@@ -6,7 +6,7 @@
   <artifactId>chaosgraph</artifactId>
   <version>0.9.0</version>
   <name>chaosgraph</name>
-  <description></description>
+  <description>ChaosGraph is able to make your Chart App more graceful and easily</description>
   <url>https://github.com/9ins/chaosgraph</url>
   <licenses>
     <license>

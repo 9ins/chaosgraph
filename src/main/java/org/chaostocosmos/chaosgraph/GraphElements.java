@@ -17,8 +17,6 @@ import java.util.stream.DoubleStream;
 /**
 * <p>Title: GraphElements class</p>
 * <p>Description:</p>
-* <pre>
-* </pre>
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * 
@@ -147,9 +145,8 @@ public class GraphElements implements GraphConstants
     
     /**
      * Get maximum in map
-     * @param values float[][]
-     * @return float
-     * @since JDK1.4.1
+     * @param map
+     * @return
      */
     public double calMax(Map<Object, GraphElement> map) {
         return map.values().stream().flatMap(ge -> ge.getValues().stream()).mapToDouble(Double::doubleValue).max().getAsDouble();
@@ -157,9 +154,8 @@ public class GraphElements implements GraphConstants
     
     /**
      * Get minimum in map
-     * @param values 
-     * @return float
-     * @since JDK1.4.1
+     * @param map
+     * @return
      */
     public double calMin(Map<Object, GraphElement> map)	{
     	return map.values().stream().flatMap(ge -> ge.getValues().stream()).mapToDouble(Double::doubleValue).min().getAsDouble();
@@ -194,7 +190,7 @@ public class GraphElements implements GraphConstants
     
     /**
      * Add graph element
-     * @param elements String[]
+     * @param ge
      * @exception NotMatchGraphTypeException
      * @since JDK1.4.1
      */
@@ -392,7 +388,7 @@ public class GraphElements implements GraphConstants
     
     /**
      * Set y index
-     * @param xIndex float[]
+     * @param yIndex 
      * @since JDK1.4.1
      */
     public void setYIndex(List<Double> yIndex) {

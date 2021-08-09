@@ -20,7 +20,6 @@ public class GraphPressEvent extends EventObject {
 	 * Constructor
 	 * 
 	 * @param source
-	 * @param me
 	 * @param ge
 	 */
 	public GraphPressEvent(Object source, GraphElement ge) {

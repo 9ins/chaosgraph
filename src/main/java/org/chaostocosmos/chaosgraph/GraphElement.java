@@ -73,15 +73,15 @@ public class GraphElement implements Serializable {
 		this(elementName, elementColor, label, labelColor, values, null);
     }
     
-    /**
-     * Constructor
-     * @param elementName
-     * @param elementColor
-     * @param label
-     * @param labelColor
-     * @param values
-     * @param interpolation
-     */
+	/**
+	 * Constructor
+	 * @param elementName
+	 * @param elementColor
+	 * @param label
+	 * @param labelColor
+	 * @param values
+	 * @param interpolationType
+	 */
     public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<Double> values, INTERPOLATE interpolationType) {
 		super();
 		this.elementName = elementName;
@@ -330,7 +330,7 @@ public class GraphElement implements Serializable {
 
 	/**
 	 * Set interpolate points count
-	 * @param interpolatePoints
+	 * @param interpolateScale
 	 */
 	public void setInterpolateScale(int interpolateScale) {
 		this.interpolateScale = interpolateScale;

@@ -19,10 +19,9 @@ import org.eclipse.swt.widgets.Shell;
 /**
 * <p>Title: SWT graph example</p>
 * <p>Description:</p>
-* <pre>
-* </pre>
+* 
 * <br>
-* <img src="example2.jpg">
+* <img src="example2.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins

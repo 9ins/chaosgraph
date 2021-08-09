@@ -11,20 +11,15 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
+
 /**
 * <p>Title: AreaGraph</p>
 * <p>Description:</p>
@@ -32,11 +27,8 @@ import java.util.stream.Collectors;
 * <br><br>
 * <b>Example</b>
 * <br>
-* <pre>
-*.
-*</pre>
-*<br>
-* <img src="area.jpg">
+* <br>
+* <img src="pic/AREA.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins
@@ -59,12 +51,9 @@ public class AreaGraph extends AbstractGraph {
     
     /**
      * Constructor
-     * 
-     * @param width int
-     * @param height int
-     * @param ge GraphElements
-     * @exception GraphElement
-     * @since JDK1.4.1
+     * @param ge
+     * @param width
+     * @param height
      */
     public AreaGraph(GraphElements ge, int width, int height)  {
         this(ge, "", width, height);
@@ -72,13 +61,10 @@ public class AreaGraph extends AbstractGraph {
     
     /**
      * Constructor
-     * 
-     * @param title String 
-     * @param width int
-     * @param height int
-     * @param ge GraphElements
-     * @exception GraphElement
-     * @since JDK1.4.1
+     * @param ge
+     * @param title
+     * @param width
+     * @param height
      */
     public AreaGraph(GraphElements ge, String title, int width, int height)  {
         super(ge, title, width, height);

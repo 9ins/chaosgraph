@@ -33,8 +33,6 @@ import java.awt.Graphics2D;
 /**
 * <p>Title: Graph panel class</p>
 * <p>Description:</p>
-* <pre>
-* </pre>
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins
@@ -51,9 +49,11 @@ public class GraphPanel extends JPanel {
     private MouseAdapterExt mouse = null;
     
     /**
-     * constructor
-     * @param graph Graph
-     * @since JDK1.4.1
+     * Constructor
+     * @param graphType
+     * @param elements
+     * @param width
+     * @param height
      */
     public GraphPanel(GRAPH graphType, GraphElements elements, int width, int height) {  
     	this(DefaultGraphFactory.createGraph(graphType, elements, width, height), width, height);

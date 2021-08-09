@@ -340,7 +340,8 @@ public abstract class AbstractGraph extends Graph {
      */
     public Color getShadowColor() {
     	return SHADOW_COLOR;
-    }    
+    }
+    
     /**
      * To set default color
      * @param color Color
@@ -566,7 +567,7 @@ public abstract class AbstractGraph extends Graph {
     
     /**
      * To convert double value to integer
-     * @param fValue float
+     * @param doubleValue double
      * @return int int
      * @since JDK1.4.1
      */
@@ -626,9 +627,6 @@ public abstract class AbstractGraph extends Graph {
     
     /**
      * Draw pop up
-     * @param fontName
-     * @param fontSize
-     * @param fontStyle
      * @param popPoint
      * @param bgColor
      * @param ge
@@ -683,14 +681,12 @@ public abstract class AbstractGraph extends Graph {
     
     /**
      * To draw label 
-     * @param fontName String
-     * @param fontSize int
-     * @param fontStyle int
-     * @param bgColor Color
-     * @param elements String[]
-     * @param elementsColor Color[]
-     * @param graphics Graphics2D
-     * @since JDK1.4.1
+     * @param fontName
+     * @param fontSize
+     * @param fontStyle
+     * @param bgColor
+     * @param elements
+     * @param graphics
      */
     protected void drawLabel(String fontName, int fontSize, int fontStyle, Color bgColor, List<GraphElement> elements, Graphics2D graphics) {
         String longStr="", tmp="";
@@ -942,10 +938,6 @@ public abstract class AbstractGraph extends Graph {
     
     /**
      * This abstract method is part of resizing graph image. Threrefore it must be implemented on inherited class.
-     * @param width int
-     * @param height int
-     * @throws Exception
-     * @since JDK1.4.1
      */
     public void resizeImage(Graphics2D g2d, int width, int height) {
     	if(width < 100 || height < 100) {

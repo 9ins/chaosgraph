@@ -48,10 +48,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 /**
 * <p>Title: Graph example </p>
 * <p>Description: </p>
-* <pre>
-* </pre>
 * <br>
-* <img src="example1.jpg">
+* <img src="pic/area_interpolate1.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins

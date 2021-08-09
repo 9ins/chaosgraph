@@ -152,7 +152,6 @@ public class InterpolateTransform {
     /**
      * To populate interpolate values in elements
      * @param graphElements
-     * @param interpolateScale
      * @return
      */
     public static GraphElements populateInterpolate(GraphElements graphElements) {

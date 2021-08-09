@@ -15,30 +15,38 @@ import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
  */
 public interface IGraph {
 	
-	/**
-	 * Get graph type
-	 * @return
-	 */
+    /**
+     * Get graph type
+     * @return GRAPH
+     */
 	public GRAPH getGraphType();
 	
 	/**
 	 * This method is part of drawing background. Therefore it must be implemented on inherited class.
-	 */
+     * 
+     * @param g2d
+     * @param width
+     * @param height
+     */
 	public void initGraph(Graphics2D g2d, int width, int height);
 	
     /**
      * This method is part of drawing graph. Therefore it must be implemented on inherited class.
-     * @since JDK1.4.1
+     * 
+     * @param g2d
      */
     public void drawGraph(Graphics2D g2d);
     
     /**
      * This method do repaint graph
+     * 
+     * @param g2d
      */
     public void repaint(Graphics2D g2d);
     
     /**
      * This method contribute to resize graph
+     * 
      * @param width
      * @param height
      */
@@ -46,6 +54,7 @@ public interface IGraph {
     
     /**
      * This method contribute to resize graph to specific Graphics2D object.
+     * 
      * @param g2d
      * @param width
      * @param height
@@ -54,12 +63,14 @@ public interface IGraph {
     
     /**
      * Get buffered image object
+     * 
      * @return
      */
     public BufferedImage getBufferedImage();
     
     /**
      * This method is get whether specific position is in graph element shapes.
+     * 
      * @param x
      * @param y
      * @return GraphElement

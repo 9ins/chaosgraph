@@ -65,10 +65,8 @@ public class GraphUtility
      * @param saveFile
      * @param codec
      * @throws FileNotFoundException
-     * @throws IOException
      * @throws NotSuppotedEncodingFormatException
      * @throws FileNotFoundException
-     * @throws IOException
      * @since JDK1.4.1
      */
     public static void saveSWTImage(Image image, File saveFile, CODEC codec) throws NotSuppotedEncodingFormatException, FileNotFoundException {
@@ -258,7 +256,7 @@ public class GraphUtility
      * @throws NoSuchMethodException 
      */
     public static void main(String[] args) throws IOException, NotSuppotedEncodingFormatException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    	File f = new File("C:\\Users\\chaos\\OneDrive\\문서\\신구인\\aws-api-lambda-chart-json.json");
+    	File f = new File("D:\\Github\\chaosgraph\\aws-api-lambda-chart-json.json");
     	String json = Files.lines(f.toPath()).collect(Collectors.joining(System.lineSeparator()));
     	Graph graph = createGraphWithJson(json);
     	System.out.println("width: "+graph.getBufferedImage().getWidth()+"   height: "+graph.getBufferedImage().getHeight());

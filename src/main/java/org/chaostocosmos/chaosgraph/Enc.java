@@ -30,11 +30,12 @@ public class Enc
         }
         return new String(ko.getBytes("EUC_KR"),"8859_1");
     }
+    
     /**
      * Get euc-kr text from 8859_1 text
-     * @param ko
+     * @param en
      * @return
-     * @since JDK1.4.1
+     * @throws UnsupportedEncodingException
      */
     public static String getEUC_KR(String en) throws UnsupportedEncodingException {
         if (en == null) {

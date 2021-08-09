@@ -26,11 +26,8 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 /**
 * <p>Title: BarGraph class</p>
 * <p>Description:</p>
-* <pre>
-*.
-*</pre>
 *<br>
-* <img src="bar.jpg">
+* <img src="pic/BAR.jpg"  alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins

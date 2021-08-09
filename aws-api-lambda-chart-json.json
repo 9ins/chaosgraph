@@ -1,0 +1,36 @@
+
+{
+  "GRAPH" : "LINE",
+  "INTERPOLATE" : "SPLINE",
+  "WIDTH" : 1600,
+  "HEIGHT" : 700,
+  "XINDEX" : ["0", "", "2", "", "3", "", "4", "", "5", "", "6", "", "7", "", "8", "", "9", "", "10"],
+  "YINDEX" : [50, 80, 500],
+  "ELEMENTS" : [
+      {
+        "ELEMENT" : "Kafka",
+        "LABEL" : "Kafka usage",
+        "COLOR" : [180,130,130],
+        "VALUES" : [44, 35 , 0, 32, 0, 33, 29, 43, 25, 22, 32, 43, 23]
+      },
+      {
+        "ELEMENT" : "elastic search",
+        "LABEL" : "elastic search usage",
+        "COLOR" : [180,130,130],
+        "VALUES" : [43,25,10,32,0,23,52,32,32,23,54,23,48, 20, 60, 140, 500, 10, 690, 32]
+      },
+      {
+        "ELEMENT" : "Oracle",
+        "LABEL" : "Oracle usage",
+        "COLOR" : [180,180,140],
+        "VALUES" : [500,93,0,49,0,24,93,63,92,84,69,46,28]
+      },
+      {
+        "ELEMENT" : "S3",
+        "LABEL" : "S3 usage",
+        "COLOR" : [150,200,158],
+        "VALUES" : [20,36,0,24,22,37,33,54,23,48,53,150,22, 300, 400, 600, 800]
+      }
+    ]
+}
+

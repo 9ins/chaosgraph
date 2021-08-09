@@ -21,11 +21,8 @@ import java.awt.geom.*;
 /**
 * <p>Title: Circle graph class</p>
 * <p>Description:</p>
-* <pre>
-*.
-*</pre>
-*<br>
-* <img src="circle.jpg">
+* <br>
+* <img src="pic/CIRCLE.jpg" alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
 * @author 9ins
