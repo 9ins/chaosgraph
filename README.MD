@@ -18,7 +18,7 @@ To use this library, see wiki pages. see above menu.
 Prefer Release menu of right side, Current version is 2.0.0 - Oct 26, 2020
 
  
-## Maven dependancy
+## Maven dependency
 ```xml
 <!-- https://mvnrepository.com/artifact/io.github.9ins/chaosgraph -->
 <dependency>
@@ -29,7 +29,7 @@ Prefer Release menu of right side, Current version is 2.0.0 - Oct 26, 2020
 ```
 
  
-## Gradle dependancy
+## Gradle dependency
 ```groovy
 // https://mvnrepository.com/artifact/io.github.9ins/chaosgraph
 implementation group: 'io.github.9ins', name: 'chaosgraph', version: '2.0.0'
