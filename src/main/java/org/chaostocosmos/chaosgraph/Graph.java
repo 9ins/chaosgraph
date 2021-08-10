@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
  * 
  * Graph
  * 
- * This class contribute to describe attributes of graph.
+ * This class contribute to describe attributes of graph. tst
  *
  * @author Kooin-Shin
  * 2020. 9. 23.

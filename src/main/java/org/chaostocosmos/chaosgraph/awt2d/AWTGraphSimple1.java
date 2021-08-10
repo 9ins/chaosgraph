@@ -63,9 +63,9 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener {
     //abstract graph object
     public AbstractGraph graph;
     //x index list
-    public List<Object> xIndex =null;
+    public List<Object> xIndex = null;
     //y index list
-    public List<Double> yIndex =null;
+    public List<Double> yIndex = null;
     //graph element list
     public String[] elements = {"Kafa", "elastic search", "Oracle", "Maria", "S3"};
     //elements color array

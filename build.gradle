@@ -12,7 +12,7 @@ apply plugin: 'signing'
 
 group = "io.github.9ins"
 archivesBaseName = "chaosgraph"
-version = "0.9.0"
+version = "2.0.0"
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'utf-8'
 
@@ -50,7 +50,7 @@ uploadArchives {
       pom.project {
         name 'chaosgraph'
         packaging 'jar'
-        description 'ChaosGraph is able to make your Chart App more graceful and easily'
+        description 'This library contribute to make chart on AWT/Swing/SWT components. It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interactive functionality to the service for users.'
         url 'https://github.com/9ins/chaosgraph'
         scm {
           connection 'scm:svn:https://github.com/9ins/chaosgraph.git'

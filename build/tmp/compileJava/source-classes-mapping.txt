@@ -40,17 +40,8 @@ org/chaostocosmos/chaosgraph/swt2d/SWTGraphSimple.java
  org.chaostocosmos.chaosgraph.swt2d.SWTGraphSimple$5
 org/chaostocosmos/chaosgraph/GraphReleaseEvent.java
  org.chaostocosmos.chaosgraph.GraphReleaseEvent
-org/chaostocosmos/chaosgraph/awt2d/AWTGraphSimple1.java
- org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1
- org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1$1
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton1_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton2_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton3_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton4_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton5_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton6_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton7_actionAdapter
- org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton8_actionAdapter
+org/chaostocosmos/chaosgraph/DefaultGraphFactory.java
+ org.chaostocosmos.chaosgraph.DefaultGraphFactory
 org/chaostocosmos/chaosgraph/NotMatchElementException.java
  org.chaostocosmos.chaosgraph.NotMatchElementException
 org/chaostocosmos/chaosgraph/GraphConstants.java
@@ -126,5 +117,14 @@ org/chaostocosmos/chaosgraph/INTERPOLATE.java
  org.chaostocosmos.chaosgraph.INTERPOLATE
 org/chaostocosmos/chaosgraph/NotMatchGraphTypeException.java
  org.chaostocosmos.chaosgraph.NotMatchGraphTypeException
-org/chaostocosmos/chaosgraph/DefaultGraphFactory.java
- org.chaostocosmos.chaosgraph.DefaultGraphFactory
+org/chaostocosmos/chaosgraph/awt2d/AWTGraphSimple1.java
+ org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1
+ org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1$1
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton1_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton2_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton3_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton4_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton5_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton6_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton7_actionAdapter
+ org.chaostocosmos.chaosgraph.awt2d.GraphTest_jButton8_actionAdapter
