@@ -7,24 +7,41 @@
 # <b> Instroduction </b>
 This library contribute to make chart on AWT/Swing/SWT components.
 It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interactive functionality to the service for users.  
-<br>
 
-## Current library download
-[chaosgraph-2.0.0.jar](https://github.com/9ins/chaosgraph/raw/master/build/libs/chaosgraph-2.0.0.jar) - Oct 26, 2020
-<br>
-<br>
 
 ## <b> What do you make with this? </b>
 You could need to make chart based application on pure java GUI, Use this library. Also when you need to build dashboard on non-web-based java application, Just use this. Maybe when if you are working with Eclipse RCP to make analysis app or CRM, MIS, This library could successful choice for your project's goal as UX to users. This library's core is java. Nevertheless, if you use Eclipse RAP, you can make a chart on Web Browser and graphic widget by using this library.  
 To use this library, see wiki pages. see above menu.
-<br>
+
+
+## Current library download
+Prefer Release menu of right side, Current version is 2.0.0 - Oct 26, 2020
+
+ 
+## Maven dependancy
+```xml
+<!-- https://mvnrepository.com/artifact/io.github.9ins/chaosgraph -->
+<dependency>
+    <groupId>io.github.9ins</groupId>
+    <artifactId>chaosgraph</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+ 
+## Gradle dependancy
+```groovy
+// https://mvnrepository.com/artifact/io.github.9ins/chaosgraph
+implementation group: 'io.github.9ins', name: 'chaosgraph', version: '2.0.0'
+```
+
 
 ## <b>What is changed and improved?</b>
 There is 5 type of chart be supported in this v2.0.0 version.  
 Area/Bar/BarRatio/Circle/line chart is currently supported for public user.
 This version of the artifacts is quit changed then old version 1.x that was not suppoted interactive event, just only show chart shapes and handling mutil-dimension array to easily cause error.  
 Currently 2.0.0 version is providing more object-oriented, more interactive and more good-looked graphical methods and functions.
-<br>  
+
 
 ## <b> Specification of additionals and improved</b>
 ### <b> Additional functionality </b>
@@ -44,19 +61,14 @@ Currently 2.0.0 version is providing more object-oriented, more interactive and 
 * When the chart's size to be resize, To make chart's inner element to resize at same ratio.
 * Improving chart drawing/Rendering structure.
 
-<br>
-<br>
 
 ## <b>Structure of chart objects</b>
 ![UMLDiagram1](./pic/UMLDiagram1.PNG)
 
-<br>
-<br>
 
 ## <b>Example snippet</b>
 This project contains 3 example of the library.  
 
-<br>
 
 > ### AWTGraphSimple1.java
 > This example is chart viewer. 
