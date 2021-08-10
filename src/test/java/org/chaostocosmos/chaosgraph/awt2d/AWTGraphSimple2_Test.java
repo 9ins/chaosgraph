@@ -1,7 +1,7 @@
 /**
  * <i>Chaos Graph API </i><br>
  */
-package org.chaostocosmos.chaosgraph.awt2d;
+package org.chaostocosmos.chaosgraph.awt2d; 
 
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
@@ -41,7 +41,7 @@ import javax.swing.border.Border;
 * @version 1.2, 2006/7/5 First draft
 * @since JDK1.4.1
 */
-public class AWTGraphSimple2 extends JFrame implements Runnable {
+public class AWTGraphSimple2_Test extends JFrame implements Runnable {
     BorderLayout borderLayout1 = new BorderLayout();
     JPanel jPanel1 = new JPanel();
     FlowLayout flowLayout1 = new FlowLayout();
@@ -77,7 +77,7 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
     /**
      * constructor
      */
-    public AWTGraphSimple2() {
+    public AWTGraphSimple2_Test() {
         try {
             for(int i=0; i<xIndexCount; i++) {
             	xIndex.add("");
@@ -112,13 +112,13 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         this.getContentPane().setLayout(borderLayout1);
         jPanel1.setLayout(flowLayout1);
         jButton1.setText("STOP");
-        jButton1.addActionListener(new GraphExample2_jButton1_actionAdapter(this)); 
+        jButton1.addActionListener(new GraphExample2_Test_jButton1_actionAdapter(this));
         jButton2.setText("START");
-        jButton2.addActionListener(new GraphExample2_jButton2_actionAdapter(this));
+        jButton2.addActionListener(new GraphExample2_Test_jButton2_actionAdapter(this));
         flowLayout1.setAlignment(FlowLayout.RIGHT);
         jButton3.setAlignmentX((float) 0.0);
         jButton3.setText("CLOSE");
-        jButton3.addActionListener(new GraphExample2_jButton3_actionAdapter(this));
+        jButton3.addActionListener(new GraphExample2_Test_jButton3_actionAdapter(this));
         jPanel2.setLayout(flowLayout2);
         jPanel3.setLayout(borderLayout2);
         flowLayout2.setAlignment(FlowLayout.LEFT);
@@ -127,15 +127,15 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("JVM Memory Viewer");
         jButton4.setText("AREA STYLE");
-        jButton4.addActionListener(new GraphExample2_jButton4_actionAdapter(this));
+        jButton4.addActionListener(new GraphExample2_Test_jButton4_actionAdapter(this));
         jButton5.setText("LINE STYLE");
-        jButton5.addActionListener(new GraphExample2_jButton5_actionAdapter(this));
+        jButton5.addActionListener(new GraphExample2_Test_jButton5_actionAdapter(this));
         jButton7.setText("BAR STYLE");
-        jButton7.addActionListener(new GraphExample2_jButton7_actionAdapter(this));
+        jButton7.addActionListener(new GraphExample2_Test_jButton7_actionAdapter(this));
         jButton6.setText("Populate objects");
-        jButton6.addActionListener(new GraphExample2_jButton6_actionAdapter(this));
+        jButton6.addActionListener(new GraphExample2_Test_jButton6_actionAdapter(this));
         jButton8.setText("GC");
-        jButton8.addActionListener(new GraphExample2_jButton8_actionAdapter(this));
+        jButton8.addActionListener(new GraphExample2_Test_jButton8_actionAdapter(this));
         
         this.getContentPane().add(jPanel1, BorderLayout.SOUTH);
         jPanel1.add(jButton3, null);
@@ -368,17 +368,17 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
      */
     public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        new AWTGraphSimple2();
+        new AWTGraphSimple2_Test();
     }
 }
 /**
  * Button adapter class
  */
-class GraphExample2_jButton2_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton2_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton2_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton2_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -390,11 +390,11 @@ class GraphExample2_jButton2_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton1_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton1_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton1_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton1_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -406,11 +406,11 @@ class GraphExample2_jButton1_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton3_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton3_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton3_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton3_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -422,11 +422,11 @@ class GraphExample2_jButton3_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton4_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton4_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton4_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton4_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -438,11 +438,11 @@ class GraphExample2_jButton4_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton5_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton5_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton5_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton5_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -454,11 +454,11 @@ class GraphExample2_jButton5_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton6_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton6_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton6_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton6_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -470,11 +470,11 @@ class GraphExample2_jButton6_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton8_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton8_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton8_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton8_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
@@ -486,11 +486,11 @@ class GraphExample2_jButton8_actionAdapter implements java.awt.event.ActionListe
 /**
  * Button adapter class
  */
-class GraphExample2_jButton7_actionAdapter implements java.awt.event.ActionListener
+class GraphExample2_Test_jButton7_actionAdapter implements java.awt.event.ActionListener
 {
-    AWTGraphSimple2 adaptee;
+    AWTGraphSimple2_Test adaptee;
 
-    GraphExample2_jButton7_actionAdapter(AWTGraphSimple2 adaptee)
+    GraphExample2_Test_jButton7_actionAdapter(AWTGraphSimple2_Test adaptee)
     {
         this.adaptee = adaptee;
     }
