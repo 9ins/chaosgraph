@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="io.github.9ins" module="chaosgraph" revision="2.0.0" status="integration" publication="20210809160148"/>
+  <info organisation="io.github.9ins" module="chaosgraph" revision="2.0.0" status="integration" publication="20220530103207"/>
   <configurations>
     <conf name="annotationProcessor" visibility="private"/>
     <conf name="apiElements" visibility="private" extends="runtime"/>

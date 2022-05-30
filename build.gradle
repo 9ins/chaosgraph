@@ -68,7 +68,7 @@ uploadArchives {
         developers {
           developer {
             id 'chaos930'
-            name 'Kooin-Shin '
+            name 'Kooin Shin'
             email 'chaos930@gmail.com'
           }
         }
