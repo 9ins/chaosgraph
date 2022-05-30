@@ -5,6 +5,6 @@
 build
 
 gradle.properties
-securing.gpg
+secring.gpg
 
 
