@@ -15,7 +15,7 @@ import java.util.List;
  * @author Kooin-Shin
  * 2020. 9. 23.
  */
-public abstract class Graph implements IGraph, GraphConstants {
+public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
 	protected int ORIGIN_WIDTH, ORIGIN_HEIGHT;
 	protected double SCALED_WIDTH = 8d;
 	protected double SCALED_HEIGHT= 6d;
@@ -31,7 +31,7 @@ public abstract class Graph implements IGraph, GraphConstants {
     protected boolean IS_SHOW_GRID_X = true;				//X axis grid whether to be shown
     protected boolean IS_SHOW_INDEX_Y = true;				//Y indent whether to be shown
     protected boolean IS_SHOW_INDEX_X = true;				//X indent whether to be shown
-    protected boolean IS_SHOW_GRAPH_XY = true;				//Is show xy axis
+    protected boolean IS_SHOW_GRAPH_XY = false;				//Is show xy axis
     protected boolean IS_SHOW_TITLE = true;					//Is show title
     protected boolean IS_SHOW_TITLE_SHADOW = false;			//Is show title shadow
     protected boolean IS_SHOW_BG = true;					//Is show background
@@ -78,12 +78,12 @@ public abstract class Graph implements IGraph, GraphConstants {
     protected double VALUE_DIVISION_RATIO = 1.0d;			//Y index values division ratio(1.0 is same ratio)
     protected String FONT_NAME;								//Font name
     protected String TITLE;									//Graph title
-    protected double LIMIT;                                 //Graph scale(Higher value to get small graph image)
+    protected double LIMIT;                                      //Graph scale(Higher value to get small graph image)
     protected double WHEEL_UNIT_SCALE = 0.02;    
     protected int SELECTED_COLOR_DENSITY = -20;		
-    protected GraphElements GRAPH_ELEMENTS = null;          //Graph elements object    
+    protected GraphElements<V, X, Y> GRAPH_ELEMENTS = null; //Graph elements object    
     protected Graphics2D GRAPHICS2D = null;                 //Graphics2D object to draw
-    protected List<GraphSelectionListener> listenerList = new ArrayList<GraphSelectionListener>(); //Graph selection listeners
+    protected List<GraphSelectionListener<V, X, Y>> listenerList = new ArrayList<GraphSelectionListener<V, X, Y>>(); //Graph selection listeners
     
     protected INTERPOLATE interpolateType;
     protected int interpolateScale;
@@ -95,7 +95,7 @@ public abstract class Graph implements IGraph, GraphConstants {
      * @param width
      * @param height
      */
-    protected Graph(GraphElements graphElements, String title, int width, int height) {
+    protected Graph(GraphElements<V, X, Y> graphElements, String title, int width, int height) {
     	this.TITLE = title;
     	if(this.ORIGIN_WIDTH == 0 && this.ORIGIN_HEIGHT == 0) {
     		this.ORIGIN_WIDTH = width;
@@ -938,7 +938,7 @@ public abstract class Graph implements IGraph, GraphConstants {
      * @return GraphElements
      * @since JDK1.4.1
      */
-    public GraphElements getGraphElements() {
+    public GraphElements<V, X, Y> getGraphElements() {
         return this.GRAPH_ELEMENTS;
     }
     
@@ -946,7 +946,7 @@ public abstract class Graph implements IGraph, GraphConstants {
      * Get graph element listener list
      * @return
      */
-    public List<GraphSelectionListener> getGraphSelectionListenerList() {
+    public List<GraphSelectionListener<V, X, Y>> getGraphSelectionListenerList() {
     	return this.listenerList;
     }
     
@@ -954,7 +954,7 @@ public abstract class Graph implements IGraph, GraphConstants {
      * Add graph element listener
      * @param listener
      */
-    public void addGraphSelectionListener(GraphSelectionListener listener) {
+    public void addGraphSelectionListener(GraphSelectionListener<V, X, Y> listener) {
     	if(this.listenerList.contains(listener)) {
     		removeGraphSelectionListener(listener);
     	}
@@ -965,7 +965,7 @@ public abstract class Graph implements IGraph, GraphConstants {
      * Remove graph element listener
      * @param listener
      */
-    public void removeGraphSelectionListener(GraphSelectionListener listener) {
+    public void removeGraphSelectionListener(GraphSelectionListener<V, X, Y>  listener) {
     	this.listenerList.remove(listener);
     }
 }

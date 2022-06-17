@@ -4,23 +4,6 @@
 package org.chaostocosmos.chaosgraph.awt2d;
 
 
-import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.GraphOverEvent;
-import org.chaostocosmos.chaosgraph.GraphPressEvent;
-import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
-import org.chaostocosmos.chaosgraph.GraphSelectionListener;
-import org.chaostocosmos.chaosgraph.GraphUtility;
-import org.chaostocosmos.chaosgraph.GraphUtility.CODEC;
-import org.chaostocosmos.chaosgraph.NotMatchArrayException;
-import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
-import org.chaostocosmos.chaosgraph.NotSuppotedEncodingFormatException;
-import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
-import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
-import org.chaostocosmos.chaosgraph.GraphConstants.POPUP_STYLE;
-import org.chaostocosmos.chaosgraph.GraphConstants.SELECTION_BORDER;
-import org.chaostocosmos.chaosgraph.AbstractGraph;
-import org.chaostocosmos.chaosgraph.GraphElement;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,6 +26,23 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.chaostocosmos.chaosgraph.AbstractGraph;
+import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
+import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
+import org.chaostocosmos.chaosgraph.GraphConstants.POPUP_STYLE;
+import org.chaostocosmos.chaosgraph.GraphConstants.SELECTION_BORDER;
+import org.chaostocosmos.chaosgraph.GraphElement;
+import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.GraphOverEvent;
+import org.chaostocosmos.chaosgraph.GraphPressEvent;
+import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
+import org.chaostocosmos.chaosgraph.GraphSelectionListener;
+import org.chaostocosmos.chaosgraph.GraphUtility;
+import org.chaostocosmos.chaosgraph.GraphUtility.CODEC;
+import org.chaostocosmos.chaosgraph.NotMatchArrayException;
+import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
+import org.chaostocosmos.chaosgraph.NotSuppotedEncodingFormatException;
+
 //import com.iproject.wbmpcreator.*
 ;
 /**
@@ -58,9 +58,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 */
 public class GraphExample1 extends JFrame implements GraphSelectionListener {
     //abstract graph object
-    public AbstractGraph graph;
+    public AbstractGraph<Double, String, Double> graph;
     //x index list
-    public List<Object> xIndex =null;
+    public List<String> xIndex =null;
     //y index list
     public List<Double> yIndex =null;
     //graph element list
@@ -72,11 +72,11 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     						new Color(150,150,150), 
     						new Color(150,200,158)};
     //elements values array
-    public double[][] values = {{44,35,0,32,0,33,29,43,25,22,32,43,23},
-                        {43,25,10,32,0,23,52,32,32,23,54,23,48, 20, 60, 140, 500, 10},
-                        {500,93,0,49,0,24,93,63,92,84,69,46,28},
-                        {300,25,0,32,0,23, 9,19,32,70,93,29,15},
-                        {20,36,0,24,22,37,33,54,23,48,53,150,22}};
+    public Double[][] values = {{44d,35d,0d,32d,0d,33d,29d,43d,25d,22d,32d,43d,23d},
+                        {43d,25d,10d,32d,0d,23d,52d,32d,32d,23d,54d,23d,48d, 20d, 60d, 140d, 500d, 10d},
+                        {500d,93d,0d,49d,0d,24d,93d,63d,92d,84d,69d,46d,28d},
+                        {300d,25d,0d,32d,0d,23d, 9d,19d,32d,70d,93d,29d,15d},
+                        {20d,36d,0d,24d,22d,37d,33d,54d,23d,48d,53d,150d,22d}};
 
 
     //y index value array
@@ -99,7 +99,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     JButton jButton7 = new JButton();
     JButton jButton8 = new JButton();
     
-    GraphPanel gpArea, gpBar, gpBarRatio, gpCircle, gpLine;
+    GraphPanel<Double, String, Double> gpArea, gpBar, gpBarRatio, gpCircle, gpLine;
     
     /**
      * constructor
@@ -107,7 +107,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      */
     public GraphExample1() {
         try {
-        	xIndex = new ArrayList<Object>();
+        	xIndex = new ArrayList<String>();
         	for(int i=0; i<17; i++) {
         		if(i % 2 == 0)
         			xIndex.add(i+"");
@@ -120,45 +120,45 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         	yIndex.add(80d);
         	yIndex.add(500d);
         	
-            GraphElements graphElements = new GraphElements(GRAPH.AREA, xIndex, yIndex);
+            GraphElements<Double, String, Double> graphElements = new GraphElements<Double, String, Double>(GRAPH.AREA, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {
-            	GraphElement ge = new GraphElement(elements[i], colors[i], elements[i], colors[i], values[i]);
+            	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
             	graphElements.addElement(ge);
             }
             if(gpArea == null) {
-            	gpArea = new GraphPanel(GRAPH.AREA, graphElements, 600, 400);
+            	gpArea = new GraphPanel<Double, String, Double>(GRAPH.AREA, graphElements, 600, 400);
             }
-            GraphElements graphElements1 = new GraphElements(GRAPH.BAR, xIndex, yIndex);
+            GraphElements<Double, String, Double> graphElements1 = new GraphElements<Double, String, Double>(GRAPH.BAR, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {        	
-            	GraphElement ge = new GraphElement(elements[i], colors[i], elements[i], colors[i], values[i]);
+            	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
             	graphElements1.addElement(ge);
             }
             if(gpBar == null) {
-            	gpBar = new GraphPanel(GRAPH.BAR, graphElements1, 600, 400);
+            	gpBar = new GraphPanel<Double, String, Double>(GRAPH.BAR, graphElements1, 600, 400);
             }
-            GraphElements graphElements2 = new GraphElements(GRAPH.BAR_RATIO, xIndex, yIndex);
+            GraphElements<Double, String, Double> graphElements2 = new GraphElements<Double, String, Double>(GRAPH.BAR_RATIO, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {
-            	GraphElement ge = new GraphElement(elements[i], colors[i], elements[i], colors[i], values[i]);
+            	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
             	graphElements2.addElement(ge);
             }
             if(gpBarRatio == null) {
-            	gpBarRatio = new GraphPanel(GRAPH.BAR_RATIO, graphElements2, 600, 400);
+            	gpBarRatio = new GraphPanel<Double, String, Double>(GRAPH.BAR_RATIO, graphElements2, 600, 400);
             }
-            GraphElements graphElements3 = new GraphElements(GRAPH.CIRCLE, xIndex, yIndex);
+            GraphElements<Double, String, Double> graphElements3 = new GraphElements<Double, String, Double>(GRAPH.CIRCLE, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {
-            	GraphElement ge = new GraphElement(elements[i], colors[i], elements[i], colors[i], values[i]);
+            	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
             	graphElements3.addElement(ge);
             }
             if(gpCircle == null) {
-            	gpCircle = new GraphPanel(GRAPH.CIRCLE, graphElements3, 600, 400);
+            	gpCircle = new GraphPanel<Double, String, Double>(GRAPH.CIRCLE, graphElements3, 600, 400);
             }
-            GraphElements graphElements4 = new GraphElements(GRAPH.LINE, xIndex, yIndex);
+            GraphElements<Double, String, Double> graphElements4 = new GraphElements<Double, String, Double>(GRAPH.LINE, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {        	
-            	GraphElement ge = new GraphElement(elements[i], colors[i], elements[i], colors[i], values[i]);
+            	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
             	graphElements4.addElement(ge);
             }
             if(gpLine == null) {
-            	gpLine = new GraphPanel(GRAPH.LINE, graphElements4, 600, 400);
+            	gpLine = new GraphPanel<Double, String, Double>(GRAPH.LINE, graphElements4, 600, 400);
             }
             jbInit();
             showAreaGraph();
@@ -177,7 +177,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         graph.setTitle("This is simple area graph.");
         graph.setShowShadow(false);
         graph.setGridStyle(GRID.DOT);
-        graph.setLimit(1000);
+        graph.setLimit(1000d);
         graph.setPopupStyle(POPUP_STYLE.ROUND);
         graph.setSelectionEnable(true);
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
@@ -199,7 +199,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     public void showBarGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
     	this.graph = (BarGraph)gpBar.getGraph();
     	graph.setTitle("This is simple bar graph.");
-        graph.setLimit(300f);
+        graph.setLimit(300d);
         graph.setUnit("m");
         
         getContentPane().remove(2);
@@ -217,7 +217,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     public void showBarRatioGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
     	this.graph = (BarRatioGraph)gpBarRatio.getGraph();
     	graph.setTitle("This is simple bar ratio graph.");
-        graph.setLimit(300f);
+        graph.setLimit(300d);
         graph.setUnit(" m");
         
         getContentPane().remove(2);
@@ -233,7 +233,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showCircleGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-    	this.graph = (CircleGraph)gpCircle.getGraph();
+    	this.graph = (AbstractGraph<Double, String, Double>)gpCircle.getGraph();
     	graph.setTitle("This is simple circle graph.");
         graph.setShadowAngle(280);
         graph.setRightIndent(100);
@@ -252,7 +252,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showLineGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-    	this.graph = (LineGraph)gpLine.getGraph();
+    	this.graph = (AbstractGraph<Double, String, Double>)gpLine.getGraph();
     	graph.setTitle("This is simple line graph.");
         //graph.setImgBgColor(new Color(50, 50, 50));
         graph.setGraphBgColor(new Color(60, 60, 60));

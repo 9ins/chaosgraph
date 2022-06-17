@@ -3,7 +3,25 @@
  */
 package org.chaostocosmos.chaosgraph;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 
 import org.chaostocosmos.chaosgraph.awt2d.AreaGraph;
@@ -16,28 +34,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 
-import javax.media.jai.JAI;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import com.sun.media.jai.codec.ImageEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.media.jai.codec.ImageCodec;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.io.File;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.sun.media.jai.codec.ImageEncoder;
 
 /**
 * <p>Title: GraphUtility</p>
@@ -130,7 +131,7 @@ public class GraphUtility
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      */
-    public static Graph createGraphWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static <V, X, Y> Graph<V, X, Y> createGraphWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	ObjectMapper om = new ObjectMapper();
     	Map<String, Object> map = (Map<String, Object>)om.readValue(json, Map.class);
     	return createGraphWithMap(map);
@@ -146,7 +147,7 @@ public class GraphUtility
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      */
-    public static Graph createGraphWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static <V, X, Y> Graph<V, X, Y> createGraphWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	GraphConstants.GRAPH type = GraphConstants.GRAPH.valueOf(map.get("GRAPH")+"");
     	INTERPOLATE interpolate = INTERPOLATE.valueOf(map.get("INTERPOLATE")+"");
     	int width = (int)Double.parseDouble(map.get("WIDTH")+"");
@@ -157,9 +158,9 @@ public class GraphUtility
     	List<Double> yIndex = new ArrayList<Double>();
     	for(Object o : list) {
     		yIndex.add(Double.parseDouble(o+""));
-    	}    	
+    	}
     	List<Map<String, Object>> elementList = (List<Map<String, Object>>)map.get("ELEMENTS");
-    	List<GraphElement> geList = elementList.stream().map(m -> {
+    	List<GraphElement<V, X, Y>> geList = elementList.stream().map(m -> {
    			String elementName = m.get("ELEMENT")+"";
    			String label = m.get("LABEL")+"";
    			List<Integer> colorList = ((List<Object>)m.get("COLOR")).stream().map(v -> (int)Double.parseDouble(v+"")).collect(Collectors.toList());
@@ -225,7 +226,7 @@ public class GraphUtility
      * @param places
      * @return
      */
-    public static List<Double> roundAvoid(List<Double> values, int places) {
+    public static List<Double>roundAvoid(List<Double> values, int places) {
 		for(int i=0; i< values.size(); i++) {
 		    values.set(i, roundAvoid(values.get(i), places));
 		}
@@ -238,10 +239,9 @@ public class GraphUtility
      * @param places
      * @return
      */
-    public static double roundAvoid(double value, int places) {
+    public static Double roundAvoid(Double value, int places) {
 		double scale = Math.pow(10, places);
-		double val = Math.round(value * scale) / scale;
-		return val;
+		return (double) (Math.round((double)value * scale) / scale);
     }
     
     /**

@@ -3,10 +3,23 @@
  */
 package org.chaostocosmos.chaosgraph.awt2d;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.DefaultGraphFactory;
 import org.chaostocosmos.chaosgraph.Graph;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
@@ -15,20 +28,6 @@ import org.chaostocosmos.chaosgraph.GraphElements;
 import org.chaostocosmos.chaosgraph.GraphOverEvent;
 import org.chaostocosmos.chaosgraph.GraphPressEvent;
 import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
-
-import java.awt.image.BufferedImage;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ContainerAdapter;
-import java.awt.event.ContainerEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.Toolkit;
-import java.awt.Graphics2D;
 
 /**
 * <p>Title: Graph panel class</p>
@@ -39,9 +38,9 @@ import java.awt.Graphics2D;
 * @version 1.2, 2006/7/5 first draft
 * @since JDK1.4.1
 */
-public class GraphPanel extends JPanel {      
-	Graph graph;
-	GraphElements elements;
+public class GraphPanel<V, X, Y> extends JPanel {      
+	Graph<V, X, Y> graph;
+	GraphElements<V, X, Y> elements;
     BufferedImage buffImg = null;     
     Graphics2D g2d;
     private ComponentAdapterExt component = null;
@@ -55,7 +54,7 @@ public class GraphPanel extends JPanel {
      * @param width
      * @param height
      */
-    public GraphPanel(GRAPH graphType, GraphElements elements, int width, int height) {  
+    public GraphPanel(GRAPH graphType, GraphElements<V, X, Y> elements, int width, int height) {  
     	this(DefaultGraphFactory.createGraph(graphType, elements, width, height), width, height);
     }
     
@@ -65,7 +64,7 @@ public class GraphPanel extends JPanel {
      * @param width
      * @param height
      */
-    public GraphPanel(Graph graph, int width, int height) {
+    public GraphPanel(Graph<V, X, Y> graph, int width, int height) {
     	this.graph = graph;
         this.component = new ComponentAdapterExt();
         this.container = new ContainerAdapterExt();
@@ -93,7 +92,7 @@ public class GraphPanel extends JPanel {
      * Get graph
      * @return
      */
-    public Graph getGraph() {
+    public Graph<V, X, Y> getGraph() {
     	return this.graph;
     }
     
@@ -137,7 +136,7 @@ public class GraphPanel extends JPanel {
     	}
 		
 		public void mousePressed(MouseEvent me) {
-		    GraphElement ge = graph.isPointOnShapes(me.getX(), me.getY());
+		    GraphElement<V, X, Y> ge = graph.isPointOnShapes(me.getX(), me.getY());
 		    if(ge != null) {
 				//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
 			    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
@@ -160,7 +159,7 @@ public class GraphPanel extends JPanel {
 		}
 		
 		public void mouseReleased(MouseEvent me) {
-		    GraphElement ge = graph.isPointOnShapes(me.getX(), me.getY());
+		    GraphElement<V, X, Y> ge = graph.isPointOnShapes(me.getX(), me.getY());
 		    if(ge != null) {
 				//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
 			    graph.getGraphSelectionListenerList().stream().forEach(gl -> {

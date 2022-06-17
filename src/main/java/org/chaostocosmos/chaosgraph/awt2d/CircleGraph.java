@@ -3,8 +3,16 @@
  */
 package org.chaostocosmos.chaosgraph.awt2d;
 
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.BasicStroke;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.geom.Arc2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +21,7 @@ import java.util.stream.Collectors;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.NotMatchArrayException;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
-import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
-
-import java.awt.geom.*;
 /**
 * <p>Title: Circle graph class</p>
 * <p>Description:</p>
@@ -29,7 +33,7 @@ import java.awt.geom.*;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class CircleGraph extends AbstractGraph
+public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
 {
     private boolean isShowPercent = false;   
     private boolean isShowValue = true;    
@@ -39,7 +43,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge)  {
+    public CircleGraph(GraphElements<V, X, Y> ge)  {
         this(ge, 600, 300);
     }
     
@@ -50,7 +54,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge, int width, int height)  {
+    public CircleGraph(GraphElements<V, X, Y> ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -62,7 +66,7 @@ public class CircleGraph extends AbstractGraph
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public CircleGraph(GraphElements ge, String title, int width, int height)  {
+    public CircleGraph(GraphElements<V, X, Y> ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.CIRCLE) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
@@ -81,18 +85,18 @@ public class CircleGraph extends AbstractGraph
     @Override
     public void drawGraph(Graphics2D g2d) {
         super.drawGraph(g2d);        
-        Map<Object, GraphElement> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
-        List<Object> elements = new ArrayList(elementMap.keySet());
-        List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();        
+        Map<Object, GraphElement<V, X, Y>> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
+        List<Object> elements = elementMap.keySet().stream().collect(Collectors.toList());
+        List<X> xIndex = GRAPH_ELEMENTS.getXIndex();        
         int minXIndex = GRAPH_ELEMENTS.getMinimumXIndexSize();
         if(minXIndex > xIndex.size()) {
             for(int i=0; i<minXIndex-xIndex.size(); i++) {
-            	xIndex.add("");
+            	xIndex.add(null);
             }
         }
 
-        List<Double> values = elementMap.entrySet().stream().map(ge -> ge.getValue().getValues().get(0)).collect(Collectors.toList());
-        double total = values.stream().mapToDouble(Double::doubleValue).sum();
+        List<V> values = elementMap.entrySet().stream().map(ge -> ge.getValue().getValues().get(0)).collect(Collectors.toList());
+        double total = values.stream().mapToDouble(v -> Double.valueOf(v+"")).sum();
         double temp = 90;        
 
         float circleWidth = GRAPH_WIDTH-(INDENT_LEFT+INDENT_RIGHT);
@@ -115,9 +119,9 @@ public class CircleGraph extends AbstractGraph
         }
 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-            GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	double value = ge.getValues().get(0);
-            if (value < 0) {
+            GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+        	V value = ge.getValues().get(0);
+            if ((double)value < 0) {
             	continue;
             }            
             boolean isSelected = false;
@@ -140,7 +144,7 @@ public class CircleGraph extends AbstractGraph
                 color(ge.getElementColor(), g2d);
             }
 
-            double angle = value * 360 / total * -1;   
+            double angle = (double)value * 360 / total * -1;   
             Arc2D.Double af = new Arc2D.Double(x, y, circleWidth, circleHeight, temp, angle, Arc2D.PIE);
             List<Point> shapes = new ArrayList<Point>();
             double cx = x + circleWidth / 2;
@@ -170,12 +174,12 @@ public class CircleGraph extends AbstractGraph
             temp += angle;
         } 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-            GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	double value = ge.getValues().get(0);
-            if (value < 0) {
+            GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+        	V value = ge.getValues().get(0);
+            if ((double)value < 0) {
             	continue;
             }       
-            double angle = value * 360 / total * -1;   
+            double angle = (double)value * 360 / total * -1;   
             setComposite(0.6f, g2d);
             color(INDEX_FONT_COLOR, g2d);
             double scale = this.GRAPH_WIDTH * (SCALED_WIDTH) / 400;
@@ -183,8 +187,8 @@ public class CircleGraph extends AbstractGraph
             String valStr = String.valueOf(value);
             
             double rnd = Math.pow(10, ROUND_PLACE);
-        	value = value * 100d / total;
-            String perStr = " (" + (Math.round(value * rnd ) / rnd) + "%)";
+        	double perValue = (double)value * 100d / total;
+            String perStr = " (" + (Math.round((double)perValue * rnd ) / rnd) + "%)";
 
             int strWidth = fm.stringWidth(valStr+perStr);
             int ascent = fm.getAscent();
@@ -237,10 +241,10 @@ public class CircleGraph extends AbstractGraph
     /**
      * Is specific position is in graph element shapes.
      */
-    public GraphElement isPointOnShapes(int x, int y) {
-		List<GraphElement> list = new ArrayList<GraphElement>(this.getGraphElements().getGraphElementMap().values());
+    public GraphElement<V, X, Y> isPointOnShapes(int x, int y) {
+		List<GraphElement<V, X, Y>> list = new ArrayList<GraphElement<V, X, Y>>(this.getGraphElements().getGraphElementMap().values());
 		for(int i=list.size()-1; i >=0; i--) {
-		    GraphElement ge = list.get(i);
+		    GraphElement<V, X, Y> ge = list.get(i);
 		    //System.out.println(ge.getElementName());
 		    int[] xpoints = new int[ge.getShapes().size()];
 		    int[] ypoints = new int[ge.getShapes().size()];
@@ -262,7 +266,7 @@ public class CircleGraph extends AbstractGraph
 					return ge;
 		    	}
 		    } else {
-		    	ge.setSelectedValue(-1);
+		    	ge.setSelectedValue((V)new Double(-1));
 		    	ge.setSelectedValueIndex(-1);
 		    	ge.setSelectedPoint(null);
 		    }

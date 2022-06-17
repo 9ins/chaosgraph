@@ -10,11 +10,11 @@ import java.util.EventObject;
  * @author Kooin-Shin
  * 2020. 8. 26.
  */
-public class GraphPressEvent extends EventObject {
+public class GraphPressEvent<V, X, Y> extends EventObject {
 	/**
 	 * Graph element
 	 */
-	GraphElement ge;
+	GraphElement<V, X, Y> ge;
 
 	/**
 	 * Constructor
@@ -22,7 +22,7 @@ public class GraphPressEvent extends EventObject {
 	 * @param source
 	 * @param ge
 	 */
-	public GraphPressEvent(Object source, GraphElement ge) {
+	public GraphPressEvent(Object source, GraphElement<V, X, Y> ge) {
 		super(source);
 		this.ge = ge;
 	}
@@ -31,7 +31,7 @@ public class GraphPressEvent extends EventObject {
 	 * Get graph element
 	 * @return
 	 */
-	public GraphElement getGraphElement() {
+	public GraphElement<V, X, Y> getGraphElement() {
 		return ge;
 	}
 
@@ -39,7 +39,7 @@ public class GraphPressEvent extends EventObject {
 	 * Set graph element
 	 * @param ge
 	 */
-	public void setGraphElement(GraphElement ge) {
+	public void setGraphElement(GraphElement<V, X, Y> ge) {
 		this.ge = ge;
 	}
 

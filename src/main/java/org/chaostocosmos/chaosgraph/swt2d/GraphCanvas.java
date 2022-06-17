@@ -2,7 +2,6 @@ package org.chaostocosmos.chaosgraph.swt2d;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Method;
 
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.DefaultGraphFactory;
@@ -13,7 +12,6 @@ import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
 import org.chaostocosmos.chaosgraph.GraphOverEvent;
 import org.chaostocosmos.chaosgraph.GraphPressEvent;
-import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 import org.chaostocosmos.chaosgraph.awt2d.CircleGraph;
 import org.eclipse.swt.SWT;
@@ -24,8 +22,6 @@ import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -43,9 +39,9 @@ import org.eclipse.swt.widgets.Shell;
  * @author Kooin-Shin
  * 2020. 9. 21.
  */
-public class GraphCanvas extends Canvas {
-	AbstractGraph graph;
-	GraphElements elements;
+public class GraphCanvas<V, X, Y> extends Canvas {
+	AbstractGraph<V, X, Y> graph;
+	GraphElements<V, X, Y> elements;
     BufferedImage buffImg;     
     Graphics2D g2d;	
 	GRAPH graphType;
@@ -65,7 +61,7 @@ public class GraphCanvas extends Canvas {
 	 * @param w
 	 * @param h
 	 */
-	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements elements, boolean autoResizing, int w, int h) {
+	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements<V, X, Y> elements, boolean autoResizing, int w, int h) {
 		this(parent, graphType, elements, autoResizing, w, h, false);
 	}
 
@@ -75,7 +71,7 @@ public class GraphCanvas extends Canvas {
 	 * @param graphType
 	 * @param elements
 	 */
-	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements elements, boolean autoResizing, int w, int h, boolean isRAPMode) {
+	public GraphCanvas(Composite parent, GRAPH graphType, GraphElements<V, X, Y> elements, boolean autoResizing, int w, int h, boolean isRAPMode) {
 		super(parent, SWT.DOUBLE_BUFFERED);
 		this.width = w;
 		this.height = h;
@@ -98,7 +94,7 @@ public class GraphCanvas extends Canvas {
 			
 			@Override
 			public void mouseDown(MouseEvent me) {
-			    GraphElement ge = graph.isPointOnShapes(me.x, me.y);
+			    GraphElement<V, X, Y> ge = graph.isPointOnShapes(me.x, me.y);
 			    if(ge != null && graph.getGraphElements().getLabelRectangle().contains(me.x, me.y)) {
 				    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
 						try {

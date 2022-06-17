@@ -3,24 +3,15 @@
  */
 package org.chaostocosmos.chaosgraph.awt2d;
 
-import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
-import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
-import org.chaostocosmos.chaosgraph.GraphElement;
-import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -30,6 +21,12 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
+
+import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
+import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
+import org.chaostocosmos.chaosgraph.GraphElement;
+import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 /**
 * <p>Title: JVM Memory Viewer</p>
 * <p>Description:</p>
@@ -64,16 +61,16 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
     public boolean isThread = false;
     long interval = 100;
     public final int xIndexCount = 300;
-    public GraphElements ge1 = null, ge2 = null, ge3 = null;
+    public GraphElements<Double, String, Double> ge1 = null, ge2 = null, ge3 = null;
     public String[] elements = {"Used Memory", "Free Memory"};
     public Color[] colors = {new Color(230, 150, 150), new Color(150, 150, 230)};
-    public List<Object> xIndex = new ArrayList<Object>();
-    public List<Object> xIndex_ = new ArrayList<Object>();
+    public List<String> xIndex = new ArrayList<String>();
+    public List<String> xIndex_ = new ArrayList<String>();
     public List<Double> yIndex = new ArrayList<Double>();
     public GRAPH sel = GRAPH.AREA;
     
     long unit = 1024 * 1024;
-    GraphPanel gp;
+    GraphPanel<Double, String, Double> gp;
     /**
      * constructor
      */
@@ -83,12 +80,12 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
             	xIndex.add("");
             }
             yIndex.add(0d);
-            this.ge1 = new GraphElements(GRAPH.AREA, xIndex, yIndex);
-            this.ge2 = new GraphElements(GRAPH.LINE, xIndex, yIndex);
-            this.ge3 = new GraphElements(GRAPH.BAR, xIndex_, yIndex);
+            this.ge1 = new GraphElements<Double, String, Double>(GRAPH.AREA, xIndex, yIndex);
+            this.ge2 = new GraphElements<Double, String, Double>(GRAPH.LINE, xIndex, yIndex);
+            this.ge3 = new GraphElements<Double, String, Double>(GRAPH.BAR, xIndex_, yIndex);
             int i=0;
             for(String element : elements) {
-	        	GraphElement ge = new GraphElement(element, colors[i], element, colors[i]);
+	        	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(element, colors[i], element, colors[i]);
 	        	this.ge1.addElement(ge);
 	        	this.ge2.addElement(ge);
 	        	this.ge3.addElement(ge);
@@ -160,7 +157,7 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         while(this.isThread) {
             try {
                 draw();
-                this.thr.sleep(this.interval);
+                Thread.sleep(this.interval);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -185,7 +182,7 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         //if selected area graph
         if(sel == GRAPH.AREA) {           
             for(int i=0; i<this.ge1.getGraphElementMap().size(); i++) {
-	        	GraphElement ge = this.ge1.getGraphElement(this.elements[i]);
+	        	GraphElement<Double, String, Double> ge = this.ge1.getGraphElement(this.elements[i]);
 	        	List<Double> values = ge.getValues();
 	        	if(values.size() > xIndexCount) {
 	        		values.remove(0);        	    
@@ -195,14 +192,13 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
 	        	ge.setValues(values);
 	        	this.ge1.setGraphElement(ge.getElementName(), ge);
             }
-            this.ge1.setYIndex(new double[] {totalMemory, this.ge1.getMaximum()});
-            
+            this.ge1.setYIndex(new Double[] {(double)totalMemory, this.ge1.getMaximum()});            
             this.gp.getGraph().setTitleFontSize(12);
             this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" MB   FREE:"+freeMemory+" MB   USED:"+usedMemory+" MB");
             this.gp.repaint();  
         } else if(sel == GRAPH.LINE) {
             for(int i=0; i<this.ge2.getGraphElementMap().size(); i++) {
-	        	GraphElement ge = this.ge2.getGraphElement(this.elements[i]);
+	        	GraphElement<Double, String, Double> ge = this.ge2.getGraphElement(this.elements[i]);
 	        	List<Double> values = ge.getValues();
 	        	if(values.size() > xIndexCount) {
 	        		values.remove(0);
@@ -210,14 +206,13 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
 	        	values.add((double)memory[i]);
 	        	ge.setValues(values);
             }
-            this.ge2.setYIndex(new double[] {totalMemory, this.ge2.getMaximum()});
-            
+            this.ge2.setYIndex(new Double[] {(double)totalMemory, this.ge2.getMaximum()});            
             this.gp.getGraph().setTitleFontSize(12);
             this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" MB   FREE:"+freeMemory+" MB   USED:"+usedMemory+" MB");
             this.gp.repaint();
         } else if(sel == GRAPH.BAR) {
             for(int i=0; i<this.ge3.getGraphElementMap().size(); i++) {
-	        	GraphElement ge = this.ge3.getGraphElement(this.elements[i]);
+	        	GraphElement<Double, String, Double> ge = this.ge3.getGraphElement(this.elements[i]);
 	        	List<Double> values = ge.getValues();
 	        	if(values.size() > xIndexCount) {
 	        		values.remove(0);        	    
@@ -225,8 +220,7 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
 	        	values.add((double)memory[i]);
 	        	ge.setValues(values);
             }
-            this.ge3.setYIndex(new double[] {totalMemory, this.ge3.getMaximum()});
-            
+            this.ge3.setYIndex(new Double[] {(double)totalMemory, this.ge3.getMaximum()});            
             this.gp.getGraph().setTitleFontSize(12);
             this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" MB   FREE:"+freeMemory+" MB   USED:"+usedMemory+" MB");
             this.gp.repaint();
@@ -252,9 +246,9 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         try {
             this.sel = GRAPH.AREA;
             long limit = Runtime.getRuntime().maxMemory() / unit;
-            this.gp = new GraphPanel(this.sel, this.ge1, 600, 400);
+            this.gp = new GraphPanel<Double, String, Double>(this.sel, this.ge1, 600, 400);
             this.gp.getGraph().setGridStyle(GRID.DOT);
-            this.gp.getGraph().setLimit(limit);
+            this.gp.getGraph().setLimit((double)limit);
             this.gp.getGraph().setLeftIndent(80);
             this.gp.getGraph().setShowGraphXY(false);
             this.gp.getGraph().setShowShadow(false);
@@ -277,8 +271,8 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         try {
             this.sel = GRAPH.LINE;
             float limit = Runtime.getRuntime().maxMemory() / unit;
-            this.gp = new GraphPanel(this.sel, this.ge2, 600, 400);
-            this.gp.getGraph().setLimit(limit);
+            this.gp = new GraphPanel<Double, String, Double>(this.sel, this.ge2, 600, 400);
+            this.gp.getGraph().setLimit((double)limit);
             this.gp.getGraph().setShowBg(false);
             this.gp.getGraph().setIndent(20, 20, 20, 20);
             this.gp.getGraph().setValueDivisionRatio(1024d*1024d);
@@ -299,8 +293,8 @@ public class AWTGraphSimple2 extends JFrame implements Runnable {
         try {
             this.sel = GRAPH.BAR;
             float limit = Runtime.getRuntime().maxMemory() / unit;
-            this.gp = new GraphPanel(this.sel, this.ge3, 600, 400);
-            this.gp.getGraph().setLimit(limit);
+            this.gp = new GraphPanel<Double, String, Double>(this.sel, this.ge3, 600, 400);
+            this.gp.getGraph().setLimit((double)limit);
             this.gp.getGraph().setShowBg(false);
             this.gp.getGraph().setIndent(20, 20, 20, 20);
             this.gp.getGraph().setValueDivisionRatio(1024d*1024d);

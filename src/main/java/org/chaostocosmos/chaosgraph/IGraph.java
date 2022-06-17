@@ -13,7 +13,7 @@ import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
  * @author Kooin-Shin
  * 2020. 8. 31.
  */
-public interface IGraph {
+public interface IGraph<V, X, Y> {
 	
     /**
      * Get graph type
@@ -75,5 +75,5 @@ public interface IGraph {
      * @param y
      * @return GraphElement
      */
-    public GraphElement isPointOnShapes(int x, int y);
+    public GraphElement<V, X, Y> isPointOnShapes(int x, int y);
 }

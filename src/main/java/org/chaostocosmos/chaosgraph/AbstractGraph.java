@@ -1,12 +1,10 @@
 package org.chaostocosmos.chaosgraph;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke; 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -17,13 +15,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-
-import org.chaostocosmos.chaosgraph.Graph;
-import org.chaostocosmos.chaosgraph.awt2d.GraphPanel;
 /**
 * <p>Title: Graph class</p>
 * <p>Description:</p>
@@ -44,7 +36,7 @@ import org.chaostocosmos.chaosgraph.awt2d.GraphPanel;
 *               2020/08/12<br>
 * @since JDK1.4.1
 */
-public abstract class AbstractGraph extends Graph {
+public abstract class AbstractGraph<V, X, Y> extends Graph<V, X, Y> {
     protected Color IMG_BG_COLOR = new Color(230,230,255);		//Color of image object background
     protected Color IMG_BORDER_COLOR = new Color(200,200,230);	//Color of image object border
     protected Color GRAPH_BG_COLOR = new Color(255,255,255);	//Color of graph background 
@@ -67,7 +59,7 @@ public abstract class AbstractGraph extends Graph {
      * @param elements
      * @since JDK1.4.1
      */
-    public AbstractGraph(GraphElements elements) {
+    public AbstractGraph(GraphElements<V, X, Y> elements) {
         this(elements, 600, 300);
     }
     
@@ -78,7 +70,7 @@ public abstract class AbstractGraph extends Graph {
      * @param height 
      * @since JDK1.4.1
      */
-    public AbstractGraph(GraphElements elements, int width, int height) {
+    public AbstractGraph(GraphElements<V, X, Y> elements, int width, int height) {
         this(elements, "", width, height);
     }
     
@@ -90,7 +82,7 @@ public abstract class AbstractGraph extends Graph {
      * @param height
      * @since JDK1.4.1
      */
-    public AbstractGraph(GraphElements elements, String title, int width, int height) {
+    public AbstractGraph(GraphElements<V, X, Y> elements, String title, int width, int height) {
     	super(elements, title, width, height);
     }
     
@@ -99,9 +91,9 @@ public abstract class AbstractGraph extends Graph {
         initGraph(g2d, IMG_WIDTH, IMG_HEIGHT);
     	sweepBg(IMG_WIDTH, IMG_HEIGHT);
         GRAPH graphType = GRAPH_ELEMENTS.getGraphType();
-        double maxValue = GRAPH_ELEMENTS.getMaximum();
-        List<Double> yIndex = GRAPH_ELEMENTS.getYIndex();
-        List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();
+        double maxValue = (double)GRAPH_ELEMENTS.getMaximum();
+        List<X> xIndex = GRAPH_ELEMENTS.getXIndex();
+        List<Y> yIndex = GRAPH_ELEMENTS.getYIndex();
                 
         if (IS_SHOW_BG) {
             setComposite(IMG_BG_ALPHA, g2d);
@@ -113,14 +105,14 @@ public abstract class AbstractGraph extends Graph {
         }
         setComposite(GRAPH_XY_ALPHA, g2d);
         if (IS_SHOW_GRAPH_XY) {
-            drawXY(GRAPH_XY_SIZE, GRAPH_XY_COLOR, g2d);						//draw x/y axis
+            drawXY(GRAPH_XY_SIZE, GRAPH_XY_COLOR, g2d);		//draw x/y axis
         }
         setComposite(INDEX_FONT_ALPHA, g2d);
         if (IS_SHOW_INDEX_X) {
-            drawIndexX(graphType, FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, xIndex, g2d); 					//draw x indexex
+            drawIndexX(graphType, FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, xIndex, g2d);		//draw x indexex
         }
         if (IS_SHOW_INDEX_Y) {
-            drawIndexY(FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, yIndex, LIMIT, maxValue, g2d); 					//draw y indexex
+            drawIndexY(FONT_NAME, INDEX_FONT_SIZE, INDEX_FONT_COLOR, yIndex, LIMIT, maxValue, g2d);	//draw y indexex
         }
         setComposite(GRID_ALPHA, g2d);
         if (IS_SHOW_GRID_X) {
@@ -632,7 +624,7 @@ public abstract class AbstractGraph extends Graph {
      * @param ge
      * @param graphics
      */
-    protected void drawPopup(Point popPoint, Color bgColor, GraphElement ge, Graphics2D graphics) {
+    protected void drawPopup(Point popPoint, Color bgColor, GraphElement<V, X, Y> ge, Graphics2D graphics) {
         String longStr = "";
         int nmSize = ge.getElementName().length();
         int valSize = (ge.getSelectedValue()+"").length();
@@ -673,9 +665,9 @@ public abstract class AbstractGraph extends Graph {
         setComposite(1.0f, graphics);        
         graphics.setFont(fm.getFont());
         graphics.drawString(ge.getElementName(), (int)(x + ascent), (int)Math.round(y + ascent * 1.5));
-        double value = ge.getSelectedValue();
+        V value = ge.getSelectedValue();
         double scale1 = Math.pow(10, ROUND_PLACE);
-        String valueStr = (Math.round(value * scale1) / scale1)+this.INDEX_Y_UNIT;
+        String valueStr = (Math.round((double)value * scale1) / scale1)+this.INDEX_Y_UNIT;
         graphics.drawString(valueStr, (int)(x + ascent), (int)Math.round(y + ascent * 2.5));
     }
     
@@ -688,7 +680,7 @@ public abstract class AbstractGraph extends Graph {
      * @param elements
      * @param graphics
      */
-    protected void drawLabel(String fontName, int fontSize, int fontStyle, Color bgColor, List<GraphElement> elements, Graphics2D graphics) {
+    protected void drawLabel(String fontName, int fontSize, int fontStyle, Color bgColor, List<GraphElement<V, X, Y>> elements, Graphics2D graphics) {
         String longStr="", tmp="";
         int i=0;
         for (i=0; i<elements.size(); i++) {
@@ -705,7 +697,7 @@ public abstract class AbstractGraph extends Graph {
         int spacing = 40;
         double labelWidth = fm.stringWidth(longStr) + spacing;
         double labelHeight = fm.getHeight() * i;
-        LABEL_X = (int)(LABEL_X-(labelWidth + 10));
+        super.LABEL_X = (int)(LABEL_X-(labelWidth + 10));
         float ascent = fm.getAscent();
         
         if(IS_SHOW_LABEL_BACKGROUND) {
@@ -724,7 +716,7 @@ public abstract class AbstractGraph extends Graph {
         }
         int unit = (int)(fm.getHeight());
         for (int a=0; a<elements.size(); a++) {        
-        	GraphElement  ge = elements.get(a);
+        	GraphElement<V, X, Y> ge = elements.get(a);
             if(ge == null) {
             	 break;
             }
@@ -758,7 +750,7 @@ public abstract class AbstractGraph extends Graph {
      * @param graphics Graphics2D
      * @since JDK1.4.1
      */
-    protected void drawIndexX(GRAPH graphType, String fontName, int fontSize, Color fontColor, List<Object> xIndex, Graphics2D graphics) {
+    protected void drawIndexX(GRAPH graphType, String fontName, int fontSize, Color fontColor, List<X> xIndex, Graphics2D graphics) {
         color(fontColor, graphics);
         for (int i=0; i<xIndex.size(); i++)
         {
@@ -791,10 +783,9 @@ public abstract class AbstractGraph extends Graph {
      * @param graphics Graphics2D
      * @since JDK1.4.1
      */
-    protected void drawIndexY(String fontName, int fontSize, Color fontColor, List<Double> yIndex, double limit, double maxValue, Graphics2D graphics) {
+    protected void drawIndexY(String fontName, int fontSize, Color fontColor, List<Y> yIndex, double limit, double maxValue, Graphics2D graphics) {
         color(fontColor, graphics);
-        for (int i=0; i<yIndex.size(); i++)
-        {
+        for (int i=0; i<yIndex.size(); i++) {
             FontMetrics fm = setFont(fontName, Font.BOLD, fontSize, graphics);
             String str =yIndex.get(i)+"";
             if(str.equals("0.0"))
@@ -837,16 +828,13 @@ public abstract class AbstractGraph extends Graph {
      * @param graphics Graphics2D
      * @since JDK1.4.1
      */
-    protected void drawGridX(List<Object> xIndex, Color color, GRID style, Graphics2D graphics) {
+    protected void drawGridX(List<X> xIndex, Color color, GRID style, Graphics2D graphics) {
         color(color, graphics);
-        double unitWidth = GRAPH_WIDTH / xIndex.size();
-        for (int i=0; i<xIndex.size(); i++)
-        {
-            double x = i*unitWidth + GRAPH_X;
+        for (int i=0; i<xIndex.size(); i++) {
+            double x = i * (GRAPH_WIDTH / xIndex.size()) + GRAPH_X;
             Object xv = xIndex.get(i);
-            if (xv != null && !xv.equals(""))
-            {
-                drawGrid(GRID_VISIBLE.X, style, x, GRAPH_Y, x, (GRAPH_Y+1)-GRAPH_HEIGHT, graphics);
+            if (xv != null && !xv.equals("")) {
+                drawGrid(GRID_VISIBLE.X, style, x, GRAPH_Y-GRAPH_BORDER_SIZE, x, (GRAPH_Y+1)-GRAPH_HEIGHT+GRAPH_BORDER_SIZE, graphics);
             }
         }
     }
@@ -861,7 +849,7 @@ public abstract class AbstractGraph extends Graph {
      * @param graphics 
      * @since JDK1.4.1
      */
-    protected void drawGridY(List<Double> yIndex, Color color, GRID style, double limit, double maxValue, Graphics2D graphics) {
+    protected void drawGridY(List<Y> yIndex, Color color, GRID style, double limit, double maxValue, Graphics2D graphics) {
         color(color, graphics);
         for (int i=0; i<yIndex.size(); i++) {
         	Object obj = yIndex.get(i);
@@ -869,13 +857,13 @@ public abstract class AbstractGraph extends Graph {
         	if(obj instanceof Number) {
         		y = ((Double)obj).doubleValue();
         	} else if(obj instanceof String) {
-        		y = Double.parseDouble(obj+"");
+        		y = Double.valueOf(obj+"");
         	} else {
         		y = 0;
         	}
             y = (limit < maxValue) ? (GRAPH_Y - y * GRAPH_HEIGHT / maxValue) : (GRAPH_Y - y * GRAPH_HEIGHT / limit);
             if (y != 0f && y > GRAPH_Y-GRAPH_HEIGHT) {
-                drawGrid(GRID_VISIBLE.Y, style, GRAPH_X+1, intValue(y), GRAPH_X+GRAPH_WIDTH, intValue(y), graphics);
+                drawGrid(GRID_VISIBLE.Y, style, GRAPH_X+GRAPH_BORDER_SIZE, intValue(y), GRAPH_X+GRAPH_WIDTH-GRAPH_BORDER_SIZE, intValue(y), graphics);
         	}
         }
     }
@@ -892,23 +880,15 @@ public abstract class AbstractGraph extends Graph {
      * @since JDK1.4.1
      */
     private void drawGrid(GRID_VISIBLE xy, GRID gridStyle, double x1, double y1, double x2, double y2, Graphics2D graphics) {
-        if (gridStyle == GRID.LINE)
-        {
+        if (gridStyle == GRID.LINE) {
             graphics.draw(new Line2D.Double(x1, y1, x2, y2));
-        } 
-        else if(gridStyle == GRID.DOT)
-        {
-            if (xy == GRID_VISIBLE.X)
-            {
-                for (int a=0; y1-a*5 > y2; a++)
-                {
+        } else if(gridStyle == GRID.DOT) {
+            if (xy == GRID_VISIBLE.X) {
+                for (int a=0; y1-a*5 > y2; a++) {
                     graphics.draw(new Line2D.Double(x1, y1-a*5, x1, y1-a*5-3));
                 }
-            }
-            else if (xy == GRID_VISIBLE.Y)
-            {
-                for (int b=0; x1+b*5 < x2; b++)
-                {
+            } else if (xy == GRID_VISIBLE.Y) {
+                for (int b=0; x1+b*5 < x2; b++) {
                     graphics.draw(new Line2D.Double(x1+b*5, y1, x1+b*5+3, y1));
                 }
             }

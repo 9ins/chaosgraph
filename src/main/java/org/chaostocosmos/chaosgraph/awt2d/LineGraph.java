@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
@@ -32,26 +33,26 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class LineGraph extends AbstractGraph
-{
+public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
+    /**
+     * Line thickness
+     */
     private float LINE_SIZE =2.0f;
     
     /**
      * Constructor
      * @param ge
      */
-    public LineGraph(GraphElements ge)  {
+    public LineGraph(GraphElements<V, X, Y> ge)  {
         this(ge, 600, 300);
-    }
-    
+    }    
     /**
      * Constructor
      * @param ge
      * @param width
      * @param height
      */
-    public LineGraph(GraphElements ge, int width, int height) 
-    {
+    public LineGraph(GraphElements<V, X, Y> ge, int width, int height) {
         this(ge, "", width, height);
     }
     
@@ -62,8 +63,7 @@ public class LineGraph extends AbstractGraph
      * @param width
      * @param height
      */
-    public LineGraph(GraphElements ge, String title, int width, int height) 
-    {
+    public LineGraph(GraphElements<V, X, Y> ge, String title, int width, int height) {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.LINE) {
         	throw new NotMatchGraphTypeException("Can't create "+getGraphStr(ge.getGraphType())+" with LineGraphAWT class.");
@@ -77,23 +77,23 @@ public class LineGraph extends AbstractGraph
     @Override
     public void drawGraph(Graphics2D g2d) {
     	super.drawGraph(g2d);
-    	List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();
+    	List<X> xIndex = GRAPH_ELEMENTS.getXIndex();
         int minXIndex = GRAPH_ELEMENTS.getMinimumXIndexSize();
         if(minXIndex > xIndex.size()) {
             for(int i=0; i<minXIndex-xIndex.size(); i++) {
-            	xIndex.add("");
+            	xIndex.add(null);
             }
         }
         
-        List<GraphElement> elements = GRAPH_ELEMENTS.getGraphElementMap().values().stream().collect(Collectors.toList());
+        List<GraphElement<V, X, Y>> elements = GRAPH_ELEMENTS.getGraphElementMap().values().stream().collect(Collectors.toList());
         double maxValue = GRAPH_ELEMENTS.getMaximum();
         double tab = GRAPH_WIDTH / GRAPH_ELEMENTS.getXIndexCount();	        
         
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
                 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-            GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	List<Double> values = ge.getValues();
+            GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+        	List<V> values = ge.getValues();
             
             if(IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
             	if(SEL_BORDER == SELECTION_BORDER.LINE) {
@@ -149,7 +149,7 @@ public class LineGraph extends AbstractGraph
             }  else {
 	            for(int i=0; i<values.size(); i++) {
 	                x = i * tab + GRAPH_X;               
-	                y = (LIMIT < maxValue) ? GRAPH_Y - values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - values.get(i) * GRAPH_HEIGHT / LIMIT;
+	                y = (LIMIT < maxValue) ? GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / LIMIT;
 		            gp.lineTo(x, y);
 	                shapes.add(new Point((int)(x-LINE_SIZE*2), (int)(y-LINE_SIZE*2)));
 	                shapes1.add(new Point((int)(x+LINE_SIZE*2), (int)(y+LINE_SIZE*2)));
@@ -197,10 +197,10 @@ public class LineGraph extends AbstractGraph
     /**
      * Is specific position is in graph element shapes.
      */
-    public GraphElement isPointOnShapes(int x, int y) {
-		List<GraphElement> list = new ArrayList<GraphElement>(this.getGraphElements().getGraphElementMap().values());
+    public GraphElement<V, X, Y> isPointOnShapes(int x, int y) {
+		List<GraphElement<V, X, Y>> list = new ArrayList<GraphElement<V, X, Y>>(this.getGraphElements().getGraphElementMap().values());
 		Collections.reverse(list);
-		for(GraphElement ge : list) {
+		for(GraphElement<V, X, Y> ge : list) {
 		    //System.out.println(ge.getElementName());
 		    int[] xpoints = new int[ge.getShapes().size()];
 		    int[] ypoints = new int[ge.getShapes().size()];
@@ -224,7 +224,7 @@ public class LineGraph extends AbstractGraph
 					return ge;
 		    	}
 		    } else {
-		    	ge.setSelectedValue(-1);
+		    	ge.setSelectedValue((V)new Double(-1));
 		    	ge.setSelectedValueIndex(-1);
 		    	ge.setSelectedPoint(null);
 		    }

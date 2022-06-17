@@ -1,7 +1,6 @@
 package org.chaostocosmos.chaosgraph.awt2d;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,7 +24,7 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
  * @author Kooin-Shin
  * 2020. 9. 23.
  */
-public class BarRatioGraph extends AbstractGraph {
+public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 	
     /**
      * Constructor
@@ -33,7 +32,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @throws NotMatchGraphTypeException 
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge)  {
+    public BarRatioGraph(GraphElements<V, X, Y> ge)  {
         this(ge, 600, 300);
     }
     
@@ -44,7 +43,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge, int width, int height)  {
+    public BarRatioGraph(GraphElements<V, X, Y> ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -56,7 +55,7 @@ public class BarRatioGraph extends AbstractGraph {
      * @param height int 
      * @since JDK1.4.1
      */
-    public BarRatioGraph(GraphElements ge, String title, int width, int height)  {
+    public BarRatioGraph(GraphElements<V, X, Y> ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.BAR_RATIO) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
@@ -71,33 +70,30 @@ public class BarRatioGraph extends AbstractGraph {
 	@Override
 	public void drawGraph(Graphics2D g2d) {
         super.drawGraph(g2d);
-
-        double maximum = 0;
+        double maximum = 0d;
         for(int i=0; i<GRAPH_ELEMENTS.getXIndexCount(); i++) {
         	final int idx = i;
         	double sum = GRAPH_ELEMENTS.getGraphElementMap().values().stream().mapToDouble(ge -> {
         		if(ge.getValues().size() > idx) {
-        			return ge.getValues().get(idx);
+        			return (double)ge.getValues().get(idx);
         		}
-        		return 0;
+        		return 0d;
         	}).sum();        	
         	maximum = maximum > sum ? maximum : sum;
         }
         //maximum += maximum/20;
-        if(maximum > GRAPH_ELEMENTS.getMaximum()) {
+        if(maximum > (double)GRAPH_ELEMENTS.getMaximum()) {
         	setLimit(maximum);
         }
-
-    	super.setShowShadow(false);
-    	
-    	List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();
+    	super.setShowShadow(false);    	
+    	List<X> xIndex = GRAPH_ELEMENTS.getXIndex();
         int minXIndex = GRAPH_ELEMENTS.getMinimumXIndexSize();
         if(minXIndex > xIndex.size()) {
             for(int i=0; i<minXIndex-xIndex.size(); i++) {
-            	xIndex.add("");
+            	xIndex.add(null);
             }
         }
-        Map<Object, GraphElement> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
+        Map<Object, GraphElement<V, X, Y>> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
         List<Object> elements = new ArrayList(elementMap.keySet());
         Collections.reverse(elements);
 
@@ -114,15 +110,14 @@ public class BarRatioGraph extends AbstractGraph {
     		double y = GRAPH_Y;
     		int j = 0;
             for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-                GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+                GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
         		if(i > ge.getValues().size() -1) {
         			continue;
         		}
-        		double value = ge.getValues().get(i);
-        		double height = (LIMIT > maximum) ? value : (value * GRAPH_HEIGHT / maximum);
+        		double value = (double)ge.getValues().get(i) * super.VALUE_DIVISION_RATIO;
+        		double height = ((double)LIMIT > (double)maximum) ? value : (value * GRAPH_HEIGHT / maximum);
         		y -= height;
-        		//System.out.println(ge.getElementName()+"  x: "+x+"   y: "+y+"   height: "+height+"   maximum: "+maximum+"   value: "+value+"   limit: "+LIMIT);
-        		
+        		//System.out.println(ge.getElementName()+"  x: "+x+"   y: "+y+"   height: "+height+"   maximum: "+maximum+"   value: "+value+"   limit: "+LIMIT);        		
                 if (IS_SHOW_SHADOW) {
                     color(SHADOW_COLOR, g2d);
                     setComposite(SHADOW_ALPHA, g2d);
@@ -131,8 +126,7 @@ public class BarRatioGraph extends AbstractGraph {
                     g2d.fill(new Rectangle2D.Double(x1, y1, width, height-SHADOW_DIST));
                     color(GRAPH_BG_COLOR, g2d);
                     g2d.fill(new Rectangle2D.Double(x, y, width, height-SHADOW_DIST));
-                }
-                
+                }                
                 boolean isSelected = false;
                 if(IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
                 	if(SEL_BORDER == SELECTION_BORDER.LINE) {
@@ -174,8 +168,7 @@ public class BarRatioGraph extends AbstractGraph {
                 }
                 j++;
         	}
-        }
-        
+        }        
         g2d.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
         
         if(IS_SHOW_POPUP && GRAPH_ELEMENTS.getSelectedElement() != null && GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint() != null) {
@@ -200,10 +193,10 @@ public class BarRatioGraph extends AbstractGraph {
 	}
 
 	@Override
-	public GraphElement isPointOnShapes(int x, int y) {
-		List<GraphElement> list = new ArrayList<GraphElement>(this.getGraphElements().getGraphElementMap().values());
+	public GraphElement<V, X, Y> isPointOnShapes(int x, int y) {
+		List<GraphElement<V, X, Y>> list = new ArrayList<GraphElement<V, X, Y>>(this.getGraphElements().getGraphElementMap().values());
 		for(int i=0; i<list.size(); i++) {
-		    GraphElement ge = list.get(i);
+		    GraphElement<V, X, Y> ge = list.get(i);
 		    int valueIndex = 0;
 		    int loop = ge.getShapes().size() / 4;
 		    for(int j=0; j<loop; j++) {
@@ -224,7 +217,7 @@ public class BarRatioGraph extends AbstractGraph {
 			    	ge.setSelectedPoint(new Point(x, y));
 			    	return ge;
 			    } else {
-			    	ge.setSelectedValue(-1);
+			    	ge.setSelectedValue((V)new Double(-1));
 			    	ge.setSelectedValueIndex(-1);
 			    	ge.setSelectedPoint(null);
 			    }

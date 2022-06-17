@@ -3,11 +3,10 @@ package org.chaostocosmos.chaosgraph;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 
@@ -19,22 +18,22 @@ import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
  * @author Kooin-Shin
  * 2020. 8. 12.
  */
-public class GraphElement implements Serializable {
+public class GraphElement <V, X, Y> {
     private String elementName;
     private Color elementColor;
     private String label;
     private Color labelColor;
-    private List<Double> values;
+    private List<V> values;
     private List<Point> shapes;
     private List<Point> labelShapes;
     private int selectedValueIndex = -1;
-    private double selectedValue;
+    private V selectedValue;
     private Point selectedPoint;
     private boolean isSWT = false;
     private GRAPH graphType;
-    private Graph graph;
+    private Graph<V, X, Y> graph;
     private int interpolateScale = -1;
-    private List<Double> interpolateValues;
+    private List<V> interpolateValues;
     private List<Point2D.Double> interpolates;
     private INTERPOLATE interpolationType;
 	
@@ -46,7 +45,7 @@ public class GraphElement implements Serializable {
      * @param labelColor
      */
     public GraphElement(String elementName, Color elementColor, String label, Color labelColor) {
-    	this(elementName, elementColor, label, labelColor, new ArrayList<Double>());
+    	this(elementName, elementColor, label, labelColor, new ArrayList<V>());
     }	
     
     /**
@@ -57,8 +56,8 @@ public class GraphElement implements Serializable {
      * @param labelColor
      * @param values
      */
-    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, double[] values) {
-    	this(elementName, elementColor, label, labelColor, Arrays.stream(values).boxed().collect(Collectors.toList()));
+    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, V[] values) {
+    	this(elementName, elementColor, label, labelColor, Arrays.asList(values));
     }
 	
     /**
@@ -69,7 +68,7 @@ public class GraphElement implements Serializable {
      * @param labelColor
      * @param values
      */
-    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<Double> values) {
+    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<V> values) {
 		this(elementName, elementColor, label, labelColor, values, null);
     }
     
@@ -82,7 +81,7 @@ public class GraphElement implements Serializable {
 	 * @param values
 	 * @param interpolationType
 	 */
-    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<Double> values, INTERPOLATE interpolationType) {
+    public GraphElement(String elementName, Color elementColor, String label, Color labelColor, List<V> values, INTERPOLATE interpolationType) {
 		super();
 		this.elementName = elementName;
 		this.elementColor = elementColor;
@@ -90,7 +89,7 @@ public class GraphElement implements Serializable {
 		this.labelColor = labelColor;
 		this.values = values;
 		if(this.values.size() < 1) {
-		    this.values.add(0d);
+		    this.values.add((V)new Double(0d));
 		}
 		this.shapes = new ArrayList<Point>();
 		this.labelShapes = new ArrayList<Point>();
@@ -165,7 +164,7 @@ public class GraphElement implements Serializable {
      * Get element values
      * @return
      */
-    public List<Double> getValues() {
+    public List<V> getValues() {
     	return values;
     }
 
@@ -173,8 +172,8 @@ public class GraphElement implements Serializable {
      * Set element values
      * @param values
      */
-    public void setValues(List<Double> values) {
-    	this.values = GraphUtility.roundAvoid(values, GraphConstants.ROUND_PLACE);
+    public void setValues(List<V> values) {
+    	this.values = values;
     }
 
     /**
@@ -213,8 +212,8 @@ public class GraphElement implements Serializable {
      * Add value to element value list
      * @param value
      */
-    public void addValue(double value) {
-    	this.values.add(GraphUtility.roundAvoid(value, GraphConstants.ROUND_PLACE));
+    public void addValue(V value) {
+    	this.values.add(value);
     }
 	
     /**
@@ -245,7 +244,7 @@ public class GraphElement implements Serializable {
 	 * Get selected value on mouse pointer
 	 * @return
 	 */
-	public double getSelectedValue() {
+	public V getSelectedValue() {
 		return selectedValue;
 	}
 
@@ -253,7 +252,7 @@ public class GraphElement implements Serializable {
 	 * Set value on element by mouse pointer
 	 * @param selectedValue
 	 */
-	public void setSelectedValue(double selectedValue) {
+	public void setSelectedValue(V selectedValue) {
 		this.selectedValue = selectedValue;
 	}	
 
@@ -292,7 +291,7 @@ public class GraphElement implements Serializable {
 	/**
 	 * Get graph object
 	 */
-	public Graph getGraph() {
+	public Graph<V, X, Y> getGraph() {
 		return graph;
 	}
 
@@ -300,7 +299,7 @@ public class GraphElement implements Serializable {
 	 * Set graph object
 	 * @param graph
 	 */
-	public void setGraph(Graph graph) {
+	public void setGraph(Graph<V, X, Y> graph) {
 		this.graph = graph;
 	}
 
@@ -340,7 +339,7 @@ public class GraphElement implements Serializable {
 	 * Get interpolated values
 	 * @return
 	 */
-	public List<Double> getInterpolateValues() {
+	public List<V> getInterpolateValues() {
 		return interpolateValues;
 	}
 
@@ -348,7 +347,7 @@ public class GraphElement implements Serializable {
 	 * Set interpolated values
 	 * @param interpolateValues
 	 */
-	public void setInterpolateValues(List<Double> interpolateValues) {
+	public void setInterpolateValues(List<V> interpolateValues) {
 		this.interpolateValues = interpolateValues;
 	}
 
@@ -382,6 +381,14 @@ public class GraphElement implements Serializable {
 	 */
 	public void setInterpolationType(INTERPOLATE interpolationType) {
 		this.interpolationType = interpolationType;
+	}
+
+	/**
+	 * Get max value
+	 * @return
+	 */
+	public V getMax() {
+		return this.values.stream().max(Comparator.comparingDouble(d -> (double)d)).get();
 	}
 
 	@Override

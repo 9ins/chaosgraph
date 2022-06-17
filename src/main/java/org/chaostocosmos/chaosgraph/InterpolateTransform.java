@@ -1,9 +1,7 @@
 package org.chaostocosmos.chaosgraph;
 
-import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -141,7 +139,7 @@ public class InterpolateTransform {
      * @param interpolateScale
      * @return
      */
-    public static GraphElements populateInterpolateWithOneType(INTERPOLATE interpolateType, GraphElements graphElements, int interpolateScale) {
+    public static <V, X, Y> GraphElements<V, X, Y> populateInterpolateWithOneType(INTERPOLATE interpolateType, GraphElements<V, X, Y> graphElements, int interpolateScale) {
     	graphElements.getGraphElementMap().values().forEach(e -> { 
     		e.setInterpolateScale(interpolateScale);
     		e.setInterpolationType(interpolateType);
@@ -154,13 +152,13 @@ public class InterpolateTransform {
      * @param graphElements
      * @return
      */
-    public static GraphElements populateInterpolate(GraphElements graphElements) {
+    public static <V, X, Y> GraphElements<V, X, Y> populateInterpolate(GraphElements<V, X, Y> graphElements) {
 		final double gx = graphElements.getGraph().getGraphX();
 		final double gy = graphElements.getGraph().getGraphY();
 		final double gw = graphElements.getGraph().getGraphWidth();
 		final double gh = graphElements.getGraph().getGraphHeight();
-		final double lim = graphElements.getGraph().getLimit();
-		final double mx = graphElements.getMaximum();
+		final double lim = (double)graphElements.getGraph().getLimit();
+		final double mx = (double)graphElements.getMaximum();
 		final double tab = gw / graphElements.getXIndexCount();
 		//System.out.println("graph width: "+gw+"   gx: "+gx);
     	graphElements.getGraphElementMap().values().stream().forEach(e -> {
@@ -168,13 +166,13 @@ public class InterpolateTransform {
     		if(e.getInterpolationType() != null && e.getInterpolateScale() != -1) {
     			final int vc = e.getValues().size();
     			double[] xv = IntStream.range(0, vc).mapToDouble(i -> i * tab + gx).toArray();
-    			double[] yv = IntStream.range(0, vc).mapToDouble(d -> (d >= vc) ? gy : (lim < mx) ? gy - e.getValues().get(d) * gh / mx : gy - e.getValues().get(d) * gh / lim).toArray();
+    			double[] yv = IntStream.range(0, vc).mapToDouble(d -> (d >= vc) ? gy : (lim < mx) ? gy - (double)e.getValues().get(d) * gh / mx : gy - (double)e.getValues().get(d) * gh / lim).toArray();
     			int interpolateCounts = vc * e.getInterpolateScale();
     			double gap = (tab * vc) / interpolateCounts;
     			double[] xi = IntStream.range(0, interpolateCounts - e.getInterpolateScale()+1).mapToDouble(i -> (int)(gap * i  + gx)).toArray();
     			//System.out.println("xv count: "+xv.length+"   xi count: "+xi.length+"  tab: "+tab+"   gap: "+gap);
     			double[] yi = InterpolateTransform.transform(e.getInterpolationType(), xv, yv, xi);
-    			List<Double> values = DoubleStream.of(yi).boxed().collect(Collectors.toList());
+    			List<V> values = Arrays.asList(yi).stream().map(d -> (V)d).collect(Collectors.toList());
     			//Collections.reverse(values);
     			e.setInterpolateValues(values);
     			List<Point2D.Double> interpolateList = IntStream.range(0, xi.length).mapToObj(i -> new Point2D.Double(xi[i], yi[i])).collect(Collectors.toList());

@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch AWTGraphSimple2",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple2",
+            "projectName": "chaosgraph"
+        },
+        {
+            "type": "java",
+            "name": "Launch AWTGraphSimple2_Test",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple2_Test",
+            "projectName": "chaosgraph"
+        },
+        {
             "type": "pwa-msedge",
             "request": "launch",
             "name": "Launch Edge against localhost",

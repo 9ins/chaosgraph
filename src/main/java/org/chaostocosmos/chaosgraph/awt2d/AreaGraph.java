@@ -3,22 +3,21 @@
  */
 package org.chaostocosmos.chaosgraph.awt2d;
 
-import org.chaostocosmos.chaosgraph.AbstractGraph;
-import org.chaostocosmos.chaosgraph.GraphElement;
-import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.NotMatchArrayException;
-import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.geom.*;
+import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.chaostocosmos.chaosgraph.AbstractGraph;
+import org.chaostocosmos.chaosgraph.GraphElement;
+import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
 * <p>Title: AreaGraph</p>
@@ -37,15 +36,14 @@ import java.util.stream.Collectors;
 * <br>
 * @since JDK1.4.1
 */
-public class AreaGraph extends AbstractGraph {
-	
+public class AreaGraph<V, X, Y> extends AbstractGraph<V, X, Y>  {	
     /**
      * Constructor
      * 
      * @param ge GraphElements
      * @throws NotMatchGraphTypeException
      */
-    public AreaGraph(GraphElements ge)  {
+    public AreaGraph(GraphElements<V, X, Y> ge)  {
         this(ge, 600, 300);
     }
     
@@ -55,7 +53,7 @@ public class AreaGraph extends AbstractGraph {
      * @param width
      * @param height
      */
-    public AreaGraph(GraphElements ge, int width, int height)  {
+    public AreaGraph(GraphElements<V, X, Y> ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -66,7 +64,7 @@ public class AreaGraph extends AbstractGraph {
      * @param width
      * @param height
      */
-    public AreaGraph(GraphElements ge, String title, int width, int height)  {
+    public AreaGraph(GraphElements<V, X, Y> ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.AREA) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
@@ -80,47 +78,47 @@ public class AreaGraph extends AbstractGraph {
     @Override
     public void drawGraph(Graphics2D g2d) {
     	super.drawGraph(g2d);
+        //Sort by elements last value
+        GRAPH_ELEMENTS.orderElementByLastValue();
     	//System.out.println(g2d);
         double maxValue = GRAPH_ELEMENTS.getMaximum();
-        List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();        
+        List<X> xIndex = GRAPH_ELEMENTS.getXIndex();
         int minXIndex = GRAPH_ELEMENTS.getMinimumXIndexSize();
         if(minXIndex > xIndex.size()) {
             for(int i=0; i<minXIndex-xIndex.size()-1; i++) {
-            	xIndex.add("");
+            	xIndex.add(null);
             }
         }
-        float tab = GRAPH_WIDTH / (GRAPH_ELEMENTS.getXIndex().size());     
-                
+        float tab = GRAPH_WIDTH / (GRAPH_ELEMENTS.getXIndex().size());        
         g2d.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
-        double x1 = Math.cos(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST;
-        double y1 = Math.sin(Math.toRadians(-(double)SHADOW_ANGLE))*SHADOW_DIST;
+        double x1 = Math.cos(Math.toRadians(-(double)SHADOW_ANGLE)) * SHADOW_DIST;
+        double y1 = Math.sin(Math.toRadians(-(double)SHADOW_ANGLE)) * SHADOW_DIST;
         double x = 0, y = 0;
-        
+
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-            GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-            List<Double> valueList = ge.getValues();
+            GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+            List<V> valueList = ge.getValues();
             final GeneralPath gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, valueList.size());
             if (IS_SHOW_SHADOW) {
                 color(SHADOW_COLOR, g2d);
                 setComposite(SHADOW_ALPHA, g2d);
                 gp.moveTo(x1 + GRAPH_X, y1 + GRAPH_Y);
                 for(int i=0; i<valueList.size(); i++) {
-                	double value = valueList.get(i);
+                	double value = (double)valueList.get(i) * VALUE_DIVISION_RATIO;
                 	if(value < 0f) {
                 	    continue;
                    	}
                     x = x1+(i) * tab+GRAPH_X;
                     y = (LIMIT < maxValue) ? y1 + GRAPH_Y - value * GRAPH_HEIGHT / maxValue : y1 + GRAPH_Y - value * GRAPH_HEIGHT / LIMIT;
-                    gp.lineTo(x, y);                	
+                    gp.lineTo(x, y);
                 }
                 gp.lineTo(x, GRAPH_Y-GRAPH_BORDER_SIZE);
                 gp.lineTo(x1+tab+GRAPH_X, y1+GRAPH_Y-GRAPH_BORDER_SIZE);
                 gp.closePath();
                 g2d.fill(gp);
                 gp.reset();
-            }            
-
+            }
             boolean isSelected = false;
             if(IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
             	if(SEL_BORDER == SELECTION_BORDER.LINE) {
@@ -141,7 +139,7 @@ public class AreaGraph extends AbstractGraph {
                 color(ge.getElementColor(), g2d);
             }
            
-            gp.moveTo(BORDER_SIZE+GRAPH_X, GRAPH_Y+BORDER_SIZE);            
+            gp.moveTo(BORDER_SIZE+GRAPH_X, GRAPH_Y);            
             List<Point> shape = new ArrayList<Point>();
             x = 0; 
             y = 0;
@@ -153,7 +151,7 @@ public class AreaGraph extends AbstractGraph {
             	x = shape.get(shape.size()-1).x;
             } else {
 	            for (int i=0; i<ge.getValues().size(); i++) {
-	                double value = ge.getValues().get(i);
+	                double value = (double)ge.getValues().get(i);
 	                if(value < 0) {
 	                	continue;
 	                }
@@ -166,7 +164,7 @@ public class AreaGraph extends AbstractGraph {
             shape.add(new Point((int)x, GRAPH_Y+GRAPH_HEIGHT));
             shape.add(new Point((int)GRAPH_X, (int)(GRAPH_Y+GRAPH_HEIGHT)));
             ge.setShapes(shape);            
-            gp.lineTo(x, GRAPH_Y-BORDER_SIZE);
+            gp.lineTo(x, GRAPH_Y);
             gp.closePath();
             g2d.fill(gp);
             
@@ -214,11 +212,11 @@ public class AreaGraph extends AbstractGraph {
     /**
      * Is specific position is in graph element shapes.
      */
-    public GraphElement isPointOnShapes(int x, int y) {
-		List<GraphElement> list = new ArrayList<GraphElement>(GRAPH_ELEMENTS.getElementOrder().stream().map(n -> GRAPH_ELEMENTS.getGraphElementMap().get(n)).collect(Collectors.toList()));
+    public GraphElement<V, X, Y> isPointOnShapes(int x, int y) {
+		List<GraphElement<V, X, Y>> list = new ArrayList<GraphElement<V, X, Y>>(GRAPH_ELEMENTS.getElementOrder().stream().map(n -> GRAPH_ELEMENTS.getGraphElementMap().get(n)).collect(Collectors.toList()));
 		//System.out.println(list.toString());
 		for(int i=list.size()-1; i>=0; i--) {
-			GraphElement ge = list.get(i);
+			GraphElement<V, X, Y> ge = list.get(i);
 		    //System.out.println(ge.getElementName());
 		    Polygon elementPoly = getPolygon(ge.getShapes(), false);
 		    Polygon labelPoly = getPolygon(ge.getLabelShapes(), false);
@@ -237,9 +235,8 @@ public class AreaGraph extends AbstractGraph {
 					return ge;
 		    	}
 		    } else {
-		    	ge.setSelectedValue(-1);
+		    	ge.setSelectedValue((V)new Double(-1));
 		    	ge.setSelectedValueIndex(-1);
-		    	ge.setSelectedPoint(null);
 		    }
 		}
 		return null;

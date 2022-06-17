@@ -11,11 +11,11 @@ import java.util.EventObject;
  * @author Kooin-Shin
  * 2020. 8. 26.
  */
-public class GraphReleaseEvent extends EventObject {
+public class GraphReleaseEvent<V, X, Y> extends EventObject {
 	/**
 	 * Graph element
 	 */
-	GraphElement ge;
+	GraphElement<V, X, Y> ge;
 	
 	/**
 	 * constructor
@@ -23,7 +23,7 @@ public class GraphReleaseEvent extends EventObject {
 	 * @param source
 	 * @param ge
 	 */
-	public GraphReleaseEvent(Object source, GraphElement ge) {
+	public GraphReleaseEvent(Object source, GraphElement<V, X, Y> ge) {
 		super(source);
 		this.ge = ge;
 	}
@@ -32,7 +32,7 @@ public class GraphReleaseEvent extends EventObject {
 	 * Get graph element
 	 * @return
 	 */
-	public GraphElement getGraphElement() {
+	public GraphElement<V, X, Y> getGraphElement() {
 		return ge;
 	}
 
@@ -40,7 +40,7 @@ public class GraphReleaseEvent extends EventObject {
 	 * Set graph element
 	 * @param ge
 	 */
-	public void setGraphElement(GraphElement ge) {
+	public void setGraphElement(GraphElement<V, X, Y> ge) {
 		this.ge = ge;
 	}
 

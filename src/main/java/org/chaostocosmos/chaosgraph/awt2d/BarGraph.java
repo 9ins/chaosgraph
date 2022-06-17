@@ -4,23 +4,19 @@
 package org.chaostocosmos.chaosgraph.awt2d;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
-import org.chaostocosmos.chaosgraph.NotMatchArrayException;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
@@ -34,17 +30,16 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class BarGraph extends AbstractGraph {
+public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
     /**
      * Constructor
      * @param ge GraphElements 
      * @throws NotMatchGraphTypeException 
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge)  {
+    public BarGraph(GraphElements<V, X, Y> ge)  {
         this(ge, 600, 300);
-    }
-    
+    }    
     /**
      * Constructor
      * @param width int
@@ -52,7 +47,7 @@ public class BarGraph extends AbstractGraph {
      * @param ge GraphElements
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge, int width, int height)  {
+    public BarGraph(GraphElements<V, X, Y> ge, int width, int height)  {
         this(ge, "", width, height);
     }
     
@@ -64,7 +59,7 @@ public class BarGraph extends AbstractGraph {
      * @param height int 
      * @since JDK1.4.1
      */
-    public BarGraph(GraphElements ge, String title, int width, int height)  {
+    public BarGraph(GraphElements<V, X, Y> ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.BAR) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
@@ -79,37 +74,36 @@ public class BarGraph extends AbstractGraph {
     @Override
     public void drawGraph(Graphics2D g2d) {
     	super.drawGraph(g2d);
-    	
-    	List<Object> xIndex = GRAPH_ELEMENTS.getXIndex();
+    	List<X> xIndex = GRAPH_ELEMENTS.getXIndex();
         int minXIndex = GRAPH_ELEMENTS.getMinimumXIndexSize();
         if(minXIndex > xIndex.size()) {
             for(int i=0; i<minXIndex-xIndex.size(); i++) {
-            	xIndex.add("");
+            	xIndex.add(null);
             }
         }
-        
-        Map<Object, GraphElement> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
-        List<Object> elements = new ArrayList(elementMap.keySet());
-        double maxValue = GRAPH_ELEMENTS.getMaximum();
+        Map<Object, GraphElement<V, X, Y>> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
+        List<Object> elementNames = new ArrayList(elementMap.keySet());
+        double maxValue = (double) GRAPH_ELEMENTS.getMaximum();
 
         g2d.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
         
         double indent = 10;
         double unit = GRAPH_WIDTH / xIndex.size();
-        double tab = unit - (indent * 2);        
-        double width = tab / elements.size();
+        double tab = unit - (indent * 2);
+        double width = tab / elementNames.size();
         
         int i = 0;
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
-            GraphElement ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-            List<Double> values = ge.getValues();
+            GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
+            List<V> values = ge.getValues();
             List<Point> shapes = new ArrayList<Point>();
             for(int j=0; j<values.size(); j++) {
-	        	double value = values.get(j);
+	        	double value = (double)values.get(j);
 	            if (value < 0) {
 	            	continue;
 	            }
+				value = value * VALUE_DIVISION_RATIO;
 	            //double x = ((i + 1) * tab - tab / 2) + width * i + GRAPH_X + 1;
 	            double x = i * width + (j * (unit) + indent)  + GRAPH_X;
 	            x = (x < 1) ? 1 : x;
@@ -117,7 +111,7 @@ public class BarGraph extends AbstractGraph {
 	            double y = GRAPH_Y - height;
 	            
 	            //System.out.println("value: "+value+" max : "+maxValue+" limit: "+LIMIT+" tab : "+tab+"   width: "+width+"  elements size: "+elements.size()+"  x: "+x+"  y: "+y+"  height: "+height);
-	            if (y<GRAPH_Y && x>GRAPH_X) {
+	            if (y < GRAPH_Y && x > GRAPH_X) {
 	                if (IS_SHOW_SHADOW) {
 	                    color(SHADOW_COLOR, g2d);
 	                    setComposite(SHADOW_ALPHA, g2d);
@@ -178,17 +172,17 @@ public class BarGraph extends AbstractGraph {
             		Font.BOLD, 
             		LABEL_BG_COLOR, 
             		GRAPH_ELEMENTS.getElementOrder().stream().map(n -> GRAPH_ELEMENTS.getGraphElementMap().get(n)).collect(Collectors.toList()),
-            		g2d); 	//???? ?????.--Graph?? ?????
+            		g2d); 	
         }
     }
     
     /**
      * Is specific position is in graph element shapes.
      */
-    public GraphElement isPointOnShapes(int x, int y) {
-		List<GraphElement> list = new ArrayList<GraphElement>(this.getGraphElements().getGraphElementMap().values());
+    public GraphElement<V, X, Y> isPointOnShapes(int x, int y) {
+		List<GraphElement<V, X, Y>> list = new ArrayList<GraphElement<V, X, Y>>(this.getGraphElements().getGraphElementMap().values());
 		for(int i=0; i<list.size(); i++) {
-		    GraphElement ge = list.get(i);
+		    GraphElement<V, X, Y> ge = list.get(i);
 		    int valueIndex = 0;
 		    int loop = ge.getShapes().size() / 4;
 		    for(int j=0; j<loop; j++) {
@@ -209,9 +203,8 @@ public class BarGraph extends AbstractGraph {
 			    	ge.setSelectedPoint(new Point(x, y));
 			    	return ge;
 			    } else {
-			    	ge.setSelectedValue(-1);
+			    	ge.setSelectedValue((V)new Double(-1));
 			    	ge.setSelectedValueIndex(-1);
-			    	ge.setSelectedPoint(null);
 			    }
 		    	valueIndex++;
 		    }
