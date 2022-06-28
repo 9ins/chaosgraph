@@ -9,17 +9,17 @@ import java.util.EventObject;
  * @author Kooin-Shin
  * 2020. 8. 12.
  */
-public class GraphElementEvent extends EventObject {
+public class GraphElementEvent<V extends Number, X, Y> extends EventObject {
 
 	/**
 	 * Graph object
 	 */
-	private Graph graph;
+	private Graph<V, X, Y> graph;
 	
 	/**
 	 * Graph element object
 	 */
-	private GraphElement graphElement;
+	private GraphElement<V, X, Y> graphElement;
 	
 	/**
 	 * Constructor
@@ -27,7 +27,7 @@ public class GraphElementEvent extends EventObject {
 	 * @param graph
 	 * @param graphElement
 	 */
-	public GraphElementEvent(Object source, Graph graph, GraphElement graphElement) {
+	public GraphElementEvent(Object source, Graph<V, X, Y> graph, GraphElement<V, X, Y> graphElement) {
 		super(source);
 		this.graphElement = graphElement;
 	}
@@ -36,7 +36,7 @@ public class GraphElementEvent extends EventObject {
 	 * Get graph
 	 * @return
 	 */
-	public Graph getGraph() {
+	public Graph<V, X, Y> getGraph() {
 		return graph;
 	}
 
@@ -44,7 +44,7 @@ public class GraphElementEvent extends EventObject {
 	 * Get element
 	 * @return
 	 */
-	public GraphElement getGraphElement() {
+	public GraphElement<V, X, Y> getGraphElement() {
 		return graphElement;
 	}
 

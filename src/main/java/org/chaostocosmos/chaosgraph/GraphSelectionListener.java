@@ -9,7 +9,7 @@ import java.util.EventListener;
  * @author Kooin-Shin
  * 2020. 8. 24.
  */
-public interface GraphSelectionListener<V, X, Y> extends EventListener {
+public interface GraphSelectionListener<V extends Number, X, Y> extends EventListener {
 	
 	/**
 	 * When mouse is over the graph
@@ -17,7 +17,7 @@ public interface GraphSelectionListener<V, X, Y> extends EventListener {
 	 * @throws Exception
 	 */
 	public void onMouseOverGraph(GraphOverEvent<V, X, Y> goe) throws Exception;
-	
+		
 	/**
 	 * When mouse is pressed the graph
 	 * @param gpe

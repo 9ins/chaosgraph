@@ -73,6 +73,7 @@ public class GraphExample2 extends JFrame implements Runnable {
     ConcurrentLinkedQueue<String> buffer;
     
     GraphPanel<Double, String, Double> gp;
+
     /**
      * constructor
      */
@@ -105,8 +106,7 @@ public class GraphExample2 extends JFrame implements Runnable {
      * init visual components
      * @throws Exception
      */
-    private void jbInit() throws Exception
-    {
+    private void jbInit() throws Exception {
         border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
         this.getContentPane().setLayout(borderLayout1);
         jPanel1.setLayout(flowLayout1);
@@ -174,8 +174,7 @@ public class GraphExample2 extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 jButton8_actionPerformed(e);
             }
-        });
-        
+        });        
         this.getContentPane().add(jPanel1, BorderLayout.SOUTH);
         jPanel1.add(jButton3, null);
         this.getContentPane().add(jPanel2,  BorderLayout.NORTH);
@@ -227,15 +226,14 @@ public class GraphExample2 extends JFrame implements Runnable {
 	        	GraphElement<Double, String, Double> ge = this.ge1.getGraphElement(this.elements[i]);
 	        	List<Double> values = ge.getValues();
 	        	if(values.size() > xIndexCount) {
-	        		values.remove(0);        	    
+	        		values.remove(0);
 	        	}
 	        	values.add((double)memory[i]);
 	        	//System.out.println(values.toString());
 	        	ge.setValues(values);
 	        	this.ge1.setGraphElement(ge.getElementName(), ge);
             }
-            this.ge1.setYIndex(new Double[] {(double)totalMemory, this.ge1.getMaximum()});
-            
+            this.ge1.setYIndex(new Double[] {(double)totalMemory, this.ge1.getMaximum()});            
             this.gp.getGraph().setTitleFontSize(12);
             this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
             this.gp.repaint();  
@@ -249,23 +247,23 @@ public class GraphExample2 extends JFrame implements Runnable {
 	        	values.add((double)memory[i]);
 	        	ge.setValues(values);
             }
-            this.ge2.setYIndex(new Double[] {(double)totalMemory, this.ge2.getMaximum()});
-            
+            this.ge2.setYIndex(new Double[] {(double)totalMemory, this.ge2.getMaximum()});            
+            this.gp.getGraph().setShowGridX(true);
             this.gp.getGraph().setTitleFontSize(12);
-            this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
+            this.gp.getGraph().setGridStyle(GRID.DOT);
+            this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");            
             this.gp.repaint();
         } else if(sel == GRAPH.BAR) {
             for(int i=0; i<this.ge3.getGraphElementMap().size(); i++) {
 	        	GraphElement<Double, String, Double> ge = this.ge3.getGraphElement(this.elements[i]);
 	        	List<Double> values = ge.getValues();
 	        	if(values.size() > xIndexCount) {
-	        		values.remove(0);        	    
+	        		values.remove(0);  
 	        	}
 	        	values.add((double)memory[i]);
 	        	ge.setValues(values);
             }
-            this.ge3.setYIndex(new Double[] {(double)totalMemory, this.ge3.getMaximum()});
-            
+            this.ge3.setYIndex(new Double[] {(double)totalMemory, this.ge3.getMaximum()});            
             this.gp.getGraph().setTitleFontSize(12);
             this.gp.getGraph().setTitle("JVM Memory TOTAL:"+totalMemory+" bytes   FREE:"+freeMemory+" bytes   USED:"+usedMemory+" bytes");
             this.gp.repaint();

@@ -12,7 +12,7 @@ apply plugin: 'signing'
 
 group = "io.github.9ins"
 archivesBaseName = "chaosgraph"
-version = "2.0.0"
+version = "2.1.0"
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'utf-8'
 

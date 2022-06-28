@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.GraphUtility;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
@@ -24,7 +26,7 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
  * @author Kooin-Shin
  * 2020. 9. 23.
  */
-public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
+public class BarRatioGraph<V extends Number, X, Y> extends AbstractGraph<V, X, Y> {
 	
     /**
      * Constructor
@@ -114,7 +116,7 @@ public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
         		if(i > ge.getValues().size() -1) {
         			continue;
         		}
-        		double value = (double)ge.getValues().get(i) * super.VALUE_DIVISION_RATIO;
+        		double value = GraphUtility.roundAvoid(ge.getValues().get(i), GRAPH_ELEMENTS.getDecimalPoint()).doubleValue() * super.VALUE_DIVISION_RATIO;
         		double height = ((double)LIMIT > (double)maximum) ? value : (value * GRAPH_HEIGHT / maximum);
         		y -= height;
         		//System.out.println(ge.getElementName()+"  x: "+x+"   y: "+y+"   height: "+height+"   maximum: "+maximum+"   value: "+value+"   limit: "+LIMIT);        		
@@ -155,14 +157,14 @@ public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
                 	}
                     g2d.draw(new Rectangle2D.Double(x, y, width, height));
                 }
-                List<Point> shapes = ge.getShapes();
+                List<Point2D.Double> shapes = ge.getShapes();
                 if(shapes == null) {
-                	shapes = new ArrayList<Point>();
+                	shapes = new ArrayList<Point2D.Double>();
                 }
-                shapes.add(new Point((int)x, (int)y));
-                shapes.add(new Point((int)x, (int)(y+height)));
-                shapes.add(new Point((int)(x+width), (int)(y+height)));
-                shapes.add(new Point((int)(x+width), (int)y));
+                shapes.add(new Point2D.Double(x, y));
+                shapes.add(new Point2D.Double(x, y+height));
+                shapes.add(new Point2D.Double(x+width, y+height));
+                shapes.add(new Point2D.Double(x+width, y));
                 while(shapes.size() > ge.getValues().size() * 4) {
                 	shapes.remove(0);
                 }
@@ -170,6 +172,12 @@ public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
         	}
         }        
         g2d.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
+
+        //Draw grid Y axis
+        if (IS_SHOW_GRID_Y) {
+            g2d.setStroke(new BasicStroke(GRID_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            drawGridY(super.getGraphElements().getYIndex(), GRID_Y_COLOR, GRID_STYLE, LIMIT, maximum, g2d);
+        }
         
         if(IS_SHOW_POPUP && GRAPH_ELEMENTS.getSelectedElement() != null && GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint() != null) {
         	drawPopup(GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint(),
@@ -203,7 +211,7 @@ public class BarRatioGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 			    int[] xpoints = new int[4];
 			    int[] ypoints = new int[4];
 			    for(int k=0; k<4; k++) {
-			    	Point p = ge.getShapes().get(j*4+k);
+			    	Point2D.Double p = ge.getShapes().get(j*4+k);
 			    	xpoints[k] = (int)p.getX();
 			    	ypoints[k] = (int)p.getY();
 			    }

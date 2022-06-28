@@ -12,6 +12,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.GraphUtility;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 /**
 * <p>Title: Circle graph class</p>
@@ -33,7 +35,7 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
+public class CircleGraph<V extends Number, X, Y> extends AbstractGraph<V, X, Y>
 {
     private boolean isShowPercent = false;   
     private boolean isShowValue = true;    
@@ -120,8 +122,8 @@ public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
             GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	V value = ge.getValues().get(0);
-            if ((double)value < 0) {
+            double value = GraphUtility.roundAvoid(ge.getValues().get(0), GRAPH_ELEMENTS.getDecimalPoint()).doubleValue();
+            if (value < 0) {
             	continue;
             }            
             boolean isSelected = false;
@@ -146,21 +148,21 @@ public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
 
             double angle = (double)value * 360 / total * -1;   
             Arc2D.Double af = new Arc2D.Double(x, y, circleWidth, circleHeight, temp, angle, Arc2D.PIE);
-            List<Point> shapes = new ArrayList<Point>();
+            List<Point2D.Double> shapes = new ArrayList<>();
             double cx = x + circleWidth / 2;
             double cy = y + circleHeight / 2;
-            shapes.add(new Point((int)cx, (int)cy));
+            shapes.add(new Point2D.Double((int)cx, (int)cy));
             double unit = angle / 10;
             for(int i=0; i <= 10; i++) {
             	double ang = (temp + unit * i) / 180.0 * Math.PI;
             	//System.out.println(temp+"   "+ang+ "   "+Math.toRadians(ang));
             	int x1 = (int)(cx + Math.cos(-ang) * (circleWidth/2));
             	int y1 = (int)(cy + Math.sin(-ang) * (circleHeight/2));
-            	shapes.add(new Point(x1, y1));
+            	shapes.add(new Point2D.Double(x1, y1));
             }
             GeneralPath gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, shapes.size());
             gp.moveTo(cx, cy);
-            for(Point p : shapes) {
+            for(Point2D.Double p : shapes) {
             	gp.lineTo(p.getX(), p.getY());
             }
             ge.setShapes(shapes);
@@ -175,8 +177,8 @@ public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
         } 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
             GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	V value = ge.getValues().get(0);
-            if ((double)value < 0) {
+        	double value = GraphUtility.roundAvoid(ge.getValues().get(0), GRAPH_ELEMENTS.getDecimalPoint()).doubleValue();
+            if (value < 0) {
             	continue;
             }       
             double angle = (double)value * 360 / total * -1;   
@@ -219,7 +221,7 @@ public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
             }
         }        
         g2d.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        
+
         if(IS_SHOW_POPUP && GRAPH_ELEMENTS.getSelectedElement() != null && GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint() != null) {
         	drawPopup(GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint(),
             		POPUP_BG_COLOR, 
@@ -249,7 +251,7 @@ public class CircleGraph<V, X, Y> extends AbstractGraph<V, X, Y>
 		    int[] xpoints = new int[ge.getShapes().size()];
 		    int[] ypoints = new int[ge.getShapes().size()];
 		    int j=0;
-		    for(Point p : ge.getShapes()) {
+		    for(Point2D.Double p : ge.getShapes()) {
 				xpoints[j] = (int)p.getX();
 				ypoints[j] = (int)p.getY();
 				j++;

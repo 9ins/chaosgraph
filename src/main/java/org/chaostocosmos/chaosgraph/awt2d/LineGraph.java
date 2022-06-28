@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.GraphUtility;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 
 /**
@@ -33,7 +35,7 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
+public class LineGraph<V extends Number, X, Y> extends AbstractGraph<V, X, Y> {
     /**
      * Line thickness
      */
@@ -83,17 +85,16 @@ public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
             for(int i=0; i<minXIndex-xIndex.size(); i++) {
             	xIndex.add(null);
             }
-        }
-        
+        }        
         List<GraphElement<V, X, Y>> elements = GRAPH_ELEMENTS.getGraphElementMap().values().stream().collect(Collectors.toList());
-        double maxValue = GRAPH_ELEMENTS.getMaximum();
-        double tab = GRAPH_WIDTH / GRAPH_ELEMENTS.getXIndexCount();	        
+        double maximum = GRAPH_ELEMENTS.getMaximum();
+        double tab = GRAPH_WIDTH / GRAPH_ELEMENTS.getXIndexCount();
         
-        g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
+        g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);        
                 
         for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
             GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-        	List<V> values = ge.getValues();
+            List<V> values = ge.getValues().stream().map(v -> GraphUtility.roundAvoid(v, GRAPH_ELEMENTS.getDecimalPoint())).collect(Collectors.toList());
             
             if(IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
             	if(SEL_BORDER == SELECTION_BORDER.LINE) {
@@ -116,8 +117,8 @@ public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
             GeneralPath gp = new GeneralPath(GeneralPath.WIND_NON_ZERO, values.size());
             gp.moveTo(tab+GRAPH_X, GRAPH_Y);
             
-            List<Point> shapes = new ArrayList<Point>();
-            List<Point> shapes1 = new ArrayList<Point>();
+            List<Point2D.Double> shapes = new ArrayList<>();
+            List<Point2D.Double> shapes1 = new ArrayList<>();
             double x = 0, y = 0; 
             
             //List<Point2D.Double> points = IntStream.range(0, values.size())
@@ -143,20 +144,21 @@ public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
             if(ge.getInterpolationType() != null) {
             	ge.getInterpolates().stream().forEach(p -> {
             		gp.lineTo(p.x, p.y);
-                    shapes.add(new Point((int)(p.x-LINE_SIZE*2), (int)(p.y-LINE_SIZE*2)));
-                    shapes1.add(new Point((int)(p.x+LINE_SIZE*2), (int)(p.y+LINE_SIZE*2)));
+                    shapes.add(new Point2D.Double((int)(p.x-LINE_SIZE*2), (int)(p.y-LINE_SIZE*2)));
+                    shapes1.add(new Point2D.Double((int)(p.x+LINE_SIZE*2), (int)(p.y+LINE_SIZE*2)));
             	});
             }  else {
 	            for(int i=0; i<values.size(); i++) {
 	                x = i * tab + GRAPH_X;               
-	                y = (LIMIT < maxValue) ? GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / maxValue : GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / LIMIT;
+	                y = (LIMIT < maximum) ? GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / maximum : GRAPH_Y - (double)values.get(i) * GRAPH_HEIGHT / LIMIT;
 		            gp.lineTo(x, y);
-	                shapes.add(new Point((int)(x-LINE_SIZE*2), (int)(y-LINE_SIZE*2)));
-	                shapes1.add(new Point((int)(x+LINE_SIZE*2), (int)(y+LINE_SIZE*2)));
+	                shapes.add(new Point2D.Double((int)(x-LINE_SIZE*2), (int)(y-LINE_SIZE*2)));
+	                shapes1.add(new Point2D.Double((int)(x+LINE_SIZE*2), (int)(y+LINE_SIZE*2)));
 	            }        
             }
-            for(int i=shapes1.size()-1; i >= 0; i--) {
-            	Point p = shapes1.get(i);
+            //for(int i=shapes1.size()-1; i >= 0; i--) {
+            for(int i=0; i<shapes1.size(); i++) {
+            	Point2D.Double p = shapes1.get(i);
             	shapes.add(p);
             }
             ge.setShapes(shapes);
@@ -164,18 +166,24 @@ public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
             g2d.draw(gp);
             gp.closePath();
             gp.reset();
-            if(IS_SHOW_PEEK && IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
+            if(IS_SHOW_PEAK && IS_SELECTION_ENABLE && GRAPH_ELEMENTS.getSelectedElement() != null && ge.getElementName().equals(GRAPH_ELEMENTS.getSelectedElement().getElementName())) {
             	for(int i=0; i<shapes.size()/2; i++) {
-            		Point p = shapes.get(i);
+            		Point2D.Double p = shapes.get(i);
             		p.setLocation(p.getX()+LINE_SIZE*2, p.getY()+LINE_SIZE*2);
             		if(ge.getInterpolationType() != null && i % ge.getInterpolateScale() != 0) {
             			continue;
             		}
-            		drawPeek(PEEK_STYLE.CIRCLE, p, 3, 5, new Color(180, 180, 180), g2d);
+            		drawPeak(PEEK_STYLE.CIRCLE, p, 3, 5, new Color(180, 180, 180), g2d);
             	}
             }            
         }
         g2d.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
+
+        //Draw grid Y axis
+        if (IS_SHOW_GRID_Y) {
+            g2d.setStroke(new BasicStroke(GRID_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            drawGridY(super.getGraphElements().getYIndex(), GRID_Y_COLOR, GRID_STYLE, LIMIT, maximum, g2d);
+        }
 
         if(IS_SHOW_POPUP && GRAPH_ELEMENTS.getSelectedElement() != null && GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint() != null) {
         	drawPopup(GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint(),
@@ -205,7 +213,7 @@ public class LineGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 		    int[] xpoints = new int[ge.getShapes().size()];
 		    int[] ypoints = new int[ge.getShapes().size()];
 		    int j=0;
-		    for(Point p : ge.getShapes()) {
+		    for(Point2D.Double p : ge.getShapes()) {
 				xpoints[j] = (int)p.getX();
 				ypoints[j] = (int)p.getY();
 				j++;

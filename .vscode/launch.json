@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch AWTGraphSimple1",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1",
+            "projectName": "chaosgraph"
+        },
+        {
+            "type": "java",
+            "name": "Launch GraphExample2",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.awt2d.GraphExample2",
+            "projectName": "chaosgraph"
+        },
+        {
+            "type": "java",
+            "name": "Launch GraphExample1",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.awt2d.GraphExample1",
+            "projectName": "chaosgraph"
+        },
+        {
+            "type": "java",
             "name": "Launch AWTGraphSimple2",
             "request": "launch",
             "mainClass": "org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple2",

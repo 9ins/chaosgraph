@@ -10,7 +10,7 @@ import java.util.EventObject;
  * @author Kooin-Shin
  * 2020. 8. 26.
  */
-public class GraphPressEvent<V, X, Y> extends EventObject {
+public class GraphPressEvent<V extends Number, X, Y> extends EventObject {
 	/**
 	 * Graph element
 	 */

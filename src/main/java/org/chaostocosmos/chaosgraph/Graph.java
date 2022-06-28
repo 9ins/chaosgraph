@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;   
 
 /**
- * 
  * Graph
  * 
  * This class contribute to describe attributes of graph. tst
@@ -15,7 +14,7 @@ import java.util.List;
  * @author Kooin-Shin
  * 2020. 9. 23.
  */
-public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
+public abstract class Graph <V extends Number, X, Y> implements IGraph<V, X, Y>, GraphConstants {
 	protected int ORIGIN_WIDTH, ORIGIN_HEIGHT;
 	protected double SCALED_WIDTH = 8d;
 	protected double SCALED_HEIGHT= 6d;
@@ -43,9 +42,9 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
     protected boolean IS_SHOW_IMG_BORDER = true;			//is show image border
     protected boolean IS_SHOW_GRAPH_BORDER = true;			//is show graph border
     protected boolean IS_SHOW_BORDER = true;                //is show background border
-    protected boolean IS_IMG_FIXED = true;                 //is to fix the image
+    protected boolean IS_IMG_FIXED = true;                  //is to fix the image
     protected boolean IS_SELECTION_ENABLE = true;			//is able to element selection
-    protected boolean IS_SHOW_PEEK = false;					//is show peek point
+    protected boolean IS_SHOW_PEAK = false;					//is show peek point
     protected boolean IS_SHOW_ELEMENT_NAME = false;			//is show element name
 
     protected float IMG_BG_ALPHA = 1.0f;					//Transparency of background
@@ -66,25 +65,25 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
     protected int SHADOW_ANGLE = 300;						//Angle of shadow on graph
     protected float IMG_BORDER_SIZE = 3f;					//Image border size
     protected float GRAPH_BORDER_SIZE = 5f;				    //Graph border size
-    protected float BORDER_SIZE = 2.0f;                       //Border size
+    protected float BORDER_SIZE = 2.0f;                     //Border size
     protected float GRAPH_XY_SIZE = 2f;					    //Stroke size of xy axis
     protected float GRID_SIZE = 0.1f;						//Stroke size of grid
     protected int ROUND_PLACE = 2;							//Round digits;
 
     protected POPUP_STYLE POPUP = POPUP_STYLE.ROUND; 		//popup style
     protected GRID GRID_STYLE = GRID.LINE;					//Grid line style(1.line, 2. dot)
-    protected SELECTION_BORDER SEL_BORDER = SELECTION_BORDER.LINE;		//Selection border
+    protected SELECTION_BORDER SEL_BORDER = SELECTION_BORDER.LINE; //Selection border
     protected String INDEX_Y_UNIT = "";						//Y index unit string
     protected double VALUE_DIVISION_RATIO = 1.0d;			//Y index values division ratio(1.0 is same ratio)
     protected String FONT_NAME;								//Font name
     protected String TITLE;									//Graph title
-    protected double LIMIT;                                      //Graph scale(Higher value to get small graph image)
-    protected double WHEEL_UNIT_SCALE = 0.02;    
+    protected double LIMIT;                                 //Graph scale(Higher value to get small graph image)
+    protected double WHEEL_UNIT_SCALE = 0.02;
     protected int SELECTED_COLOR_DENSITY = -20;		
     protected GraphElements<V, X, Y> GRAPH_ELEMENTS = null; //Graph elements object    
     protected Graphics2D GRAPHICS2D = null;                 //Graphics2D object to draw
     protected List<GraphSelectionListener<V, X, Y>> listenerList = new ArrayList<GraphSelectionListener<V, X, Y>>(); //Graph selection listeners
-    
+
     protected INTERPOLATE interpolateType;
     protected int interpolateScale;
     
@@ -107,8 +106,8 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
         this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	//Width of graph in image
         this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  //Height of graph in image
     	this.GRAPH_ELEMENTS.setGraph(this);
-    	this.interpolateScale = 5;
     	this.ROUND_PLACE = GraphConstants.ROUND_PLACE;
+    	this.interpolateScale = 5;
     }
     
     /**
@@ -142,10 +141,10 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
     public void sweepBg(int width, int height) {
         this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	
         this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);  
-        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);		
-        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;                  
-        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;                         
-        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;                     
+        this.GRAPH_X = (IMG_WIDTH)-(INDENT_RIGHT+GRAPH_WIDTH);
+        this.GRAPH_Y = (IMG_HEIGHT)-INDENT_BOTTOM;
+        this.LABEL_X = GRAPH_X+GRAPH_WIDTH;
+        this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;
         this.GRAPHICS2D.setColor(Color.black);
         this.GRAPHICS2D.fill(new Rectangle2D.Double(0, 0, width, height));
     }
@@ -165,6 +164,8 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
             type = "CIRCLE GRAPH";
         else if(graphType == GRAPH.AREA)
             type = "AREA GRAPH";
+        else 
+            throw new NotMatchGraphTypeException("Specified graph type is not exist!!!");
         return type;
     }
     
@@ -513,16 +514,16 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
      * Whether showing peek point
      * @param is
      */
-    public void setShowPeek(boolean is) {
-    	IS_SHOW_PEEK = is;
+    public void setShowPeak(boolean is) {
+    	IS_SHOW_PEAK = is;
     }
     
     /**
      * Get whether showing peek point
      * @return
      */
-    public boolean getShowPeek() {
-    	return IS_SHOW_PEEK;
+    public boolean getShowPeak() {
+    	return IS_SHOW_PEAK;
     }
     
     /**
@@ -843,9 +844,9 @@ public abstract class Graph <V, X, Y> implements IGraph, GraphConstants {
         this.INDENT_LEFT = left;
         this.INDENT_BOTTOM = bottom;
         this.INDENT_RIGHT = right;
-        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);
-        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP+INDENT_BOTTOM);
-        this.GRAPH_X = IMG_WIDTH-(INDENT_RIGHT+GRAPH_WIDTH);
+        this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT + INDENT_RIGHT);
+        this.GRAPH_HEIGHT = IMG_HEIGHT-(INDENT_TOP + INDENT_BOTTOM);
+        this.GRAPH_X = IMG_WIDTH-(INDENT_RIGHT + GRAPH_WIDTH);
         this.GRAPH_Y = IMG_HEIGHT-INDENT_BOTTOM;
         this.LABEL_X = GRAPH_X+GRAPH_WIDTH;
         this.LABEL_Y = GRAPH_Y-GRAPH_HEIGHT+10;

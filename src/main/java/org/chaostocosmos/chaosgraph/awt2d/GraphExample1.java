@@ -56,7 +56,7 @@ import org.chaostocosmos.chaosgraph.NotSuppotedEncodingFormatException;
 * @version 1.2, 2006/7/5 First draft
 * @since JDK1.4.1
 */
-public class GraphExample1 extends JFrame implements GraphSelectionListener {
+public class GraphExample1 extends JFrame implements GraphSelectionListener<Double, String, Double> {
     //abstract graph object
     public AbstractGraph<Double, String, Double> graph;
     //x index list
@@ -72,11 +72,11 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     						new Color(150,150,150), 
     						new Color(150,200,158)};
     //elements values array
-    public Double[][] values = {{44d,35d,0d,32d,0d,33d,29d,43d,25d,22d,32d,43d,23d},
-                        {43d,25d,10d,32d,0d,23d,52d,32d,32d,23d,54d,23d,48d, 20d, 60d, 140d, 500d, 10d},
-                        {500d,93d,0d,49d,0d,24d,93d,63d,92d,84d,69d,46d,28d},
-                        {300d,25d,0d,32d,0d,23d, 9d,19d,32d,70d,93d,29d,15d},
-                        {20d,36d,0d,24d,22d,37d,33d,54d,23d,48d,53d,150d,22d}};
+    public Double[][] values = {{44d,35d,0d,32d,0d,33d,29d,43d,25d,22d,32d,43d,23d, 33d,44d,10d,5d},
+                                {43d,25d,10d,32d,0d,23d,52d,32d,32d,23d,54d,23d,48d,20d,60d,140d,500d},
+                                {500d,93d,0d,49d,0d,24d,93d,63d,92d,84d,69d,46d,28d,10d,3d,44d,43d},
+                                {300d,25d,0d,32d,0d,23d, 9d,19d,32d,70d,93d,29d,15d,24d,93d,63d,92d},
+                                {20d,36d,0d,24d,22d,37d,33d,54d,23d,48d,53d,150d,22d,0d,24d,22d,37d}};
 
 
     //y index value array
@@ -173,7 +173,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showAreaGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-        this.graph = (AreaGraph)gpArea.getGraph();
+        this.graph = (AreaGraph<Double, String, Double>)gpArea.getGraph();
         graph.setTitle("This is simple area graph.");
         graph.setShowShadow(false);
         graph.setGridStyle(GRID.DOT);
@@ -182,6 +182,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         graph.setSelectionEnable(true);
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
         graph.setShowGraphXY(false);
+        //graph.setShowPeak(true);
         
         getContentPane().remove(2);
         getContentPane().add(gpArea, BorderLayout.CENTER);
@@ -197,7 +198,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showBarGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-    	this.graph = (BarGraph)gpBar.getGraph();
+    	this.graph = (BarGraph<Double, String, Double>)gpBar.getGraph();
     	graph.setTitle("This is simple bar graph.");
         graph.setLimit(300d);
         graph.setUnit("m");
@@ -215,7 +216,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
      * @since JDK1.4.1
      */
     public void showBarRatioGraph() throws NotMatchArrayException, NotMatchGraphTypeException {
-    	this.graph = (BarRatioGraph)gpBarRatio.getGraph();
+    	this.graph = (BarRatioGraph<Double, String, Double>)gpBarRatio.getGraph();
     	graph.setTitle("This is simple bar ratio graph.");
         graph.setLimit(300d);
         graph.setUnit(" m");
@@ -238,7 +239,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
         graph.setShadowAngle(280);
         graph.setRightIndent(100);
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
-        ((CircleGraph)graph).setShowPercent(true);
+        ((CircleGraph<Double, String, Double>)graph).setShowPercent(true);
         
         getContentPane().remove(2);
         getContentPane().add(gpCircle, BorderLayout.CENTER);
@@ -453,6 +454,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     	   return;
        }       
     }
+    
     /**
      * Perform close button selection
      * @param e ActionEvent
@@ -488,18 +490,17 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener {
     }
 
 	@Override
-	public void onMouseOverGraph(GraphOverEvent goe) throws Exception {
-		//System.out.println(goe.toString());
-		
+	public void onMouseOverGraph(GraphOverEvent<Double, String, Double> goe) throws Exception {
+		//System.out.println(goe.toString());		
 	}
+
 	@Override
-	public void onMousePressedGraph(GraphPressEvent gpe) throws Exception {
+	public void onMousePressedGraph(GraphPressEvent<Double, String, Double> gpe) throws Exception {
 		System.out.println(gpe.toString());		
 	}
+
 	@Override
-	public void onMouseReleasedGraph(GraphReleaseEvent gre) throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void onMouseReleasedGraph(GraphReleaseEvent<Double, String, Double> gre) throws Exception {
 	}
 	
     /**

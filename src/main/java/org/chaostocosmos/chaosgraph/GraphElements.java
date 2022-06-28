@@ -4,10 +4,11 @@
 package org.chaostocosmos.chaosgraph;
 
 import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 * @version 1.2, 2006/7/5 
 * @since JDK1.4.1
 */
-public class GraphElements <V, X, Y> implements GraphConstants {
+public class GraphElements <V extends Number, X, Y> implements GraphConstants {
 	/**
 	 * This represent graph element ordering
 	 */
@@ -58,6 +59,10 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     private Graph<V, X, Y> graph;
     /**
+     * Decimal Point
+     */
+    private int decimalPoint;
+    /**
      * Constructor
      * @param graphType
      * @param xIndex
@@ -65,8 +70,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public GraphElements(GRAPH graphType, X[] xIndex, Y[] yIndex) {
         this(graphType, Arrays.asList(xIndex), Arrays.asList(yIndex));
-    }
-    
+    }    
     /**
      * Constructor
      * @param graphType
@@ -74,9 +78,8 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      * @param yIndex
      */
     public GraphElements(GRAPH graphType, List<X> xIndex, List<Y> yIndex) {
-    	this(graphType, null, xIndex, yIndex);
-    }
-    
+    	this(graphType, null, xIndex, yIndex, 2);
+    }    
     /**
      * Constructor
      * @param graphType
@@ -84,25 +87,27 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      * @param xIndex
      * @param yIndex
      */
-    public GraphElements(GRAPH graphType, List<GraphElement<V, X, Y>> elements, List<X> xIndex, List<Y> yIndex) {
+    public GraphElements(GRAPH graphType, List<GraphElement<V, X, Y>> elements, List<X> xIndex, List<Y> yIndex, int decimalPoint) {
     	this.graphType = graphType;
     	this.xIndex = xIndex;
+        if(this.xIndex.size() == 0) {
+            this.xIndex.add(null);
+        }
     	this.yIndex = yIndex;
+        this.decimalPoint = decimalPoint;
 		this.elementMap = new TreeMap<Object, GraphElement<V, X, Y>>();
     	this.elementOrder = new ArrayList<Object>();
     	if(elements != null) {
     		elements.stream().forEach(e -> addElement(e));
     	}
-    }
-    
+    }    
     /**
      * Get graph object
      * @return
      */
     public Graph<V, X, Y> getGraph() {
     	return this.graph;
-    }
-    
+    }    
     /**
      * Set graph object
      * @param graph
@@ -110,8 +115,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
     public void setGraph(Graph<V, X, Y> graph) {
     	this.graph = graph;
     	this.elementMap.values().stream().forEach(e -> e.setGraph(graph));
-    }
-    
+    }    
     /**
      * Get maximum in double list
      * @param value
@@ -119,9 +123,8 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      * @since JDK1.4.1
      */
     public double calMax(List<V> value) {
-        return value.stream().mapToDouble(v -> v == null ? 0d : Double.valueOf(v+"")).max().getAsDouble();
-    }
-    
+        return Collections.max(value.stream().map(v -> (double)v).collect(Collectors.toList()));
+    }    
     /**
      * Get minimum in double list
      * @param value
@@ -129,27 +132,34 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      * @since JDK1.4.1
      */
     public double calMin(List<V> value) {
-        return value.stream().mapToDouble(v -> v == null ? 0d : Double.valueOf(v+"")).min().getAsDouble();
+        return Collections.min(value.stream().map(v -> (double)v).collect(Collectors.toList()));
     }
-    
     /**
      * Get maximum in map
      * @param map
      * @return
      */
     public double calMax(Map<Object, GraphElement<V, X, Y>> map) {
-        return map.values().stream().mapToDouble(ev -> calMax(ev.getValues())).max().getAsDouble();
+        double max = 0;
+        for(GraphElement<V, X, Y> e : map.values()) {
+            double subMax = Collections.max(e.getValues().stream().map(v -> (double)v).collect(Collectors.toList()));
+            max = max < subMax ? subMax : max;
+        }
+        return max;
     }
-    
     /**
      * Get minimum in map
      * @param map
      * @return
      */
-    public double calMin(Map<Object, GraphElement<V, X, Y>> map)	{
-        return map.values().stream().mapToDouble(ev -> calMin(ev.getValues())).min().getAsDouble();
-    }
-    
+    public double calMin(Map<Object, GraphElement<V, X, Y>> map) {
+        double min = 0;
+        for(GraphElement<V, X, Y> e : map.values()) {
+            double subMin = Collections.min(e.getValues().stream().map(v -> (double)v).collect(Collectors.toList()));
+            min = min > subMin ? subMin : min;
+        }
+        return min;
+    }    
     /**
      * Get graph type
      * @return int
@@ -157,8 +167,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public GRAPH getGraphType() {
         return this.graphType;
-    }
-    
+    }    
     /**
      * get GraphElement 
      * @param elementName
@@ -166,8 +175,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public GraphElement<V, X, Y> getGraphElement(String elementName) {
     	return this.elementMap.get(elementName);
-    }
-    
+    }    
     /**
      * Set graph element by name
      * @param elementName
@@ -175,8 +183,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public void setGraphElement(Object elementName, GraphElement<V, X, Y> ge) {
     	addGraphElement(elementName, ge);
-    }
-    
+    }    
     /**
      * Add graph element
      * @param ge
@@ -185,8 +192,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public void addElement(GraphElement<V, X, Y> ge) {
     	addGraphElement(ge.getElementName(), ge);
-    }
-    
+    }    
     /**
      * Add graph element
      * @param elementName
@@ -200,7 +206,6 @@ public class GraphElements <V, X, Y> implements GraphConstants {
         	this.elementOrder.add(ge.getElementName());
     	}
     }
-
     /**
      * Remove graph element
      * @param elementName
@@ -209,7 +214,6 @@ public class GraphElements <V, X, Y> implements GraphConstants {
     	this.elementOrder = this.elementOrder.stream().filter(o -> !o.equals(elementName)).collect(Collectors.toList());
     	return this.elementMap.remove(elementName);
     }
-    
     /**
      * Circulate elements
      * @param forword
@@ -223,7 +227,6 @@ public class GraphElements <V, X, Y> implements GraphConstants {
     		this.elementOrder.add(0, o);
     	}
     }
-
     /**
      * Sorting by last value of element
      */
@@ -235,8 +238,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
             double last2 = last2v == null ? 0d : (double)last2v;
             return last1 > last2 ? 1 : last1 < last2 ? -1 : 0;
         }).map(e -> e.getElementName()).collect(Collectors.toList());
-    }
-    
+    }    
     /**
      * Get graph element map
      * @return
@@ -244,7 +246,6 @@ public class GraphElements <V, X, Y> implements GraphConstants {
     public Map<Object, GraphElement<V, X, Y>> getGraphElementMap() {
     	return this.elementMap;
     }    
-    
     /**
      * Set graph element map
      * @param elementMap
@@ -252,16 +253,14 @@ public class GraphElements <V, X, Y> implements GraphConstants {
     public void setGraphElementMap(Map<Object, GraphElement<V, X, Y>> elementMap) {
     	this.elementMap = elementMap;
     	this.elementOrder = this.elementMap.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
-    }
-    
+    }    
     /**
      * Get element order by element names
      * @return
      */
     public List<Object> getElementOrder() {
     	return this.elementOrder;
-    }
-   
+    }   
     /**
      * Get x indexes
      * @return String[]
@@ -269,16 +268,14 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public List<X> getXIndex() {
         return this.xIndex;
-    }
-    
+    }    
     /**
      * Get minimum size of index
      * @return
      */
     public int getMinimumXIndexSize() {
-    	return this.elementMap.entrySet().stream().map(e -> e.getValue().getValues().size()).max(Integer::compare).get()-1;
-    }
-    
+        return Collections.max(this.elementMap.values().stream().map(e -> e.getValues().size()).collect(Collectors.toList()));
+    }    
     /**
      * Get y indexes
      * @return float
@@ -286,8 +283,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public List<Y> getYIndex() {
         return this.yIndex;
-    }
-    
+    }    
     /**
      * Get graph element value to double value
      * @param elementName
@@ -301,26 +297,23 @@ public class GraphElements <V, X, Y> implements GraphConstants {
 		} else {
 		    throw new IndexOutOfBoundsException("Given index value is over than element value size.");
 		}
-    }
-    
+    }    
     /**
      * Get maximum value of specific index of graph elements
      * @param index
      * @return
      */
     public double getIndexMaximum(int index) {
-    	return this.elementMap.values().stream().mapToDouble(e -> Double.valueOf(e.getValues().get(index)+"")).max().getAsDouble();
-    }
-    
+        return Collections.max(this.elementMap.values().stream().map(e -> e.getValues().size()).collect(Collectors.toList()));
+    }    
     /**
      * Get minimum value of specific index fo graph elements
      * @param index
      * @return
      */
     public double getIndexMinimum(int index) {
-    	return this.elementMap.values().stream().mapToDouble(e -> Double.valueOf(e.getValues().get(index)+"")).min().getAsDouble();
-    }
-    
+        return Collections.min(this.elementMap.values().stream().map(e -> e.getValues().size()).collect(Collectors.toList()));
+    }    
     /**
      * Get element values
      * @return float[][]
@@ -328,8 +321,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public List<V> getElementsValues(String elementName) {
         return this.elementMap.get(elementName).getValues();
-    }
-    
+    }    
     /**
      * Get maximum value of elements
      * @return float
@@ -337,8 +329,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public double getMaximum() {
         return calMax(this.elementMap); 
-    }
-    
+    }    
     /**
      * Get minimum value of elements
      * @return float
@@ -346,17 +337,15 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public double getMin() {
         return calMin(this.elementMap);
-    }
-    
+    }    
     /**
      * Get x index count
      * @return int
      * @since JDK1.4.1
      */
-     public int getXIndexCount() {
+    public int getXIndexCount() {
         return this.xIndex.size();
-    }
-     
+    }     
     /**
      * Get y index count
      * @return int
@@ -364,8 +353,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public int getYIndexCount() {
         return this.yIndex.size();
-    }
-    
+    }    
     /**
      * Set element values
      * @param values float[][]
@@ -374,8 +362,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public void setValues(String elementName, V[] values) {
     	this.elementMap.get(elementName).setValues(Arrays.asList(values));
-    }
-    
+    }    
     /**
      * Set X index
      * @param xIndex String[]
@@ -383,8 +370,7 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public void setXIndex(List<X> xIndex) {
         this.xIndex = xIndex;
-    }
-    
+    }    
     /**
      * Set y index
      * @param yIndex 
@@ -392,58 +378,65 @@ public class GraphElements <V, X, Y> implements GraphConstants {
      */
     public void setYIndex(List<Y> yIndex) {
         this.yIndex = yIndex;
-    }
-    
+    }    
     /**
      * Set y index
      * @param yIndex
      */
     public void setYIndex(Y[] yIndex) {
 		this.yIndex = Arrays.asList(yIndex);
-    }
-    
+    }    
     /**
      * Get selected graph element
      * @return
      */
     public GraphElement<V, X, Y> getSelectedElement() {
     	return this.selectedElement;
-    }
-    
+    }    
     /**
      * Set selected graph element
      * @param ge
      */
     public void setSelectedElement(GraphElement<V, X, Y> ge) {
     	this.selectedElement = ge;
-    }
-    
+    }    
     /**
      * Get selected index
      * @return
      */
     public int getSelectedIndex() {
     	return this.selectedIndex;
-    }
-    
+    }    
     /**
      * Set selected index
      * @param index
      */
     public void setSelectedIndex(int index) {
     	this.selectedIndex = index;
-    }
-    
+    }    
     /**
      * Get whole label dimension
      * @return
      */
-    public Rectangle getLabelRectangle() {
-    	int width = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point>::stream).map(p -> p.x).max(Integer::compare).get() - this.graph.LABEL_X;
-    	int height = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point>::stream).map(p -> p.y).max(Integer::compare).get() - this.graph.LABEL_Y; 
-    	return new Rectangle(this.graph.LABEL_X, this.graph.LABEL_Y, width, height);
+    public Rectangle2D.Double getLabelRectangle() {
+    	double width = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point2D.Double>::stream).map(p -> p.x).max(Double::compare).get() - this.graph.LABEL_X;
+    	double height = this.elementMap.values().stream().map(ge -> ge.getLabelShapes()).flatMap(List<Point2D.Double>::stream).map(p -> p.y).max(Double::compare).get() - this.graph.LABEL_Y; 
+    	return new Rectangle2D.Double(this.graph.LABEL_X, this.graph.LABEL_Y, width, height);
+    }   
+    /**
+     * Get decimal point
+     * @return
+     */ 
+    public int getDecimalPoint() {
+        return this.decimalPoint;
     }
-    
+    /**
+     * Set decimal point
+     * @param decimalPoint
+     */
+    public void setDecimalPoint(int decimalPoint) {
+        this.decimalPoint = decimalPoint;
+    }
     /**
      * Create and get sample GraphElements object
      * @param type
@@ -454,9 +447,9 @@ public class GraphElements <V, X, Y> implements GraphConstants {
         List<Double> yIndex =null;
     	xIndex = new ArrayList<String>();
     	for(int i=0; i<17; i++) {
-    		if(i % 2 == 0)
+    		if(i % 2 == 0) {
     			xIndex.add(i+"");
-    		else {
+            } else {
     			xIndex.add(null);
     		}
     	}

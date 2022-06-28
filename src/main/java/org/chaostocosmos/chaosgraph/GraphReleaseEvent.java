@@ -11,7 +11,7 @@ import java.util.EventObject;
  * @author Kooin-Shin
  * 2020. 8. 26.
  */
-public class GraphReleaseEvent<V, X, Y> extends EventObject {
+public class GraphReleaseEvent<V extends Number, X, Y> extends EventObject {
 	/**
 	 * Graph element
 	 */

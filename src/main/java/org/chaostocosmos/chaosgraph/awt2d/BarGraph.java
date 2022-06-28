@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +18,14 @@ import java.util.stream.Collectors;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphElement;
 import org.chaostocosmos.chaosgraph.GraphElements;
+import org.chaostocosmos.chaosgraph.GraphUtility;
 import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
+
 
 /**
 * <p>Title: BarGraph class</p>
 * <p>Description:</p>
-*<br>
+* <br>
 * <img src="pic/BAR.jpg"  alt="">
 * <p>Copyright: Copyleft (c) 2006</p>
 * <p>Company: ChaosToCosmos</p>
@@ -30,7 +33,7 @@ import org.chaostocosmos.chaosgraph.NotMatchGraphTypeException;
 * @version 1.0, 2001/8/13 19:30 first draft<br>
 * @since JDK1.4.1
 */
-public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
+public class BarGraph<V extends Number, X, Y> extends AbstractGraph<V, X, Y> {
     /**
      * Constructor
      * @param ge GraphElements 
@@ -49,23 +52,21 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
      */
     public BarGraph(GraphElements<V, X, Y> ge, int width, int height)  {
         this(ge, "", width, height);
-    }
-    
+    }    
     /**
      * Constructor
      * @param ge GraphElements 
      * @param title 
      * @param width int 
      * @param height int 
-     * @since JDK1.4.1
+     * @since JDK1.4.1 
      */
     public BarGraph(GraphElements<V, X, Y> ge, String title, int width, int height)  {
         super(ge, title, width, height);
         if (ge.getGraphType() != GRAPH.BAR) {
         	throw new NotMatchGraphTypeException("Can't draw graph with given graph elements type: "+ge.getGraphType().name());
         }
-    }
-    
+    }    
     /**
      * Draw bar graph
      * This method paint bar graph elements
@@ -82,23 +83,24 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
             }
         }
         Map<Object, GraphElement<V, X, Y>> elementMap = GRAPH_ELEMENTS.getGraphElementMap();
-        List<Object> elementNames = new ArrayList(elementMap.keySet());
-        double maxValue = (double) GRAPH_ELEMENTS.getMaximum();
+        List<Object> elementNames = new ArrayList<>(elementMap.keySet());
+        double maximum = (double) GRAPH_ELEMENTS.getMaximum();
 
         g2d.setStroke(new BasicStroke(BORDER_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setClip((int)GRAPH_X, (int)(GRAPH_Y-GRAPH_HEIGHT), (int)GRAPH_WIDTH, (int)GRAPH_HEIGHT);
         
-        double indent = 10;
-        double unit = GRAPH_WIDTH / xIndex.size();
+        double indent = 10d;
+        double unit = (double)GRAPH_WIDTH / (double)xIndex.size();
         double tab = unit - (indent * 2);
-        double width = tab / elementNames.size();
+        double width = tab / (double)elementNames.size();
         
+		int xIndexCount = xIndex.size()-1;
         int i = 0;
-        for (Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
+        for(Object elementName : GRAPH_ELEMENTS.getElementOrder()) {
             GraphElement<V, X, Y> ge = GRAPH_ELEMENTS.getGraphElementMap().get(elementName);
-            List<V> values = ge.getValues();
-            List<Point> shapes = new ArrayList<Point>();
-            for(int j=0; j<values.size(); j++) {
+			List<V> values = ge.getValues().stream().map(v -> GraphUtility.roundAvoid(v, GRAPH_ELEMENTS.getDecimalPoint())).collect(Collectors.toList());
+            List<Point2D.Double> shapes = new ArrayList<>();
+            for(int j=0; j<xIndexCount; j++) {
 	        	double value = (double)values.get(j);
 	            if (value < 0) {
 	            	continue;
@@ -107,7 +109,7 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 	            //double x = ((i + 1) * tab - tab / 2) + width * i + GRAPH_X + 1;
 	            double x = i * width + (j * (unit) + indent)  + GRAPH_X;
 	            x = (x < 1) ? 1 : x;
-	            double height = (LIMIT < maxValue) ? value * GRAPH_HEIGHT / maxValue : (value * GRAPH_HEIGHT) / LIMIT;
+	            double height = (LIMIT < maximum) ? value * GRAPH_HEIGHT / maximum : (value * GRAPH_HEIGHT) / LIMIT;
 	            double y = GRAPH_Y - height;
 	            
 	            //System.out.println("value: "+value+" max : "+maxValue+" limit: "+LIMIT+" tab : "+tab+"   width: "+width+"  elements size: "+elements.size()+"  x: "+x+"  y: "+y+"  height: "+height);
@@ -149,23 +151,27 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 	                    g2d.draw(new Rectangle2D.Double(x, y, width, height));
 	                }
 	            }
-                shapes.add(new Point((int)x, (int)y));
-                shapes.add(new Point((int)x, (int)(y+height)));
-                shapes.add(new Point((int)(x+width), (int)(y+height)));
-                shapes.add(new Point((int)(x+width), (int)y));
+                shapes.add(new Point2D.Double(x, y)); 
+                shapes.add(new Point2D.Double(x, y+height));
+                shapes.add(new Point2D.Double(x+width, y+height)); 
+                shapes.add(new Point2D.Double(x+width, y));
             }
             ge.setShapes(shapes);
             i++;
         }
         g2d.setClip(0, 0, IMG_WIDTH, IMG_HEIGHT);
-        
+
+        //Draw grid Y axis
+        if (IS_SHOW_GRID_Y) {
+            g2d.setStroke(new BasicStroke(GRID_SIZE, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            drawGridY(super.getGraphElements().getYIndex(), GRID_Y_COLOR, GRID_STYLE, LIMIT, maximum, g2d);
+        }        
         if(IS_SHOW_POPUP && GRAPH_ELEMENTS.getSelectedElement() != null && GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint() != null) {
         	drawPopup(GRAPH_ELEMENTS.getSelectedElement().getSelectedPoint(),
             		POPUP_BG_COLOR, 
             		GRAPH_ELEMENTS.getSelectedElement(),
             		g2d);
         }
-
         if (IS_SHOW_LABEL) {
             drawLabel(FONT_NAME, 
             		LABEL_FONT_SIZE, 
@@ -189,7 +195,7 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 			    int[] xpoints = new int[4];
 			    int[] ypoints = new int[4];
 			    for(int k=0; k<4; k++) {
-			    	Point p = ge.getShapes().get(j*4+k);
+			    	Point2D.Double p = ge.getShapes().get(j*4+k);
 			    	xpoints[k] = (int)p.getX();
 			    	ypoints[k] = (int)p.getY();
 			    }
@@ -203,7 +209,7 @@ public class BarGraph<V, X, Y> extends AbstractGraph<V, X, Y> {
 			    	ge.setSelectedPoint(new Point(x, y));
 			    	return ge;
 			    } else {
-			    	ge.setSelectedValue((V)new Double(-1));
+			    	ge.setSelectedValue((V)new Double(-1d));
 			    	ge.setSelectedValueIndex(-1);
 			    }
 		    	valueIndex++;

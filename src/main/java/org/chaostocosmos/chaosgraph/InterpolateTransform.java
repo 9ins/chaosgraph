@@ -1,7 +1,7 @@
 package org.chaostocosmos.chaosgraph;
 
 import java.awt.geom.Point2D;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -139,7 +139,7 @@ public class InterpolateTransform {
      * @param interpolateScale
      * @return
      */
-    public static <V, X, Y> GraphElements<V, X, Y> populateInterpolateWithOneType(INTERPOLATE interpolateType, GraphElements<V, X, Y> graphElements, int interpolateScale) {
+    public static <V extends Number, X, Y> GraphElements<V, X, Y> populateInterpolateWithOneType(INTERPOLATE interpolateType, GraphElements<V, X, Y> graphElements, int interpolateScale) {
     	graphElements.getGraphElementMap().values().forEach(e -> { 
     		e.setInterpolateScale(interpolateScale);
     		e.setInterpolationType(interpolateType);
@@ -152,7 +152,7 @@ public class InterpolateTransform {
      * @param graphElements
      * @return
      */
-    public static <V, X, Y> GraphElements<V, X, Y> populateInterpolate(GraphElements<V, X, Y> graphElements) {
+    public static <V extends Number, X, Y> GraphElements<V, X, Y> populateInterpolate(GraphElements<V, X, Y> graphElements) {
 		final double gx = graphElements.getGraph().getGraphX();
 		final double gy = graphElements.getGraph().getGraphY();
 		final double gw = graphElements.getGraph().getGraphWidth();
@@ -172,7 +172,11 @@ public class InterpolateTransform {
     			double[] xi = IntStream.range(0, interpolateCounts - e.getInterpolateScale()+1).mapToDouble(i -> (int)(gap * i  + gx)).toArray();
     			//System.out.println("xv count: "+xv.length+"   xi count: "+xi.length+"  tab: "+tab+"   gap: "+gap);
     			double[] yi = InterpolateTransform.transform(e.getInterpolationType(), xv, yv, xi);
-    			List<V> values = Arrays.asList(yi).stream().map(d -> (V)d).collect(Collectors.toList());
+				List<Double> doubles = new ArrayList<>();
+				for(double d : yi) {
+					doubles.add(d);
+				}
+    			List<V> values = doubles.stream().map(d -> (V)d).collect(Collectors.toList());
     			//Collections.reverse(values);
     			e.setInterpolateValues(values);
     			List<Point2D.Double> interpolateList = IntStream.range(0, xi.length).mapToObj(i -> new Point2D.Double(xi[i], yi[i])).collect(Collectors.toList());

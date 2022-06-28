@@ -3,6 +3,7 @@
  */
 package org.chaostocosmos.chaosgraph;
 
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -53,13 +54,12 @@ import com.sun.media.jai.codec.ImageEncoder;
 * @version 1.2, 2006/7/5 first draft
 * @since JDK1.4.1
 */
-public class GraphUtility
-{
+public class GraphUtility {
     /**
      * Supported codec list
      */
     public static enum CODEC {JPEG, TIFF, PNG, BMP};
-    
+	    
     /**
      * Save image to file
      * @param image
@@ -131,7 +131,7 @@ public class GraphUtility
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      */
-    public static <V, X, Y> Graph<V, X, Y> createGraphWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static <V, X, Y> Graph<Double, String, Double> createGraphWithJson(String json) throws JsonMappingException, JsonProcessingException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	ObjectMapper om = new ObjectMapper();
     	Map<String, Object> map = (Map<String, Object>)om.readValue(json, Map.class);
     	return createGraphWithMap(map);
@@ -146,47 +146,47 @@ public class GraphUtility
      * @throws IllegalAccessException 
      * @throws SecurityException 
      * @throws NoSuchMethodException 
-     */
-    public static <V, X, Y> Graph<V, X, Y> createGraphWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+     */ 
+    public static <V, X, Y> Graph<Double, String, Double> createGraphWithMap(Map<String, Object> map) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	GraphConstants.GRAPH type = GraphConstants.GRAPH.valueOf(map.get("GRAPH")+"");
     	INTERPOLATE interpolate = INTERPOLATE.valueOf(map.get("INTERPOLATE")+"");
     	int width = (int)Double.parseDouble(map.get("WIDTH")+"");
     	int height = (int)Double.parseDouble(map.get("HEIGHT")+"");
     	
-    	List<Object> xIndex = (List<Object>)map.get("XINDEX");  
-    	List<Object> list = (List<Object>)map.get("YINDEX");  
+    	List<String> xIndex = (List<String>)map.get("XINDEX");  
+    	List<Double> list = (List<Double>)map.get("YINDEX");  
     	List<Double> yIndex = new ArrayList<Double>();
     	for(Object o : list) {
     		yIndex.add(Double.parseDouble(o+""));
     	}
     	List<Map<String, Object>> elementList = (List<Map<String, Object>>)map.get("ELEMENTS");
-    	List<GraphElement<V, X, Y>> geList = elementList.stream().map(m -> {
+    	List<GraphElement<Double, String, Double>> geList = elementList.stream().map(m -> {
    			String elementName = m.get("ELEMENT")+"";
    			String label = m.get("LABEL")+"";
    			List<Integer> colorList = ((List<Object>)m.get("COLOR")).stream().map(v -> (int)Double.parseDouble(v+"")).collect(Collectors.toList());
    			Color elementColor = new Color((int)colorList.get(0), (int)colorList.get(1), (int)colorList.get(2));
    			List<Double> valueList = ((List<Object>)m.get("VALUES")).stream().map(v -> Double.parseDouble(v+"")).collect(Collectors.toList());
-   			return new GraphElement(elementName, elementColor, label, elementColor, valueList);
+   			return new GraphElement<Double, String, Double>(elementName, elementColor, label, elementColor, valueList);
     	}).filter(el -> el != null).collect(Collectors.toList());
-    	//elementList.stream().forEach(System.out::println);
-    	GraphElements elements = new GraphElements(type, geList, xIndex, yIndex);
-    	
-    	AbstractGraph graph = null; 
+
+    	GraphElements<Double, String, Double> elements = new GraphElements<>(type, geList, xIndex, yIndex, 2);    	
+    	AbstractGraph<Double, String, Double> graph = null; 
+
     	switch(type) {
-    		case LINE :
-    			graph = new LineGraph(elements, width, height);
+    		case LINE:
+    			graph = new LineGraph<Double, String, Double>(elements, width, height);
     			break;
-    		case AREA :
-    			graph = new AreaGraph(elements, width, height);
+    		case AREA:
+    			graph = new AreaGraph<Double, String, Double>(elements, width, height);
     			break;
-    		case CIRCLE :
-    			graph = new CircleGraph(elements, width, height);
+    		case CIRCLE:
+    			graph = new CircleGraph<Double, String, Double>(elements, width, height);
     			break;
-    		case BAR : 
-    			graph = new BarGraph(elements, width, height);
+    		case BAR: 
+    			graph = new BarGraph<Double, String, Double>(elements, width, height);
     			break;
-    		case BAR_RATIO :
-    			graph = new BarRatioGraph(elements, width, height);
+    		case BAR_RATIO:
+    			graph = new BarRatioGraph<Double, String, Double>(elements, width, height);
     			break;
     	}
     	List<Map<String, Object>> configList = (List<Map<String, Object>>)map.get("CONFIGS");
@@ -205,6 +205,18 @@ public class GraphUtility
     	return graph;
     }
     
+	/**
+	 * Invoke method with parameters
+	 * @param object
+	 * @param methodName
+	 * @param params
+	 * @return
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
     private static Object invokeMethod(Object object, String methodName, Object...params) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	Object[] paramClasses = Arrays.asList(params).stream().map(o -> o.getClass()).toArray();
     	Method[] methods = object.getClass().getMethods();
@@ -226,7 +238,7 @@ public class GraphUtility
      * @param places
      * @return
      */
-    public static List<Double>roundAvoid(List<Double> values, int places) {
+    public static <V extends Number> List<V> roundAvoid(List<V> values, int places) {
 		for(int i=0; i< values.size(); i++) {
 		    values.set(i, roundAvoid(values.get(i), places));
 		}
@@ -239,9 +251,10 @@ public class GraphUtility
      * @param places
      * @return
      */
-    public static Double roundAvoid(Double value, int places) {
+	@SuppressWarnings("unchecked")
+    public static <V extends Number> V roundAvoid(V value, int places) {
 		double scale = Math.pow(10, places);
-		return (double) (Math.round((double)value * scale) / scale);
+		return (V) Double.valueOf(Math.round(value.doubleValue() * scale) / scale);
     }
     
     /**
@@ -258,7 +271,7 @@ public class GraphUtility
     public static void main(String[] args) throws IOException, NotSuppotedEncodingFormatException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     	File f = new File("D:\\Github\\chaosgraph\\aws-api-lambda-chart-json.json");
     	String json = Files.lines(f.toPath()).collect(Collectors.joining(System.lineSeparator()));
-    	Graph graph = createGraphWithJson(json);
+    	Graph<Double, String, Double> graph = createGraphWithJson(json);
     	System.out.println("width: "+graph.getBufferedImage().getWidth()+"   height: "+graph.getBufferedImage().getHeight());
     	GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
     }

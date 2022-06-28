@@ -13,7 +13,7 @@ import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
  * @author Kooin-Shin
  * 2020. 8. 31.
  */
-public interface IGraph<V, X, Y> {
+public interface IGraph<V extends Number, X, Y> {
 	
     /**
      * Get graph type

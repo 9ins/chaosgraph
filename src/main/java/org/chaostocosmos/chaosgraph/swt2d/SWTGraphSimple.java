@@ -124,7 +124,7 @@ public class SWTGraphSimple {
     		//System.out.println("Disposed.....................");
     		this.canvas = new GraphCanvas(parent, type, GraphElements.newSimpleGraphElements(type), false, 1000, 600); 
     		this.canvas.getGraph().setInterpolateType(INTERPOLATE.SPLINE);
-    		this.canvas.getGraph().setShowPeek(true);
+    		this.canvas.getGraph().setShowPeak(true);
     	}
     }
     

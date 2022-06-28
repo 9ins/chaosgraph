@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.9ins</groupId>
   <artifactId>chaosgraph</artifactId>
-  <version>2.0.0</version>
+  <version>2.1.0</version>
   <name>chaosgraph</name>
   <description>This library contribute to make chart on AWT/Swing/SWT components. It can be used for AWT/Swing application and Eclipse SWT(Standard Widget Tookit) application also if you would try to build a service of RAP dashboard web application, This library will provide great UX experience and excellent interactive functionality to the service for users.</description>
   <url>https://github.com/9ins/chaosgraph</url>

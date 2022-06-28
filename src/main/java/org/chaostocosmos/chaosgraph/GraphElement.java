@@ -18,14 +18,14 @@ import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
  * @author Kooin-Shin
  * 2020. 8. 12.
  */
-public class GraphElement <V, X, Y> {
+public class GraphElement <V extends Number, X, Y> {
     private String elementName;
     private Color elementColor;
     private String label;
     private Color labelColor;
     private List<V> values;
-    private List<Point> shapes;
-    private List<Point> labelShapes;
+    private List<Point2D.Double> shapes;
+    private List<Point2D.Double> labelShapes;
     private int selectedValueIndex = -1;
     private V selectedValue;
     private Point selectedPoint;
@@ -91,8 +91,8 @@ public class GraphElement <V, X, Y> {
 		if(this.values.size() < 1) {
 		    this.values.add((V)new Double(0d));
 		}
-		this.shapes = new ArrayList<Point>();
-		this.labelShapes = new ArrayList<Point>();
+		this.shapes = new ArrayList<>();
+		this.labelShapes = new ArrayList<>();
 		this.interpolationType = interpolationType;
     }    
 	
@@ -180,7 +180,7 @@ public class GraphElement <V, X, Y> {
      * Get element shape point list
      * @return
      */
-    public List<Point> getShapes() {
+    public List<Point2D.Double> getShapes() {
     	return shapes;
     }
 
@@ -188,7 +188,7 @@ public class GraphElement <V, X, Y> {
      * Set element shape point list
      * @param shapes
      */
-    public void setShapes(List<Point> shapes) {
+    public void setShapes(List<Point2D.Double> shapes) {
     	this.shapes = shapes;
     }
     
@@ -196,7 +196,7 @@ public class GraphElement <V, X, Y> {
      * Get label shape point list
      * @return
      */
-    public List<Point> getLabelShapes() {
+    public List<Point2D.Double> getLabelShapes() {
     	return this.labelShapes;
     }
     
@@ -204,7 +204,7 @@ public class GraphElement <V, X, Y> {
      * Set label shape point list
      * @param labelShapes
      */
-    public void setLabelShapes(List<Point> labelShapes) {
+    public void setLabelShapes(List<Point2D.Double> labelShapes) {
     	this.labelShapes = labelShapes;
     }
 

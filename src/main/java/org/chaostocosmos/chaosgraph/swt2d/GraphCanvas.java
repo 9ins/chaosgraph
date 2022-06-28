@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Shell;
  * @author Kooin-Shin
  * 2020. 9. 21.
  */
-public class GraphCanvas<V, X, Y> extends Canvas {
+public class GraphCanvas<V extends Number, X, Y> extends Canvas {
 	AbstractGraph<V, X, Y> graph;
 	GraphElements<V, X, Y> elements;
     BufferedImage buffImg;     
@@ -223,7 +223,7 @@ public class GraphCanvas<V, X, Y> extends Canvas {
 		return this.canvas;
 	}
 	
-	public Graph getGraph() {
+	public Graph<V, X, Y> getGraph() {
 		return this.graph;
 	}
 	

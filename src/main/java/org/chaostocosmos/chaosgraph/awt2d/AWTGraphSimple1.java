@@ -153,7 +153,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
             }
             if(gpCircle == null) {
             	gpCircle = new GraphPanel<Double, String, Double>(GRAPH.CIRCLE, graphElements3, 600, 400);
-            }
+            }                        
             GraphElements<Double, String, Double> graphElements4 = new GraphElements<Double, String, Double>(GRAPH.LINE, xIndex, yIndex);
             for(int i=0; i<elements.length; i++) {        	
             	GraphElement<Double, String, Double> ge = new GraphElement<Double, String, Double>(elements[i], colors[i], elements[i], colors[i], values[i]);
@@ -163,7 +163,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
             	gpLine = new GraphPanel<Double, String, Double>(GRAPH.LINE, graphElements4, 600, 400);
             }
             jbInit();
-            showAreaGraph();
+            showLineGraph();
 
             setVisible(true);
         } catch(Exception e) {
@@ -196,7 +196,6 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
         graph.setInterpolateType(INTERPOLATE.SPLINE);
         graph.setInterPolateScale(9);
         graph.setShowGraphXY(false);
-        graph.setShowPeek(true);
         graph.addGraphSelectionListener(new GraphSelectionListener<Double, String, Double>() {
 			@Override
 			public void onMouseOverGraph(GraphOverEvent<Double, String, Double> goe) throws Exception {
@@ -283,8 +282,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
         graph.setSelectionBorder(SELECTION_BORDER.DOT);
         ((CircleGraph<Double, String, Double>)graph).setShowPercent(true);
         graph.addGraphSelectionListener(this);
-        //graph.setShowLabel(false);
-        
+        //graph.setShowLabel(false);        
         getContentPane().remove(2);
         getContentPane().add(gpCircle, BorderLayout.CENTER);
         getContentPane().validate();
@@ -301,7 +299,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
     	graph.setTitle("This is simple line graph.");
         graph.setGridSize(2);
         graph.setGridStyle(GRID.DOT);
-        graph.setShowPeek(true);
+        graph.setShowPeak(true);
         graph.setInterpolateType(INTERPOLATE.SPLINE);
         graph.addGraphSelectionListener(this);
         
@@ -434,8 +432,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
      */
     public void jButton6_actionPerformed(ActionEvent e) {
         System.exit(0);
-    }
-    
+    }    
     /**
      * Perform save button selection
      * @param ae
@@ -460,7 +457,6 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
         }
         JOptionPane.showConfirmDialog(this, "Success to save image...", "Error", JOptionPane.CLOSED_OPTION);
     }
-
 	@Override
 	public void onMouseOverGraph(GraphOverEvent<Double, String, Double> goe) throws Exception {
 		//System.out.println(goe.toString());
@@ -473,8 +469,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
 	@Override
 	public void onMouseReleasedGraph(GraphReleaseEvent<Double, String, Double> gre) throws Exception {
 		JOptionPane.showConfirmDialog(this,"You just select "+gre.getGraphElement().getElementName()+" element.   value: "+gre.getGraphElement().getSelectedValue(),  "Select", JOptionPane.YES_OPTION);
-	}
-	
+	}	
     /**
      * Main
      * @param args String[]

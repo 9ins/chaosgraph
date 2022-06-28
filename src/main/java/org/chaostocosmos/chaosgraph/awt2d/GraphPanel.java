@@ -38,7 +38,7 @@ import org.chaostocosmos.chaosgraph.GraphReleaseEvent;
 * @version 1.2, 2006/7/5 first draft
 * @since JDK1.4.1
 */
-public class GraphPanel<V, X, Y> extends JPanel {      
+public class GraphPanel<V extends Number, X, Y> extends JPanel {      
 	Graph<V, X, Y> graph;
 	GraphElements<V, X, Y> elements;
     BufferedImage buffImg = null;     
@@ -66,6 +66,7 @@ public class GraphPanel<V, X, Y> extends JPanel {
      */
     public GraphPanel(Graph<V, X, Y> graph, int width, int height) {
     	this.graph = graph;
+        this.graph.setShowPeak(true);
         this.component = new ComponentAdapterExt();
         this.container = new ContainerAdapterExt();
         this.mouse = new MouseAdapterExt(this);
@@ -178,12 +179,12 @@ public class GraphPanel<V, X, Y> extends JPanel {
 		}
 		
 		public void mouseMoved(MouseEvent me) {	    
-		    GraphElement ge = graph.isPointOnShapes(me.getX(), me.getY());
+		    GraphElement<V, X, Y> ge = graph.isPointOnShapes(me.getX(), me.getY());
 		    if(ge != null) {
 				//System.out.println(ge.getElementName()+"   selected index: "+ge.getSelectedValueIndex()+"  value : "+ge.getSelectedValue());
 			    graph.getGraphSelectionListenerList().stream().forEach(gl -> {
 					try {
-						gl.onMouseOverGraph(new GraphOverEvent(graph, ge));
+						gl.onMouseOverGraph(new GraphOverEvent<V, X, Y>(graph, ge));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
