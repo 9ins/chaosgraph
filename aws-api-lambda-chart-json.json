@@ -1,6 +1,6 @@
 
 {
-  "GRAPH" : "LINE",
+  "GRAPH" : "CIRCLE",
   "INTERPOLATE" : "SPLINE",
   "WIDTH" : 1600,
   "HEIGHT" : 700,

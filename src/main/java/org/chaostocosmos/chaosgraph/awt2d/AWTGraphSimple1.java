@@ -3,7 +3,6 @@
  */
 package org.chaostocosmos.chaosgraph.awt2d;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,12 +21,13 @@ import java.util.stream.Collectors;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JOptionPane; 
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.commons.imaging.ImageWriteException;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
@@ -182,7 +182,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
 		try {
 			json = Files.lines(Paths.get("D:\\Github\\chaosgraph\\aws-api-lambda-chart-json.json")).collect(Collectors.joining(System.lineSeparator()));
 	        graph = (AbstractGraph<Double, String, Double>)GraphUtility.<Double, String, Double>createGraphWithJson(json);
-	        GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
+	        GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG, 1.0f);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}        
@@ -444,7 +444,7 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
         BufferedImage img = this.graph.getBufferedImage();
         try {
             //Save buffered image to file
-            GraphUtility.saveBufferedImage(img, tFile, CODEC.PNG);
+            GraphUtility.saveBufferedImage(img, tFile, CODEC.PNG, 1.0f);
         } catch (NotSuppotedEncodingFormatException ex) {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
@@ -452,6 +452,9 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
         } catch (IOException ex) {
+            JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
+            return;
+        } catch (ImageWriteException ex) {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
         }
@@ -480,7 +483,6 @@ public class AWTGraphSimple1 extends JFrame implements GraphSelectionListener<Do
      * @since JDK1.4.1
      */
     public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new AWTGraphSimple1();
     }
 }

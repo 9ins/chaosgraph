@@ -404,7 +404,6 @@ public class GraphExample2 extends JFrame implements Runnable {
      * @throws ClassNotFoundException
      */
     public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         new GraphExample2();
     }
 }

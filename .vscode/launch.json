@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GraphUtility",
+            "request": "launch",
+            "mainClass": "org.chaostocosmos.chaosgraph.GraphUtility",
+            "projectName": "chaosgraph"
+        },
+        {
+            "type": "java",
             "name": "Launch AWTGraphSimple1",
             "request": "launch",
             "mainClass": "org.chaostocosmos.chaosgraph.awt2d.AWTGraphSimple1",

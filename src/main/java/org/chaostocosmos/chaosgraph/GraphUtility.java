@@ -3,10 +3,8 @@
  */
 package org.chaostocosmos.chaosgraph;
 
-
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,15 +14,17 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.ImagingConstants;
+import org.chaostocosmos.chaosgraph.GraphUtility.CODEC;
 import org.chaostocosmos.chaosgraph.awt2d.AreaGraph;
 import org.chaostocosmos.chaosgraph.awt2d.BarGraph;
 import org.chaostocosmos.chaosgraph.awt2d.BarRatioGraph;
@@ -38,8 +38,6 @@ import org.eclipse.swt.graphics.ImageLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.media.jai.codec.ImageCodec;
-import com.sun.media.jai.codec.ImageEncoder;
 
 /**
 * <p>Title: GraphUtility</p>
@@ -58,8 +56,8 @@ public class GraphUtility {
     /**
      * Supported codec list
      */
-    public static enum CODEC {JPEG, TIFF, PNG, BMP};
-	    
+    public static enum CODEC {JPEG, TIFF, PNG, BMP, ICO, DCX, PGM, GIF, PCX, WBMP, PSD};
+
     /**
      * Save image to file
      * @param image
@@ -97,28 +95,36 @@ public class GraphUtility {
     
     /**
      * Save buffered image to file
-     * @param image BufferedImage
-     * @param saveFile File
+     * @param bufferedImage
+     * @param saveFile
      * @param codec
+	 * @param compresstion
      * @throws FileNotFoundException
      * @throws IOException
+	 * @throws ImageWriteException
      * @throws NotSuppotedEncodingFormatException
      * @since JDK1.4.1
      */
-    public static void saveBufferedImage(BufferedImage image, File saveFile, CODEC codec) throws IOException, NotSuppotedEncodingFormatException {
-        Enumeration enu = ImageCodec.getCodecs();
-    	String ext = saveFile.getName().substring(saveFile.getName().lastIndexOf(".")+1);
-    	if(!Stream.of(CODEC.values()).anyMatch(c -> c.name().equalsIgnoreCase(ext))) {
-    		throw new NotSuppotedEncodingFormatException("Given file extention isn't exist in supported codec list.");
-    	}
-        ParameterBlock pb = new ParameterBlock();
-        pb.add(image);
-        PlanarImage tPlanarImage = (PlanarImage)JAI.create("awtImage", pb );
-        ImageCodec ic = ImageCodec.getCodec(codec.name());
-        ImageEncoder tEncoder = ic.createImageEncoder(codec.name(), new FileOutputStream(saveFile),  null);
-        tEncoder.encode(tPlanarImage);
+    public static void saveBufferedImage(BufferedImage bufferedImage, File saveFile, CODEC codec, float compresstion) throws IOException, NotSuppotedEncodingFormatException, ImageWriteException {		
+        Map<String, Object> params = new HashMap<>();
+        // Set the JPEG compression quality (0.0f - 1.0f)
+        params.put(ImagingConstants.PARAM_KEY_COMPRESSION, compresstion);
+		Imaging.writeImage(bufferedImage, saveFile, 
+				codec == CODEC.JPEG ? ImageFormats.JPEG :
+				codec == CODEC.PNG ? ImageFormats.PNG :
+				codec == CODEC.BMP ? ImageFormats.BMP :
+				codec == CODEC.TIFF ? ImageFormats.TIFF :
+				codec == CODEC.WBMP ? ImageFormats.WBMP :
+				codec == CODEC.PSD ? ImageFormats.PSD :
+				codec == CODEC.PSD ? ImageFormats.ICO :
+				codec == CODEC.DCX ? ImageFormats.DCX :				
+				codec == CODEC.PGM ? ImageFormats.PGM :
+				codec == CODEC.GIF ?  ImageFormats.GIF :
+				codec == CODEC.PCX ? ImageFormats.PCX :
+				ImageFormats.UNKNOWN, params);
     }
-    
+	
+
     /**
      * Create graph object with specified json
      * @param json
@@ -267,12 +273,13 @@ public class GraphUtility {
      * @throws IllegalAccessException 
      * @throws SecurityException 
      * @throws NoSuchMethodException 
+     * @throws ImageWriteException 
      */
-    public static void main(String[] args) throws IOException, NotSuppotedEncodingFormatException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    	File f = new File("D:\\Github\\chaosgraph\\aws-api-lambda-chart-json.json");
+    public static void main(String[] args) throws IOException, NotSuppotedEncodingFormatException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ImageWriteException {
+    	File f = new File("./aws-api-lambda-chart-json.json"); 
     	String json = Files.lines(f.toPath()).collect(Collectors.joining(System.lineSeparator()));
     	Graph<Double, String, Double> graph = createGraphWithJson(json);
     	System.out.println("width: "+graph.getBufferedImage().getWidth()+"   height: "+graph.getBufferedImage().getHeight());
-    	GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./line.png"), CODEC.PNG);
+    	GraphUtility.saveBufferedImage(graph.getBufferedImage(), new File("./circle.png"), CODEC.PNG, 0.5f);
     }
 }

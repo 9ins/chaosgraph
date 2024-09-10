@@ -137,6 +137,8 @@ public abstract class Graph <V extends Number, X, Y> implements IGraph<V, X, Y>,
     
     /**
      * Sweeping background
+     * @param width
+     * @param height
      */
     public void sweepBg(int width, int height) {
         this.GRAPH_WIDTH = IMG_WIDTH-(INDENT_LEFT+INDENT_RIGHT);	

@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.commons.imaging.ImageWriteException;
 import org.chaostocosmos.chaosgraph.AbstractGraph;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRAPH;
 import org.chaostocosmos.chaosgraph.GraphConstants.GRID;
@@ -475,7 +476,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener<Doub
         BufferedImage img = this.graph.getBufferedImage();
         try {
             //Save buffered image to file
-            GraphUtility.saveBufferedImage(img, tFile, CODEC.PNG);
+            GraphUtility.saveBufferedImage(img, tFile, CODEC.PNG, 1.0f);
         } catch (NotSuppotedEncodingFormatException ex) {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
@@ -483,6 +484,9 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener<Doub
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
         } catch (IOException ex) {
+            JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
+            return;
+        } catch (ImageWriteException ex) {
             JOptionPane.showConfirmDialog(this, ex.getMessage(), "Error", JOptionPane.CLOSED_OPTION);
             return;
         }
@@ -512,9 +516,7 @@ public class GraphExample1 extends JFrame implements GraphSelectionListener<Doub
      * @throws ClassNotFoundException
      * @since JDK1.4.1
      */
-    public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException
-    {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+    public static void main(String[] args) throws UnsupportedLookAndFeelException, IllegalAccessException, InstantiationException, ClassNotFoundException {
         new GraphExample1();
     }
 }
